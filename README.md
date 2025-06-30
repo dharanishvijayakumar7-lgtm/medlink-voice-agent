@@ -39,17 +39,18 @@ You can also do this automatically using the LiveKit CLI:
 lk app env -w .env
 ```
 
-Run the agent:
+Run the agent in console mode:
 
 ```console
-uv run python src/agent.py dev
+uv run python src/agent.py console
 ```
+
 
 This agent requires a frontend application to communicate with. Use a [starter app](https://docs.livekit.io/agents/start/frontend/#starter-apps), our hosted [Sandbox](https://cloud.livekit.io/projects/p_/sandbox) frontends, or the [LiveKit Agents Playground](https://agents-playground.livekit.io/).
 
 
-Run tests
+Run evals
 
 ```console
-uv run pytest
+uv run pytest evals
 ```
