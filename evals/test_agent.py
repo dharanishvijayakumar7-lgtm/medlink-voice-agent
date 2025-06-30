@@ -9,16 +9,15 @@ def _llm() -> llm.LLM:
     return openai.LLM(model="gpt-4o-mini", temperature=0.45)
 
 @pytest.mark.asyncio
-async def test_greeting() -> None:
-
+async def test_offers_assistance() -> None:
     async with (
         _llm() as llm,
         AgentSession(llm=llm) as session,
     ):
         await session.start(Assistant())
-        result = await session.run(user_input="Hi there how are you?")
+        result = await session.run(user_input="Hello")
         await result.expect.message(role="assistant").judge(
-            llm, intent="should offer a friendly greeting to the user"
+            llm, intent="Offers a friendly introduction and offer of assistance."
         )
         result.expect.no_more_events()
         

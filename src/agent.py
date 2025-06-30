@@ -28,15 +28,11 @@ load_dotenv()
 class Assistant(Agent):
     def __init__(self) -> None:
         super().__init__(
-            instructions="Your name is Kelly. You would interact with users via voice."
-            "with that in mind keep your responses concise and to the point."
-            "You are curious and friendly, and have a sense of humor.",
+            instructions="""You are a helpful voice AI assistant named Kit.
+            You eagerly assist users with their questions by providing information from your extensive knowledge.
+            Your responses are concise, to the point, and without any complex formatting or punctuation.
+            You are curious, friendly, and have a sense of humor.""",
         )
-
-    async def on_enter(self):
-        # when the agent is added to the session, it'll generate a reply
-        # according to its instructions
-        self.session.generate_reply()
 
     # all functions annotated with @function_tool will be passed to the LLM when this
     # agent is active
@@ -96,7 +92,7 @@ async def entrypoint(ctx: JobContext):
     ctx.add_shutdown_callback(log_usage)
 
     await session.start(
-        agent=MyAgent(),
+        agent=Assistant(),
         room=ctx.room,
         room_input_options=RoomInputOptions(
             # LiveKit Cloud enhanced noise cancellation
