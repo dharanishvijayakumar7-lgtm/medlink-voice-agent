@@ -1,0 +1,44 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "agent-starter-python"
+version = "0.1.0"
+description = "Simple voice AI assistant built with LiveKit Agents for Python"
+requires-python = ">=3.9"
+
+dependencies = [
+    "livekit-agents",
+    "livekit-plugins-openai",
+    "livekit-plugins-turn-detector",
+    "livekit-plugins-silero",
+    "livekit-plugins-cartesia",
+    "livekit-plugins-deepgram",
+    "python-dotenv",
+    "livekit-plugins-noise-cancellation~=0.2.1",
+]
+
+[dependency-groups]
+dev = [
+    "pytest",
+    "pytest-asyncio",
+]
+
+[tool.uv.sources]
+livekit-agents = { path = "../../livekit/agents/livekit-agents", editable = true }
+livekit-plugins-openai = { path = "../../livekit/agents/livekit-plugins/livekit-plugins-openai", editable = true }
+livekit-plugins-turn-detector = { path = "../../livekit/agents/livekit-plugins/livekit-plugins-turn-detector", editable = true }
+livekit-plugins-silero = { path = "../../livekit/agents/livekit-plugins/livekit-plugins-silero", editable = true }
+livekit-plugins-cartesia = { path = "../../livekit/agents/livekit-plugins/livekit-plugins-cartesia", editable = true }
+livekit-plugins-deepgram = { path = "../../livekit/agents/livekit-plugins/livekit-plugins-deepgram", editable = true }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-dir]
+"" = "src"
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
