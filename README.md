@@ -47,9 +47,3 @@ uv run python src/agent.py dev
 
 This agent requires a frontend application to communicate with. Use a [starter app](https://docs.livekit.io/agents/start/frontend/#starter-apps), our hosted [Sandbox](https://cloud.livekit.io/projects/p_/sandbox) frontends, or the [LiveKit Agents Playground](https://agents-playground.livekit.io/).
 
-
-Run tests
-
-```console
-uv run pytest
-```
