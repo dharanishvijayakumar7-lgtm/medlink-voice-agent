@@ -6,7 +6,7 @@ from agent import Assistant
 
 
 def _llm() -> llm.LLM:
-    return openai.LLM(model="gpt-4o-mini", temperature=0.45)
+    return openai.LLM(model="gpt-4o-mini")
 
 
 @pytest.mark.asyncio
