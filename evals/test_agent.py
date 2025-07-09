@@ -87,7 +87,7 @@ async def test_no_hallucination() -> None:
             .is_message(role="assistant")
             .judge(
                 llm,
-                intent="Declines to answer. Optionally, may offer to help if the user provides the missing information.",
+                intent="Declines to answer and/or speculate. Optionally it may ask for information or offer help if more is provided (not required).",
             )
         )
 
