@@ -66,15 +66,21 @@ async def entrypoint(ctx: JobContext):
         "room": ctx.room.name,
     }
 
+    # Set up a voice AI pipeline using OpenAI, Cartesia, Deepgram, and the LiveKit turn detector
     session = AgentSession(
-        vad=ctx.proc.userdata["vad"],
         # any combination of STT, LLM, TTS, or realtime API can be used
         llm=openai.LLM(model="gpt-4o-mini"),
         stt=deepgram.STT(model="nova-3", language="multi"),
         tts=cartesia.TTS(),
         # use LiveKit's turn detection model
         turn_detection=MultilingualModel(),
+        vad=ctx.proc.userdata["vad"],
     )
+    
+    # To use the OpenAI Realtime API, use the following session setup instead:
+    # session = AgentSession(
+    #     llm=openai.realtime.RealtimeModel()
+    # )
 
     # log metrics as they are emitted, and total usage after session is over
     usage_collector = metrics.UsageCollector()
