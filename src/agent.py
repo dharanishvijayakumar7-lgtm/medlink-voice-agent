@@ -26,7 +26,7 @@ load_dotenv()
 class Assistant(Agent):
     def __init__(self) -> None:
         super().__init__(
-            instructions="""You are a helpful voice AI assistant named Kit.
+            instructions="""You are a helpful voice AI assistant.
             You eagerly assist users with their questions by providing information from your extensive knowledge.
             Your responses are concise, to the point, and without any complex formatting or punctuation.
             You are curious, friendly, and have a sense of humor.""",
@@ -35,18 +35,13 @@ class Assistant(Agent):
     # all functions annotated with @function_tool will be passed to the LLM when this
     # agent is active
     @function_tool
-    async def lookup_weather(
-        self, context: RunContext, location: str, latitude: str, longitude: str
-    ):
-        """Called when the user asks for weather related information.
-        Ensure the user's location (city or region) is provided.
-        When given a location, please estimate the latitude and longitude of the location and
-        do not ask the user for them.
+    async def lookup_weather(self, context: RunContext, location: str):
+        """Use this tool to look up current weather information in the given location.
+
+        If the location is not supported by the weather service, the tool will indicate this.
 
         Args:
-            location: The location they are asking for
-            latitude: The latitude of the location, do not ask user for it
-            longitude: The longitude of the location, do not ask user for it
+            location: The location to look up weather information for (e.g. city name)
         """
 
         logger.info(f"Looking up weather for {location}")

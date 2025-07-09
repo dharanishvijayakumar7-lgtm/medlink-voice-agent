@@ -1,5 +1,6 @@
 import pytest
 from livekit.agents import AgentSession, llm
+from livekit.agents.voice.run_result import mock_tools
 from livekit.plugins import openai
 
 from agent import Assistant
@@ -70,7 +71,57 @@ async def test_weather_tool() -> None:
 
 
 @pytest.mark.asyncio
-async def test_no_hallucination() -> None:
+async def test_weather_unavailable() -> None:
+    """Evaluation of the agent's ability to handle tool errors."""
+    async with (
+        _llm() as llm,
+        AgentSession(llm=llm) as sess,
+    ):
+        await sess.start(Assistant())
+
+        # Simulate a tool error
+        with mock_tools(
+            Assistant,
+            {"lookup_weather": lambda: RuntimeError("Weather service is unavailable")},
+        ):
+            result = await sess.run(user_input="What's the weather in Tokyo?")
+            result.expect.skip_next_event_if(type="message", role="assistant")
+            result.expect.next_event().is_function_call(
+                name="lookup_weather", arguments={"location": "Tokyo"}
+            )
+            result.expect.next_event().is_function_call_output()
+            await result.expect.next_event(type="message").judge(
+                llm, intent="Should inform the user that an error occurred."
+            )
+
+            # leaving this commented, some LLMs may occasionally try to retry.
+            # result.expect.no_more_events()
+
+
+@pytest.mark.asyncio
+async def test_unsupported_location() -> None:
+    """Evaluation of the agent's ability to handle a weather response with an unsupported location."""
+    async with (
+        _llm() as llm,
+        AgentSession(llm=llm) as sess,
+    ):
+        await sess.start(Assistant())
+
+        with mock_tools(Assistant, {"lookup_weather": lambda: "UNSUPPORTED_LOCATION"}):
+            result = await sess.run(user_input="What's the weather in Tokyo?")
+
+            # Evaluate the agent's response for an unsupported location
+            await result.expect.next_event(type="message").judge(
+                llm,
+                intent="Should inform the user that weather information is not available for the given location.",
+            )
+
+        # Ensures there are no function calls or other unexpected events
+        result.expect.no_more_events()
+
+
+@pytest.mark.asyncio
+async def test_grounding() -> None:
     """Evaluation of the agent's ability to refuse to answer when it doesn't know something."""
     async with (
         _llm() as llm,
