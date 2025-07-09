@@ -1,7 +1,6 @@
 import logging
 
 from dotenv import load_dotenv
-
 from livekit.agents import (
     Agent,
     AgentSession,
@@ -16,9 +15,8 @@ from livekit.agents import (
 )
 from livekit.agents.llm import function_tool
 from livekit.agents.voice import MetricsCollectedEvent
-from livekit.plugins import cartesia, deepgram, openai, silero
+from livekit.plugins import cartesia, deepgram, noise_cancellation, openai, silero
 from livekit.plugins.turn_detector.multilingual import MultilingualModel
-from livekit.plugins import noise_cancellation
 
 logger = logging.getLogger("agent")
 
@@ -76,7 +74,7 @@ async def entrypoint(ctx: JobContext):
         turn_detection=MultilingualModel(),
         vad=ctx.proc.userdata["vad"],
     )
-    
+
     # To use the OpenAI Realtime API, use the following session setup instead:
     # session = AgentSession(
     #     llm=openai.realtime.RealtimeModel()

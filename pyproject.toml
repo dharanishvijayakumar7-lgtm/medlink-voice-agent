@@ -18,6 +18,7 @@ dependencies = [
 dev = [
     "pytest",
     "pytest-asyncio",
+    "ruff",
 ]
 
 # TODO: Remove these once agents 1.2 is released
@@ -43,3 +44,15 @@ where = ["src"]
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
 asyncio_default_fixture_loop_scope = "function"
+
+[tool.ruff]
+line-length = 88
+target-version = "py39"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "N", "B", "A", "C4", "UP", "SIM", "RUF"]
+ignore = ["E501"]  # Line too long (handled by formatter)
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
