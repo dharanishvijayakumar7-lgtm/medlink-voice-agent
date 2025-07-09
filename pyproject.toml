@@ -9,14 +9,9 @@ description = "Simple voice AI assistant built with LiveKit Agents for Python"
 requires-python = ">=3.9"
 
 dependencies = [
-    "livekit-agents",
-    "livekit-plugins-openai",
-    "livekit-plugins-turn-detector",
-    "livekit-plugins-silero",
-    "livekit-plugins-cartesia",
-    "livekit-plugins-deepgram",
-    "python-dotenv",
+    "livekit-agents[openai,turn-detector,silero,cartesia,deepgram]~=1.2",
     "livekit-plugins-noise-cancellation~=0.2.1",
+    "python-dotenv",
 ]
 
 [dependency-groups]
@@ -25,13 +20,19 @@ dev = [
     "pytest-asyncio",
 ]
 
+# TODO: Remove these once agents 1.2 is released
+# If you run into git lfs smudge issues when doing `uv sync`, do this:
+# ```
+# uv cache clean
+# UV_GIT_LFS=1 uv sync
+# ```
 [tool.uv.sources]
-livekit-agents = { path = "../../livekit/agents/livekit-agents", editable = true }
-livekit-plugins-openai = { path = "../../livekit/agents/livekit-plugins/livekit-plugins-openai", editable = true }
-livekit-plugins-turn-detector = { path = "../../livekit/agents/livekit-plugins/livekit-plugins-turn-detector", editable = true }
-livekit-plugins-silero = { path = "../../livekit/agents/livekit-plugins/livekit-plugins-silero", editable = true }
-livekit-plugins-cartesia = { path = "../../livekit/agents/livekit-plugins/livekit-plugins-cartesia", editable = true }
-livekit-plugins-deepgram = { path = "../../livekit/agents/livekit-plugins/livekit-plugins-deepgram", editable = true }
+livekit-agents = { git = "https://github.com/livekit/agents.git", branch = "theo/agents1.2", subdirectory = "livekit-agents" }
+livekit-plugins-openai = { git = "https://github.com/livekit/agents.git", branch = "theo/agents1.2", subdirectory = "livekit-plugins/livekit-plugins-openai" }
+livekit-plugins-turn-detector = { git = "https://github.com/livekit/agents.git", branch = "theo/agents1.2", subdirectory = "livekit-plugins/livekit-plugins-turn-detector" }
+livekit-plugins-silero = { git = "https://github.com/livekit/agents.git", branch = "theo/agents1.2", subdirectory = "livekit-plugins/livekit-plugins-silero" }
+livekit-plugins-cartesia = { git = "https://github.com/livekit/agents.git", branch = "theo/agents1.2", subdirectory = "livekit-plugins/livekit-plugins-cartesia" }
+livekit-plugins-deepgram = { git = "https://github.com/livekit/agents.git", branch = "theo/agents1.2", subdirectory = "livekit-plugins/livekit-plugins-deepgram" }
 
 [tool.setuptools.packages.find]
 where = ["src"]
