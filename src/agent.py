@@ -38,7 +38,7 @@ class Assistant(Agent):
     async def lookup_weather(self, context: RunContext, location: str):
         """Use this tool to look up current weather information in the given location.
 
-        If the location is not supported by the weather service, the tool will indicate this.
+        If the location is not supported by the weather service, the tool will indicate this. You must tell the user the location's weather is unavailable.
 
         Args:
             location: The location to look up weather information for (e.g. city name)
