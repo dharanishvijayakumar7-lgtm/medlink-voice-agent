@@ -44,7 +44,13 @@ lk app env -w .env
 
 ## Run the agent
 
-Run this command to speak to your agent directly in your terminal:
+Before your first run, you must download certain models such as [Silero VAD](https://docs.livekit.io/agents/build/turns/vad/) and the [LiveKit turn detector](https://docs.livekit.io/agents/build/turns/turn-detector/):
+
+```console
+uv run python src/agent.py download-files
+```
+
+Next, run this command to speak to your agent directly in your terminal:
 
 ```console
 uv run python src/agent.py console

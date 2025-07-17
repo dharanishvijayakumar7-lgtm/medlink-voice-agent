@@ -13,7 +13,6 @@ from livekit.agents import (
     WorkerOptions,
     cli,
     metrics,
-    workflows,
 )
 from livekit.agents.llm import function_tool
 from livekit.agents.voice import MetricsCollectedEvent
@@ -49,22 +48,6 @@ class Assistant(Agent):
         logger.info(f"Looking up weather for {location}")
 
         return "sunny with a temperature of 70 degrees."
-
-    @function_tool
-    async def send_email(self, context: RunContext, subject: str, body: str):
-        """Use this tool to send an email on behalf of the user.
-
-        Args:
-            subject: The subject of the email
-            body: The body of the email
-        """
-
-        email_result = await workflows.GetEmailAgent(chat_ctx=self.chat_ctx)
-        send_to_email_address = email_result.email_address
-
-        await asyncio.sleep(1)  # simulate sending the email
-        return "Email sent to " + send_to_email_address
-
 
 def prewarm(proc: JobProcess):
     proc.userdata["vad"] = silero.VAD.load()
