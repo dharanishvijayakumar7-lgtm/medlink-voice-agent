@@ -29,12 +29,11 @@ async def test_offers_assistance() -> None:
             .judge(
                 llm,
                 intent="""
-                Offers assistance to the user.
+                Greets the user in a friendly manner.
 
                 Optional context that may or may not be included:
-                - A friendly greeting or introduction
-                - Welcoming tone
-                - Invitation to ask questions or request help
+                - Offer of assistance with any request the user may have
+                - Other small talk or chit chat is acceptable, so long as it is friendly and not too intrusive
                 """,
             )
         )
