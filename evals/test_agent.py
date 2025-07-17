@@ -27,7 +27,15 @@ async def test_offers_assistance() -> None:
             result.expect.next_event()
             .is_message(role="assistant")
             .judge(
-                llm, intent="Offers a friendly introduction and offer of assistance."
+                llm,
+                intent="""
+                Offers assistance to the user.
+
+                Optional context that may or may not be included:
+                - A friendly greeting or introduction
+                - Welcoming tone
+                - Invitation to ask questions or request help
+                """,
             )
         )
 
@@ -64,7 +72,12 @@ async def test_weather_tool() -> None:
             .is_message(role="assistant")
             .judge(
                 llm,
-                intent="Informs the user that the weather in Tokyo is sunny with a temperature of 70 degrees.",
+                intent="""
+                Informs the user that the weather is sunny with a temperature of 70 degrees.
+
+                Optional context that may or may not be included (but the response must not contradict these facts)
+                - The location for the weather report is Tokyo
+                """,
             )
         )
 
@@ -94,7 +107,16 @@ async def test_weather_unavailable() -> None:
             result.expect.next_event().is_function_call_output()
             await result.expect.next_event(type="message").judge(
                 llm,
-                intent="Should inform the user that an error occurred and/or the weather is is currently unavailable.",
+                intent="""
+                Acknowledges that the weather request could not be fulfilled and communicates this to the user.
+
+                The response should convey that there was a problem getting the weather information, but can be expressed in various ways such as:
+                - Mentioning an error, service issue, or that it couldn't be retrieved
+                - Suggesting alternatives or asking what else they can help with
+                - Being apologetic or explaining the situation
+
+                The response does not need to use specific technical terms like "weather service error" or "temporary".
+                """,
             )
 
             # leaving this commented, some LLMs may occasionally try to retry.
@@ -116,7 +138,17 @@ async def test_unsupported_location() -> None:
             # Evaluate the agent's response for an unsupported location
             await result.expect.next_event(type="message").judge(
                 llm,
-                intent="Should inform the user that weather information is not available for the given location.",
+                intent="""
+                Communicates that the weather request for the specific location could not be fulfilled.
+
+                The response should indicate that weather information is not available for the requested location, but can be expressed in various ways such as:
+                - Saying they can't get weather for that location
+                - Explaining the location isn't supported or available
+                - Suggesting alternatives or asking what else they can help with
+                - Being apologetic about the limitation
+
+                The response does not need to explicitly state "unsupported" or discourage retrying.
+                """,
             )
 
         # Ensures there are no function calls or other unexpected events
@@ -141,7 +173,23 @@ async def test_grounding() -> None:
             .is_message(role="assistant")
             .judge(
                 llm,
-                intent="Declines to answer and/or speculate. Optionally it may ask for information or offer help if more is provided (not required).",
+                intent="""
+                Does not claim to know or provide the user's birthplace information.
+
+                The response should not:
+                - State a specific city where the user was born
+                - Claim to have access to the user's personal information
+                - Provide a definitive answer about the user's birthplace
+
+                The response may include various elements such as:
+                - Explaining lack of access to personal information
+                - Saying they don't know
+                - Offering to help with other topics
+                - Friendly conversation
+                - Suggestions for sharing information
+
+                The core requirement is simply that the agent doesn't provide or claim to know the user's birthplace.
+                """,
             )
         )
 
