@@ -68,13 +68,21 @@ In production, use the `start` command:
 uv run python src/agent.py start
 ```
 
-## Web and mobile frontends
+## Frontend & Telephony
 
-To use a prebuilt frontend or build your own, see the [agents frontend guide](https://docs.livekit.io/agents/start/frontend/).
+Get started quickly with our pre-built frontend starter apps, or add telephony support:
 
-## Telephony
+| Platform | Link | Description |
+|----------|----------|-------------|
+| **Web** | [`livekit-examples/agent-starter-react`](https://github.com/livekit-examples/agent-starter-react) | Web voice AI assistant with React & Next.js |
+| **iOS/macOS** | [`livekit-examples/agent-starter-swift`](https://github.com/livekit-examples/agent-starter-swift) | Native iOS, macOS, and visionOS voice AI assistant |
+| **Flutter** | [`livekit-examples/agent-starter-flutter`](https://github.com/livekit-examples/agent-starter-flutter) | Cross-platform voice AI assistant app |
+| **React Native** | [`livekit-examples/voice-assistant-react-native`](https://github.com/livekit-examples/voice-assistant-react-native) | Native mobile app with React Native & Expo |
+| **Android** | [`livekit-examples/agent-starter-android`](https://github.com/livekit-examples/agent-starter-android) | Native Android app with Kotlin & Jetpack Compose |
+| **Web Embed** | [`livekit-examples/agent-starter-embed`](https://github.com/livekit-examples/agent-starter-embed) | Voice AI widget for any website |
+| **Telephony** | [📚 Documentation](https://docs.livekit.io/agents/start/telephony/) | Add inbound or outbound calling to your agent |
 
-To add a phone number, see the [agents telephony guide](https://docs.livekit.io/agents/start/telephony/).
+For advanced customization, see the [complete frontend guide](https://docs.livekit.io/agents/start/frontend/).
 
 ## Tests and evals
 
