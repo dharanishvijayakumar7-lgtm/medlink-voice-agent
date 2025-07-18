@@ -81,7 +81,7 @@ To add a phone number, see the [agents telephony guide](https://docs.livekit.io/
 This project includes a complete suite of evals, based on the LiveKit Agents [testing & evaluation framework](https://docs.livekit.io/agents/build/testing/). To run them, use `pytest`.
 
 ```console
-uv run pytest evals
+uv run pytest
 ```
 
 ## Using this template repo for your own project
