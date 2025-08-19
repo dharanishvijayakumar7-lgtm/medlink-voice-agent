@@ -27,6 +27,7 @@ RUN adduser \
 # We clean up the apt cache after installation to keep the image size down
 RUN apt-get update && apt-get install -y \
     gcc \
+    g++ \
     python3-dev \
   && rm -rf /var/lib/apt/lists/*
 
