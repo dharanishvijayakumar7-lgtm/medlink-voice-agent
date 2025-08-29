@@ -84,7 +84,7 @@ async def entrypoint(ctx: JobContext):
     # To use a realtime model instead of a voice pipeline, use the following session setup instead:
     # session = AgentSession(
     #     # See all providers at https://docs.livekit.io/agents/integrations/realtime/
-    #     llm=openai.realtime.RealtimeModel()
+    #     llm=openai.realtime.RealtimeModel(voice="marin")
     # )
 
     # sometimes background noise could interrupt the agent session, these are considered false positive interruptions
