@@ -130,6 +130,53 @@ def test_contraindication_matches_disclosed_condition(fm):
     assert any("contraindicated" in reason for _, reason in result.rejected)
 
 
+def test_reported_symptoms_are_checked_against_contraindications(fm):
+    """A symptom the caller described must block a drug, not just a formal
+    'known condition'. Loperamide is dangerous in dysentery."""
+    query = "control diarrhoea stop loose motion frequent watery stools"
+    bloody = recommend(
+        query,
+        PatientContext(
+            age_years=30,
+            symptom_duration_days=1,
+            reported_symptoms=["blood in the stool"],
+        ),
+        allowed_classes={"antidiarrheal"},
+        formulary=fm,
+    )
+    assert "loperamide_2" not in _ids(bloody)
+    assert any("contraindicated" in reason for _, reason in bloody.rejected)
+
+
+def test_fever_with_diarrhoea_blocks_loperamide(fm):
+    result = recommend(
+        "control diarrhoea stop loose motion frequent watery stools",
+        PatientContext(
+            age_years=30,
+            symptom_duration_days=1,
+            reported_symptoms=["loose motions with fever"],
+        ),
+        allowed_classes={"antidiarrheal"},
+        formulary=fm,
+    )
+    assert "loperamide_2" not in _ids(result)
+
+
+def test_uncomplicated_diarrhoea_still_allows_loperamide(fm):
+    """The safety check must not be so broad that it blocks valid use."""
+    result = recommend(
+        "control diarrhoea stop loose motion frequent watery stools",
+        PatientContext(
+            age_years=30,
+            symptom_duration_days=1,
+            reported_symptoms=["watery stools only"],
+        ),
+        allowed_classes={"antidiarrheal"},
+        formulary=fm,
+    )
+    assert "loperamide_2" in _ids(result)
+
+
 def test_interaction_with_current_medication_is_rejected(fm):
     result = recommend(
         "strong body pain and sprain",

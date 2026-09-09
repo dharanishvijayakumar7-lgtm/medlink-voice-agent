@@ -74,6 +74,12 @@ class RecommendAgent(MedLinkAgent):
             symptom: The main symptom in English, e.g. "fever", "loose motions".
         """
         data = context.userdata
+        # Feed everything the caller described into the contraindication check,
+        # not just formally recorded conditions.
+        data.patient.reported_symptoms = [
+            *(x for x in [data.chief_complaint] if x),
+            *data.answers.values(),
+        ]
         # BM25 + filtering is CPU work; keep it off the voice event loop.
         result = await asyncio.to_thread(
             recommend_medicines,

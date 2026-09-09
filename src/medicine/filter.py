@@ -99,6 +99,13 @@ class PatientContext:
     known_conditions: list[str] = field(default_factory=list)
     symptom_duration_days: int | None = None
     is_for_child: bool = False  # caller is asking on behalf of a child
+    # What the caller described during triage (chief complaint + answers).
+    # Checked against contraindications too: "blood in the stool" must block
+    # loperamide even though it is a symptom rather than a known condition.
+    reported_symptoms: list[str] = field(default_factory=list)
+
+    def disclosed_context(self) -> list[str]:
+        return [*self.known_conditions, *self.reported_symptoms]
 
 
 @dataclass
@@ -285,8 +292,9 @@ def recommend(
             continue
 
         contra_hit = None
+        disclosed = patient.disclosed_context()
         for rule in entry.contraindications:
-            hit = _phrase_matches(rule, patient.known_conditions)
+            hit = _phrase_matches(rule, disclosed)
             if hit:
                 contra_hit = (rule, hit)
                 break
