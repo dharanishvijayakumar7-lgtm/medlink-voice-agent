@@ -1,0 +1,28 @@
+# Local PostgreSQL for MedLink call/patient history.
+#
+#   docker compose up -d
+#   export DATABASE_URL=postgresql://medlink:medlink@localhost:5432/medlink
+#   uv run alembic upgrade head
+#
+# Postgres is free and self-hosted; nothing here costs money.
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: medlink-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: medlink
+      POSTGRES_PASSWORD: medlink
+      POSTGRES_DB: medlink
+    ports:
+      - "5432:5432"
+    volumes:
+      - medlink_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U medlink -d medlink"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  medlink_pgdata:

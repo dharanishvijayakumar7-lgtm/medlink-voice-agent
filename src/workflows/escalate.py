@@ -17,6 +17,7 @@ import logging
 from livekit.agents import RunContext, function_tool
 
 from config import settings
+from db import repository as history
 from safety.redflags import format_redflag_advice
 from session_state import MedLinkUserData
 from workflows.base import SHARED_STYLE, MedLinkAgent
@@ -107,6 +108,9 @@ class EscalateAgent(MedLinkAgent):
         """
         data = context.userdata
         data.consent_share_doctor = may_share_summary_with_doctor
+        await history.record_consent(
+            data, "share_doctor", may_share_summary_with_doctor
+        )
         logger.info(
             "consent recorded",
             extra={

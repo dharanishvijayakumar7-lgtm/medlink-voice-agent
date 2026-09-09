@@ -340,7 +340,23 @@ def recommend(
         survivors.append((entry, score, cautions))
 
     survivors.sort(key=lambda t: t[1], reverse=True)
-    top = survivors[: settings.medicine_max_results]
+
+    # Never suggest two products sharing an active ingredient. Paracetamol is
+    # the classic accidental-overdose route, and the formulary warns against
+    # combining products that contain it.
+    top: list[tuple[FormularyEntry, float, list[str]]] = []
+    chosen_ingredients: set[str] = set()
+    for entry, score, cautions in survivors:
+        ingredients = {i.name.casefold() for i in entry.active_ingredients}
+        if ingredients & chosen_ingredients:
+            rejected.append(
+                (entry.id, "duplicate active ingredient already recommended")
+            )
+            continue
+        chosen_ingredients |= ingredients
+        top.append((entry, score, cautions))
+        if len(top) >= settings.medicine_max_results:
+            break
 
     if not top:
         reason = (

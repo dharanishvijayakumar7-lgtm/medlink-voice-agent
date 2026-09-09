@@ -228,3 +228,21 @@ def test_known_names_populated_for_allow_list_gate(fm):
     assert "paracetamol" in names
     assert "cetirizine" in names
     assert len(names) > 20
+
+
+def test_never_recommends_two_products_with_the_same_ingredient(fm):
+    """Double-dosing paracetamol is a classic accidental overdose route."""
+    result = recommend(
+        "fever and body pain",
+        PatientContext(age_years=34, symptom_duration_days=2),
+        allowed_classes={"analgesic_antipyretic"},
+        formulary=fm,
+    )
+    ingredients = [
+        i.name.casefold()
+        for rec in result.recommendations
+        for i in fm.by_id[rec.entry_id].active_ingredients
+    ]
+    assert len(ingredients) == len(set(ingredients)), (
+        f"same active ingredient offered twice: {ingredients}"
+    )

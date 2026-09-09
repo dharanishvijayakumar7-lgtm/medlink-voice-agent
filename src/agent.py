@@ -19,6 +19,7 @@ from livekit.agents import (
 from livekit.plugins import ai_coustics
 
 from config import settings
+from db import repository as history
 from llm_factory import build_llm
 from session_state import MedLinkUserData
 from speech import build_stt, build_tts
@@ -52,6 +53,10 @@ async def medlink_session(ctx: JobContext):
     )
     ctx.log_context_fields["call_id"] = userdata.call_id
 
+    # Look up a returning caller and open the call record before we greet, so
+    # the intake agent can acknowledge prior history. Never fatal.
+    await history.start_call(userdata)
+
     session = AgentSession[MedLinkUserData](
         userdata=userdata,
         llm=build_llm(),
@@ -65,6 +70,7 @@ async def medlink_session(ctx: JobContext):
     )
 
     async def _log_outcome():
+        await history.finish_call(userdata)
         logger.info(
             "call ended",
             extra={

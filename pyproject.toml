@@ -19,14 +19,12 @@ dependencies = [
     "rank-bm25>=0.2.2",
     "tenacity>=9.0",
     "httpx>=0.28",
-    # Persistence (P1.6) + local RAG store
+    # Persistence. Relational only - triage/formulary retrieval is lexical,
+    # so there is no vector store and no embedding model to download.
     "sqlalchemy[asyncio]>=2.0.36",
     "asyncpg>=0.30",
     "alembic>=1.14",
-    "pgvector>=0.3.6",
     "cryptography>=44.0",
-    # Local embeddings for triage KB / formulary retrieval (no per-query API cost)
-    "fastembed>=0.4",
 ]
 
 [dependency-groups]
@@ -34,6 +32,8 @@ dev = [
     "pytest",
     "pytest-asyncio",
     "ruff",
+    # Lets the DB test suite run on SQLite - no Docker/Postgres needed locally.
+    "aiosqlite>=0.20",
 ]
 
 [tool.uv]

@@ -92,6 +92,8 @@ class Settings(BaseSettings):
     phone_hash_key: str = Field(default="", alias="MEDLINK_PHONE_HASH_KEY")
     field_encryption_key: str = Field(default="", alias="MEDLINK_FIELD_ENCRYPTION_KEY")
     history_retention_days: int = Field(default=90, alias="MEDLINK_RETENTION_DAYS")
+    # Seconds to wait for a database connection before giving up on the write.
+    db_connect_timeout: float = Field(default=3.0, alias="MEDLINK_DB_CONNECT_TIMEOUT")
 
     # --- Telephony ---
     sms_provider: str = Field(default="", alias="MEDLINK_SMS_PROVIDER")  # plivo|exotel
