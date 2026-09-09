@@ -1,0 +1,129 @@
+[
+  {
+    "id": "med_000001",
+    "name": "Crocin 500mg Tablet",
+    "composition": [
+      "Paracetamol (500mg)"
+    ],
+    "indications": [
+      "fever",
+      "headache",
+      "body pain"
+    ],
+    "side_effects": [
+      "nausea",
+      "allergic reaction"
+    ],
+    "therapeutic_class": "PAIN ANALGESICS",
+    "manufacturer": "GSK"
+  },
+  {
+    "id": "med_000002",
+    "name": "Aspirin 500mg Tablet",
+    "composition": [
+      "Acetylsalicylic Acid (500mg)"
+    ],
+    "indications": [
+      "fever",
+      "pain relief",
+      "headache"
+    ],
+    "side_effects": [
+      "stomach upset",
+      "heartburn"
+    ],
+    "therapeutic_class": "PAIN ANALGESICS",
+    "manufacturer": "Bayer"
+  },
+  {
+    "id": "med_000003",
+    "name": "Ibuprofen 400mg Tablet",
+    "composition": [
+      "Ibuprofen (400mg)"
+    ],
+    "indications": [
+      "pain relief",
+      "fever",
+      "inflammation"
+    ],
+    "side_effects": [
+      "stomach pain",
+      "dizziness"
+    ],
+    "therapeutic_class": "PAIN ANALGESICS",
+    "manufacturer": "Various"
+  },
+  {
+    "id": "med_000004",
+    "name": "Ascoril LS Syrup",
+    "composition": [
+      "Ambroxol (30mg/5ml)",
+      "Salbutamol (2mg/5ml)"
+    ],
+    "indications": [
+      "cough",
+      "bronchitis",
+      "respiratory symptoms"
+    ],
+    "side_effects": [
+      "tremor",
+      "nervousness"
+    ],
+    "therapeutic_class": "RESPIRATORY",
+    "manufacturer": "Novartis"
+  },
+  {
+    "id": "med_000005",
+    "name": "Allegra 120mg Tablet",
+    "composition": [
+      "Fexofenadine (120mg)"
+    ],
+    "indications": [
+      "allergy",
+      "sneezing",
+      "runny nose"
+    ],
+    "side_effects": [
+      "headache",
+      "drowsiness"
+    ],
+    "therapeutic_class": "RESPIRATORY",
+    "manufacturer": "Sanofi"
+  },
+  {
+    "id": "med_000006",
+    "name": "Gelusil Antacid Tablet",
+    "composition": [
+      "Magnesium Hydroxide (200mg)",
+      "Aluminum Hydroxide (200mg)"
+    ],
+    "indications": [
+      "acidity",
+      "heartburn",
+      "indigestion"
+    ],
+    "side_effects": [
+      "constipation",
+      "diarrhea"
+    ],
+    "therapeutic_class": "GASTRO INTESTINAL",
+    "manufacturer": "Cipla"
+  },
+  {
+    "id": "med_000007",
+    "name": "Digene Antacid Syrup",
+    "composition": [
+      "Magnesium Hydroxide (140mg/5ml)"
+    ],
+    "indications": [
+      "acidity",
+      "gas",
+      "bloating"
+    ],
+    "side_effects": [
+      "mild laxative effect"
+    ],
+    "therapeutic_class": "GASTRO INTESTINAL",
+    "manufacturer": "Abbott"
+  }
+]

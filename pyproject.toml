@@ -9,9 +9,23 @@ description = "Simple voice AI assistant built with LiveKit Agents for Python"
 requires-python = ">=3.10, <3.15"
 
 dependencies = [
-    "livekit-agents>=1.6.9",
+    # google = default STT/TTS/LLM provider; sarvam kept for optional per-language STT override
+    "livekit-agents[google,sarvam]>=1.8.0",
     "livekit-plugins-ai-coustics~=0.2",
     "python-dotenv",
+    "pydantic-settings>=2.5",
+    "pyyaml>=6.0",
+    "rank-bm25>=0.2.2",
+    "tenacity>=9.0",
+    "httpx>=0.28",
+    # Persistence (P1.6) + local RAG store
+    "sqlalchemy[asyncio]>=2.0.36",
+    "asyncpg>=0.30",
+    "alembic>=1.14",
+    "pgvector>=0.3.6",
+    "cryptography>=44.0",
+    # Local embeddings for triage KB / formulary retrieval (no per-query API cost)
+    "fastembed>=0.4",
 ]
 
 [dependency-groups]
@@ -38,7 +52,7 @@ asyncio_default_fixture_loop_scope = "function"
 
 [tool.ruff]
 line-length = 88
-target-version = "py39"
+target-version = "py310"
 
 [tool.ruff.lint]
 select = ["E", "F", "W", "I", "N", "B", "A", "C4", "UP", "SIM", "RUF"]
