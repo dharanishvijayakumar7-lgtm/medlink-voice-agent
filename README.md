@@ -1,163 +1,164 @@
-<a href="https://livekit.io/">
-  <img src="./.github/assets/livekit-mark.png" alt="LiveKit logo" width="100" height="100">
-</a>
+# MedLink — a voice health helpline for rural India
 
-# LiveKit Agents Starter - Python
+MedLink is a **voice AI agent you reach on an ordinary phone call**. No
+smartphone, no app, no data connection. It listens to what is wrong, asks a few
+targeted questions, works out how serious it is, gives safe over-the-counter
+guidance when that is appropriate — and pushes hard toward a real doctor when it
+is not.
 
-A complete starter project for building voice AI apps with [LiveKit Agents for Python](https://github.com/livekit/agents) and [LiveKit Cloud](https://cloud.livekit.io/).
+It speaks **English, Hindi, Tamil, Telugu, Kannada and Malayalam**, including
+the mixed way people actually talk (*"Enakku fever irukku, yesterday la irundhu
+romba tired aa irukken"*).
 
-The starter project includes:
+**It is not a doctor and never pretends to be one.** It is a safe first point of
+contact for people whose alternative is a long trip to a clinic, or nothing.
 
-- A simple voice AI assistant, ready for extension and customization
-- A voice AI pipeline built on [LiveKit Inference](https://docs.livekit.io/agents/models/inference), providing zero-configuration access to [models](https://docs.livekit.io/agents/models) from top labs
-  - Uses the fast, open-weight Gemma 4 31B model, [hosted by LiveKit](https://docs.livekit.io/agents/models/llm/livekit/) and tuned for optimal performance in voice AI, as the default LLM
-  - Uses Fish Audio S2.1 Pro for TTS, which renders the inline delivery markup that expressive mode relies on
-  - Supports more than 50 models from OpenAI, Cartesia, Deepgram, and other providers
-  - Access to a wide range of other models, including [Realtime models](https://docs.livekit.io/agents/models/realtime), through extensive plugin ecosystem
-- Expressive mode, enabled by default: the framework injects the TTS provider's markup guide into the LLM prompt, so the model emits inline delivery tags (emotion, pacing, non-verbal sounds) that the TTS renders and the transcript never shows
-- Eval suite based on the LiveKit Agents [testing & evaluation framework](https://docs.livekit.io/agents/start/testing/)
-- [LiveKit Turn Detector](https://docs.livekit.io/agents/logic/turns/turn-detector/), an end-of-turn model that listens to the user's audio directly, combining semantic understanding with acoustic cues for state-of-the-art accuracy across 14 languages
-- [Background voice cancellation](https://docs.livekit.io/transport/media/noise-cancellation/)
-- Deep session insights from LiveKit [Agent Observability](https://docs.livekit.io/deploy/observability/)
-- A Dockerfile ready for [production deployment to LiveKit Cloud](https://docs.livekit.io/deploy/agents/)
+---
 
-This starter app is compatible with any [custom web/mobile frontend](https://docs.livekit.io/frontends/) or [telephony](https://docs.livekit.io/telephony/).
+## The core design decision
 
-## Using coding agents
+An LLM is never allowed to choose a medicine, judge urgency, or decide an
+emergency. Those run in deterministic code; the model handles conversation.
 
-This project is designed to work with coding agents like [Claude Code](https://claude.com/product/claude-code), [Cursor](https://www.cursor.com/), and [Codex](https://openai.com/codex/).
-
-For your convenience, LiveKit offers both a CLI and an [MCP server](https://docs.livekit.io/reference/developer-tools/docs-mcp/) that can be used to browse and search its documentation. The [LiveKit CLI](https://docs.livekit.io/intro/basics/cli/) (`lk docs`) works with any coding agent that can run shell commands. Install it for your platform:
-
-**macOS:**
-
-```console
-brew install livekit-cli
+```
+caller audio
+     │
+     ├─▶ red-flag detector ──── emergency phrase? ──▶ Escalate agent
+     │   (deterministic, 13 categories, 6 languages)   (has NO medicine tool)
+     │   runs BEFORE the LLM; suppresses its reply
+     │
+     ▼
+Intake ──▶ Triage ──▶ Recommend        ← LiveKit agent handoffs,
+                 └──▶ Escalate            one small prompt each
+     │           │
+     │           ├─ triage KB: which questions matter for THIS symptom,
+     │           │             and which drug classes are ever appropriate
+     │           │
+     │           └─ severity scored in code, never by the model
+     │
+     ▼
+medicine filter: OTC-only · India-available · age · pregnancy ·
+                 contraindications · interactions · duration limit ·
+                 no duplicate active ingredients
+     │           (spoken text built ONLY from structured formulary fields)
+     ▼
+output guardrail — blocks any prescription drug the model volunteers
+     │
+     ▼
+caller hears it
 ```
 
-**Linux:**
+Four independent layers have to fail before a caller hears something unsafe.
 
-```console
-curl -sSL https://get.livekit.io/cli | bash
-```
+---
 
-**Windows:**
+## What is built
 
-```console
-winget install LiveKit.LiveKitCLI
-```
+| Area | Status |
+|---|---|
+| Deterministic emergency detection (13 categories, 6 languages + romanised) | ✅ |
+| Intake → Triage → Recommend → Escalate workflow with handoffs | ✅ |
+| Triage knowledge base — 22 presentations, WHO IMCI / ICMR STG / NICE CKS | ✅ |
+| OTC medicine safety pipeline + curated formulary | ✅ |
+| Output guardrail (prescription-drug denylist) + prompt-injection guard | ✅ |
+| PostgreSQL call history, returning-caller recall, consent gating, erasure | ✅ |
+| Bhashini speech (free) behind a provider factory | ✅ *(awaiting API key for a live smoke test)* |
+| Telephony (SIP inbound), doctor escalation automation, SMS | ⏳ next |
 
-The `lk docs` subcommand requires version 2.15.0 or higher. Check your version with `lk --version` and update if needed. Once installed, your coding agent can search and browse LiveKit documentation directly from the terminal:
+**211 tests**, `ruff` clean.
 
-```console
-lk docs search "voice agents"
-lk docs get-page /agents/start/voice-ai-quickstart
-```
+## Everything runs on free infrastructure
 
-See the [Using coding agents](https://docs.livekit.io/intro/coding-agents/) guide for more details, including MCP server setup.
+This was a hard constraint, and `MEDLINK_FREE_TIER_ONLY=true` (the default)
+enforces it in code — the provider factory refuses to construct anything that
+bills.
 
-The project includes a complete [AGENTS.md](AGENTS.md) file for these assistants. You can modify this file to suit your needs. To learn more about this file, see [https://agents.md](https://agents.md).
+| Need | Choice | Cost |
+|---|---|---|
+| Speech (STT/TTS) | **Bhashini** — Government of India ULCA/Dhruva | free |
+| Voice-activity detection | **Silero**, on-device | free |
+| Reasoning | **Gemini free tier** via Google AI Studio (*not* billed Google Cloud — `vertexai=False` is enforced) | free |
+| Transport, turn detection, SIP | **LiveKit Cloud** free tier | free |
+| Retrieval | lexical BM25 + curated multilingual aliases — no embedding model, no vector DB | free |
+| Database | self-hosted PostgreSQL | free |
 
-## Dev Setup
+## Privacy
 
-Create a project from this template with the LiveKit CLI (recommended):
+- **A raw phone number is never stored.** Lookup uses an HMAC hash; a reversible
+  encrypted copy is written *only* after consent.
+- Operational records (timings, triage outcome) are always kept — they are what
+  makes the service auditable. The caller's **words, answers and complaint** are
+  stored only with consent, and a previous call is recalled only if they
+  consented at the time.
+- Right to erasure by phone number; retention purge for transcripts.
+- Every consent decision and data access lands in an append-only audit log.
+
+---
+
+## Run it
 
 ```bash
-lk cloud auth
-lk agent init my-agent --template agent-starter-python
-```
-
-The CLI clones the template and configures your environment. Then follow the rest of this guide from [Run the agent](#run-the-agent).
-
-<details>
-<summary>Alternative: Manual setup without the CLI</summary>
-
-Clone the repository and install dependencies to a virtual environment:
-
-```console
-cd agent-starter-python
 uv sync
-```
-
-Sign up for [LiveKit Cloud](https://cloud.livekit.io/) then set up the environment by copying `.env.example` to `.env.local` and filling in the required keys:
-
-- `LIVEKIT_URL`
-- `LIVEKIT_API_KEY`
-- `LIVEKIT_API_SECRET`
-
-You can load the LiveKit environment automatically using the [LiveKit CLI](https://docs.livekit.io/intro/basics/cli/):
-
-```bash
-lk cloud auth
-lk app env --write --destination .env.local
-```
-
-</details>
-
-## Run the agent
-
-Run this command to speak to your agent directly in your terminal:
-
-```console
+cp .env.example .env.local     # then fill in the keys
 uv run python src/agent.py console
 ```
 
-To run the agent for use with a frontend or telephony, use the `dev` command:
+The agent starts and works with **no keys at all** — it falls back to LiveKit
+Inference and logs a warning. Add keys to improve it:
 
-```console
-uv run python src/agent.py dev
+- `GOOGLE_API_KEY` — free Gemini key from [aistudio.google.com/apikey](https://aistudio.google.com/apikey) (no card)
+- `BHASHINI_API_KEY` / `BHASHINI_USER_ID` / `BHASHINI_PIPELINE_ID` — from [bhashini.gov.in](https://bhashini.gov.in)
+
+Optional call history:
+
+```bash
+docker compose up -d
+export DATABASE_URL=postgresql://medlink:medlink@localhost:5432/medlink
+export MEDLINK_ENABLE_DB=true
+uv run alembic upgrade head
 ```
 
-In production, use the `start` command:
+### Tests
 
-```console
-uv run python src/agent.py start
+```bash
+uv run pytest                                   # 211 unit/integration tests, no network
+lk agent simulate --scenarios scenarios.yaml    # 10 full conversation simulations
 ```
 
-## Frontend & Telephony
+The pytest suite needs no API keys, no Docker and no network — the database
+tests run on SQLite and the Bhashini tests use a mocked transport.
 
-Get started quickly with our pre-built frontend starter apps, or add telephony support:
+---
 
-| Platform | Link | Description |
-|----------|----------|-------------|
-| **Web** | [`livekit-examples/agent-starter-react`](https://github.com/livekit-examples/agent-starter-react) | Web voice AI assistant with React & Next.js |
-| **iOS/macOS** | [`livekit-examples/agent-starter-swift`](https://github.com/livekit-examples/agent-starter-swift) | Native iOS, macOS, and visionOS voice AI assistant |
-| **Flutter** | [`livekit-examples/agent-starter-flutter`](https://github.com/livekit-examples/agent-starter-flutter) | Cross-platform voice AI assistant app |
-| **React Native** | [`livekit-examples/voice-assistant-react-native`](https://github.com/livekit-examples/voice-assistant-react-native) | Native mobile app with React Native & Expo |
-| **Android** | [`livekit-examples/agent-starter-android`](https://github.com/livekit-examples/agent-starter-android) | Native Android app with Kotlin & Jetpack Compose |
-| **Web Embed** | [`livekit-examples/agent-starter-embed`](https://github.com/livekit-examples/agent-starter-embed) | Voice AI widget for any website |
-| **Telephony** | [Documentation](https://docs.livekit.io/telephony/) | Add inbound or outbound calling to your agent |
+## Layout
 
-For advanced customization, see the [complete frontend guide](https://docs.livekit.io/frontends/).
-
-## Tests and evals
-
-Simulations run full multi-turn conversations between a simulated user and your agent on LiveKit Cloud, then judge each transcript. The scenarios live in [`scenarios.yaml`](scenarios.yaml). Run them locally with the [LiveKit CLI](https://docs.livekit.io/intro/basics/cli/):
-
-```console
-lk agent simulate --scenarios scenarios.yaml
+```
+data/
+  redflags.yaml               emergency phrases, 6 languages — edit without touching code
+  triage_kb.yaml              22 presentations: questions, severity, allowed drug classes
+  formulary.json              curated OTC medicines, fully structured
+  prescription_denylist.yaml  what must never be spoken
+src/
+  agent.py                    entrypoint — session wiring only
+  workflows/                  intake · triage · recommend · escalate + pure routing logic
+  safety/                     redflags · guardrails
+  medicine/                   formulary retrieval + the hard safety filter
+  knowledge/                  triage KB retrieval
+  speech/                     Bhashini wrapper + provider factory
+  db/                         models · repository · PII crypto
 ```
 
-The `Simulations` workflow in `.github/workflows/simulations.yml` runs the same file on every merge to `main` and on demand from the Actions tab. It runs there rather than on every pull request push because each run spends real inference. See the [simulations guide](https://docs.livekit.io/agents/start/testing/simulations/) for how to write scenarios and read results.
+Built on [LiveKit Agents](https://github.com/livekit/agents). See
+[AGENTS.md](AGENTS.md) for development conventions.
 
-For turn-level checks that don't need a live session, the LiveKit Agents [testing & evaluation framework](https://docs.livekit.io/agents/start/testing/) runs your agent in-process under `pytest`. A commented-out example lives in [`tests/test_agent.py`](tests/test_agent.py).
+## Disclaimer
 
-## Using this template repo for your own project
-
-Once you've started your own project based on this repo, you should:
-
-1. **Check in your `uv.lock`**: This file is currently untracked for the template, but you should commit it to your repository for reproducible builds and proper configuration management. (The same applies to `livekit.toml`, if you run your agents in LiveKit Cloud)
-
-2. **Add your own repository secrets**: You must [add secrets](https://docs.github.com/en/actions/how-tos/writing-workflows/choosing-what-your-workflow-does/using-secrets-in-github-actions) for `LIVEKIT_URL`, `LIVEKIT_API_KEY`, and `LIVEKIT_API_SECRET` so that the simulations can run in CI.
-
-## Deploying to production
-
-This project is production-ready and includes a working `Dockerfile`. To deploy it to LiveKit Cloud or another environment, see the [deploying to production](https://docs.livekit.io/deploy/agents/) guide.
-
-## Self-hosted LiveKit
-
-You can also self-host LiveKit instead of using LiveKit Cloud. See the [self-hosting](https://docs.livekit.io/transport/self-hosting/local/) guide for more information. If you choose to self-host, you'll need to also use [model plugins](https://docs.livekit.io/agents/models/#plugins) instead of LiveKit Inference and will need to remove the [LiveKit Cloud noise cancellation](https://docs.livekit.io/transport/media/noise-cancellation/) plugin.
+MedLink provides general health information, not medical advice or diagnosis.
+The clinical content is drawn from published guidelines but **has not been
+reviewed by a licensed clinician** and is not fit for real patient use in its
+current state. Do not deploy it to real callers without clinical sign-off and
+regulatory review.
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+MIT — see [LICENSE](LICENSE).
