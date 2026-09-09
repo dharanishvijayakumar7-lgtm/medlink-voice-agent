@@ -11,6 +11,7 @@ import logging
 from livekit.agents import RunContext, function_tool
 
 from config import DEFAULT_LANGUAGE_CODE
+from knowledge.triage_kb import apply_to_session
 from session_state import MedLinkUserData
 from workflows.base import SHARED_STYLE, MedLinkAgent
 
@@ -87,9 +88,17 @@ class IntakeAgent(MedLinkAgent):
         if patient_age_years is not None:
             data.patient.age_years = patient_age_years
 
+        # Pull this presentation's follow-up questions, allowed OTC categories
+        # and referral criteria from the curated triage KB.
+        entry = apply_to_session(data, complaint)
+
         logger.info(
             "intake complete",
-            extra={"call_id": data.call_id, "complaint": complaint},
+            extra={
+                "call_id": data.call_id,
+                "complaint": complaint,
+                "triage_entry": entry.id if entry else None,
+            },
         )
 
         from workflows.triage import TriageAgent

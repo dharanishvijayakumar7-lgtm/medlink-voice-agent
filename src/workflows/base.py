@@ -78,6 +78,16 @@ class MedLinkAgent(Agent):
     def _context_block(self) -> str:
         """Case context appended to an agent's instructions at handoff time."""
         lines = [f"# What you already know\n{self.data.clinical_summary()}"]
+        if self.data.self_care_advice:
+            lines.append(
+                "\n# Approved self-care advice for this problem (use this wording, "
+                f"simplified for the caller)\n{self.data.self_care_advice}"
+            )
+        if self.data.refer_when:
+            lines.append(
+                "\n# They must see a doctor if any of this applies - say it plainly\n"
+                f"{self.data.refer_when}"
+            )
         if self.data.is_returning_caller and self.data.previous_summary:
             lines.append(
                 f"\n# This caller has spoken to us before\n{self.data.previous_summary}\n"

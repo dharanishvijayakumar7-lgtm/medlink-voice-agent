@@ -1,0 +1,774 @@
+# MedLink triage knowledge base.
+#
+# Clinical DECISION SUPPORT, not transcripts. Each entry says: what callers call
+# this problem (in 6 languages), which follow-up questions actually change the
+# decision, what makes it more serious, and which OTC categories - if any - are
+# ever appropriate. Retrieval is lexical over `aliases`, so add the words real
+# callers use rather than textbook terms.
+#
+# Fields:
+#   id                      stable slug
+#   presentation            clinician-facing label
+#   aliases                 per-language lay terms; THIS is what retrieval matches
+#   candidate_questions     3-6 questions offered to the LLM as guidance, not a script
+#   severity_modifiers      added to the deterministic severity score when matched
+#   otc_categories_allowed  therapeutic_class values from data/formulary.json.
+#                           [] means NO over-the-counter medicine is ever appropriate.
+#   self_care               plain-language advice safe for a rural home
+#   refer_when              explicit criteria for sending them to a clinician
+#
+# The hard emergency guard lives in data/redflags.yaml and runs before the LLM;
+# `red_flags` here is advisory context for the model.
+#
+# Sources: WHO IMCI, WHO/ICMR Standard Treatment Guidelines, NICE CKS.
+# Must be reviewed by a clinician before production use.
+
+version: 1
+last_reviewed: "2026-09-09"
+
+entries:
+  - id: fever
+    presentation: "Fever"
+    aliases:
+      en: [fever, temperature, high temperature, hot body, chills, shivering, feverish]
+      hi: [bukhar, taap, thand lag rahi, jvar]
+      ta: [kaaichal, juram, kaichal]
+      te: [jwaram, jwara, vedi]
+      kn: [jwara, sekhe]
+      ml: [pani, jvaram]
+    red_flags:
+      - fever with stiff neck or rash that does not fade
+      - fever over 5 days
+      - fever in a baby under 3 months
+      - fever with confusion or fits
+    candidate_questions:
+      - "How many days have you had the fever?"
+      - "Have you measured the temperature, or does the body feel very hot?"
+      - "Along with the fever, is there cough, loose motions, burning urine, or a rash?"
+      - "Is there any neck stiffness, confusion, or a fit?"
+      - "Has anyone else at home had fever recently?"
+    severity_modifiers:
+      duration_over_5_days: 3
+      age_under_5: 2
+      with_rash: 3
+      with_confusion: 5
+    otc_categories_allowed: [analgesic_antipyretic, oral_rehydration]
+    self_care: >-
+      Drink plenty of water or ORS. Rest. Sponge the body with normal-temperature
+      water if very hot. Eat light food. Do not cover with heavy blankets.
+    refer_when: >-
+      Fever lasting more than 3 days, fever in a child under 5, fever with a
+      rash, neck stiffness, breathing difficulty, confusion, or very little urine.
+    source: "WHO IMCI; ICMR STG fever"
+
+  - id: cough_cold
+    presentation: "Cough and common cold"
+    aliases:
+      en: [cough, cold, running nose, runny nose, blocked nose, sneezing, phlegm, chest congestion, khansi]
+      hi: [khansi, sardi, zukam, naak behna, balgam, kaf]
+      ta: [irumal, jaladhosham, sali]
+      te: [dagg, jalubu, daggu]
+      kn: [kemmu, negadi, shita]
+      ml: [chuma, jaladosham]
+    red_flags:
+      - coughing blood
+      - breathlessness at rest
+      - cough for more than 3 weeks
+      - chest pain with the cough
+    candidate_questions:
+      - "How many days has the cough been there?"
+      - "Is it a dry cough, or is phlegm coming out?"
+      - "Is there any difficulty in breathing or wheezing sound?"
+      - "Is there fever along with it?"
+      - "Have you been coughing for more than three weeks, or coughing any blood?"
+    severity_modifiers:
+      duration_over_21_days: 5
+      with_breathlessness: 5
+      with_blood: 6
+      age_under_5: 2
+    otc_categories_allowed: [cough_expectorant, throat_lozenge, nasal_saline, decongestant_topical, analgesic_antipyretic]
+    self_care: >-
+      Drink warm water often. Steam inhalation twice a day. Warm salt-water
+      gargles for throat irritation. Honey in warm water helps a dry cough in
+      anyone over one year. Avoid smoke and dust.
+    refer_when: >-
+      Cough lasting more than 3 weeks (this must be checked for TB), coughing
+      blood, breathlessness, chest pain, or high fever that will not settle.
+    source: "NICE CKS cough; RNTCP/NTEP TB screening guidance"
+
+  - id: sore_throat
+    presentation: "Sore throat"
+    aliases:
+      en: [sore throat, throat pain, throat infection, painful swallowing, gala kharab]
+      hi: [gale mein dard, gala kharab, nigalne mein dard]
+      ta: [thondai vali, thondai kaduppu]
+      te: [gontu noppi]
+      kn: [gantalu novu]
+      ml: [thonda vedana]
+    red_flags:
+      - unable to swallow saliva or drooling
+      - difficulty breathing
+      - swelling of the neck
+    candidate_questions:
+      - "How many days has your throat been paining?"
+      - "Is it difficult to swallow food or even water?"
+      - "Is there fever along with it?"
+      - "Can you see white patches at the back of the throat?"
+    severity_modifiers:
+      cannot_swallow_fluids: 6
+      with_high_fever: 2
+      duration_over_7_days: 2
+    otc_categories_allowed: [throat_lozenge, analgesic_antipyretic]
+    self_care: >-
+      Warm salt-water gargles three times a day. Warm fluids. Rest the voice.
+      Avoid very spicy or very cold food.
+    refer_when: >-
+      Cannot swallow liquids, drooling, breathing difficulty, neck swelling,
+      high fever with white patches, or pain lasting over a week.
+    source: "NICE CKS sore throat; WHO IMCI"
+
+  - id: diarrhoea
+    presentation: "Diarrhoea / loose motions"
+    aliases:
+      en: [diarrhoea, diarrhea, loose motions, loose motion, watery stool, motions, stomach running, frequent stools]
+      hi: [dast, patla paikhana, loose motion, atisar]
+      ta: [vayitru pokku, bedhi]
+      te: [virechanalu, diarrhoea, bhedi]
+      kn: [bhedi, atisara]
+      ml: [vayaru ilakkam, vayattilakkam]
+    red_flags:
+      - blood or mucus in the stool
+      - sunken eyes, no urine, extreme weakness
+      - unable to keep any fluid down
+      - diarrhoea in a baby under 6 months
+    candidate_questions:
+      - "How many times have you passed motion since yesterday?"
+      - "Is there any blood or slime in the motion?"
+      - "Are you able to drink and keep water down?"
+      - "Are you passing urine as usual?"
+      - "Is there fever or stomach pain along with it?"
+    severity_modifiers:
+      blood_in_stool: 6
+      no_urine: 6
+      cannot_keep_fluids: 6
+      age_under_5: 3
+      age_over_65: 2
+    otc_categories_allowed: [oral_rehydration, diarrhoea_adjunct, antidiarrheal]
+    self_care: >-
+      ORS is the main treatment - one sachet in one full litre of clean water,
+      sipped after every loose motion. Keep eating; keep breastfeeding a baby.
+      Children need zinc for 14 days along with ORS. Wash hands with soap.
+    refer_when: >-
+      Blood in the stool, no urine passed, sunken eyes, extreme weakness,
+      vomiting everything, a baby under 6 months, or no improvement in 2 days.
+    source: "WHO/UNICEF ORS and zinc guidance; IAP"
+
+  - id: vomiting
+    presentation: "Vomiting"
+    aliases:
+      en: [vomiting, throwing up, nausea, feeling sick, cannot keep food down]
+      hi: [ulti, jee michlana, matli]
+      ta: [vaandhi, kuma]
+      te: [vanthulu, vaanthi]
+      kn: [vaanti, valake]
+      ml: [chardi, omikkuka]
+    red_flags:
+      - vomiting blood
+      - severe abdominal pain with vomiting
+      - vomiting with a severe headache or stiff neck
+      - green or dark vomit
+    candidate_questions:
+      - "How many times have you vomited?"
+      - "Is there any blood in the vomit?"
+      - "Are you able to keep down even small sips of water?"
+      - "Is there stomach pain or loose motions along with it?"
+    severity_modifiers:
+      vomiting_blood: 8
+      cannot_keep_fluids: 6
+      with_severe_abdominal_pain: 5
+      age_under_5: 3
+    otc_categories_allowed: [oral_rehydration]
+    self_care: >-
+      Take small sips of ORS or clean water every few minutes rather than a
+      large amount at once. Rest. Avoid oily and spicy food. Plain rice, curd
+      or banana once vomiting settles.
+    refer_when: >-
+      Blood in the vomit, unable to keep any fluid down for more than a few
+      hours, severe stomach pain, or a child who is drowsy or not passing urine.
+    source: "NICE CKS nausea and vomiting; WHO IMCI"
+
+  - id: abdominal_pain
+    presentation: "Abdominal / stomach pain"
+    aliases:
+      en: [stomach pain, stomach ache, abdominal pain, tummy pain, belly pain, cramps, pet dard]
+      hi: [pet dard, pet mein dard, marod]
+      ta: [vayiru vali, vayitru vali]
+      te: [kadupu noppi]
+      kn: [hotte novu]
+      ml: [vayaru vedana]
+    red_flags:
+      - severe or sudden very bad pain
+      - hard rigid abdomen
+      - pain with vomiting blood or black stools
+      - pain in pregnancy
+    candidate_questions:
+      - "Where exactly in the stomach is the pain?"
+      - "How bad is the pain - can you walk and move normally?"
+      - "Is there vomiting, loose motions, or fever with it?"
+      - "Is the pain constant, or does it come and go?"
+      - "For women: is there any chance you could be pregnant?"
+    severity_modifiers:
+      severe_pain: 5
+      rigid_abdomen: 8
+      pregnant: 5
+      with_black_stools: 7
+      age_over_65: 2
+    otc_categories_allowed: [antacid]
+    self_care: >-
+      Light food, small meals, plenty of water. Avoid spicy, oily and very sour
+      food. A warm cloth over the stomach may ease mild cramps.
+    refer_when: >-
+      Severe pain, a hard tight stomach, pain that keeps worsening, pain with
+      fever or vomiting blood, black stools, or any stomach pain in pregnancy.
+    source: "NICE CKS abdominal pain; ICMR STG"
+
+  - id: acidity
+    presentation: "Acidity / heartburn / indigestion"
+    aliases:
+      en: [acidity, heartburn, gas, indigestion, burning in chest after food, sour belching, bloating, gastric]
+      hi: [gas, acidity, jalan, khatti dakar, badhazmi]
+      ta: [aamilam, neruppu erichal, vaayu]
+      te: [amlatvam, gastric, gyas]
+      kn: [hulita, gyas, hotte uri]
+      ml: [nenjerichil, gyas]
+    red_flags:
+      - burning that spreads to the arm or jaw, or comes on with exertion
+      - black stools or vomiting blood
+      - difficulty swallowing
+      - unexplained weight loss
+    candidate_questions:
+      - "Does the burning come after eating, or does it come when you walk or work?"
+      - "How long has this been happening?"
+      - "Is there any difficulty swallowing food?"
+      - "Have you noticed black-coloured motions?"
+    severity_modifiers:
+      exertional: 8
+      black_stools: 7
+      difficulty_swallowing: 5
+      duration_over_14_days: 2
+    otc_categories_allowed: [antacid]
+    self_care: >-
+      Eat smaller meals and do not lie down for two hours after eating. Cut down
+      on very spicy, oily and sour food, tea on an empty stomach, and tobacco.
+      Raise the head end of the bed slightly.
+    refer_when: >-
+      Burning brought on by walking or exertion (this can be the heart, not the
+      stomach), black stools, vomiting blood, difficulty swallowing, weight loss,
+      or symptoms lasting more than two weeks.
+    source: "NICE CKS dyspepsia"
+
+  - id: headache
+    presentation: "Headache"
+    aliases:
+      en: [headache, head pain, migraine, head is paining, sir dard]
+      hi: [sir dard, sar dard, adha sir dard]
+      ta: [thalai vali, ore thalai vali]
+      te: [thalanoppi, tala noppi]
+      kn: [tale novu]
+      ml: [thalavedana]
+    red_flags:
+      - sudden worst-ever headache
+      - headache with fever and neck stiffness
+      - headache with weakness, slurred speech or vision loss
+      - headache after a head injury
+    candidate_questions:
+      - "How long has the headache been there?"
+      - "Did it start suddenly and very badly, or build up slowly?"
+      - "Is there fever, neck stiffness, or vomiting with it?"
+      - "Any weakness, difficulty speaking, or trouble seeing?"
+      - "Do you get this kind of headache often?"
+    severity_modifiers:
+      sudden_worst_ever: 8
+      with_neck_stiffness: 8
+      with_neuro_signs: 9
+      after_head_injury: 7
+    otc_categories_allowed: [analgesic_antipyretic]
+    self_care: >-
+      Rest in a quiet, dim room. Drink water - headaches are often from not
+      drinking enough or skipping meals. Regular sleep helps.
+    refer_when: >-
+      A sudden very severe headache, headache with fever and a stiff neck,
+      any weakness or speech or vision change, headache after a head injury, or
+      a headache that keeps getting worse over days.
+    source: "NICE CKS headache; WHO STG"
+
+  - id: chest_pain
+    presentation: "Chest pain or chest discomfort"
+    aliases:
+      en: [chest pain, chest discomfort, chest tightness, chest heaviness, pain in chest, chest pressure]
+      hi: [seene mein dard, chhati mein dard, seene mein bhaari]
+      ta: [nenju vali, maarbu vali]
+      te: [chaati noppi]
+      kn: [ede novu]
+      ml: [nenchu vedana]
+    red_flags:
+      - any chest pain in an adult must be treated as possible heart trouble
+      - pain spreading to arm, jaw or back
+      - sweating, nausea or breathlessness with the pain
+    candidate_questions:
+      - "When did the pain start, and what were you doing at the time?"
+      - "Does the pain spread to your arm, jaw, or back?"
+      - "Are you sweating, feeling sick, or short of breath?"
+      - "Do you have blood pressure, sugar, or a heart problem?"
+    severity_modifiers:
+      age_over_40: 3
+      radiating: 4
+      with_sweating: 4
+      with_breathlessness: 4
+    otc_categories_allowed: []
+    self_care: >-
+      There is no safe home treatment for chest pain. Sit upright, stay calm,
+      loosen tight clothing, and get medical help immediately.
+    refer_when: >-
+      Always. All chest pain needs to be seen urgently - do not wait to see if
+      it settles.
+    source: "WHO STG acute coronary syndrome; NICE CKS chest pain"
+
+  - id: breathlessness
+    presentation: "Breathing difficulty"
+    aliases:
+      en: [breathlessness, cannot breathe, difficulty breathing, short of breath, wheezing, asthma attack, breathing problem]
+      hi: [saans phoolna, saans lene mein takleef, dama]
+      ta: [moochu thinaral, moochu vaanga mudiyala]
+      te: [oopiri aadatam ledu, shwasa ibbandi]
+      kn: [usiratada kashta]
+      ml: [swasam mudakkam]
+    red_flags:
+      - breathless at rest or while speaking
+      - blue lips or fingertips
+      - cannot complete a sentence
+    candidate_questions:
+      - "Are you breathless right now, even while sitting still?"
+      - "Can you speak a full sentence without stopping for breath?"
+      - "Do you have asthma or any lung problem?"
+      - "Did this start suddenly?"
+    severity_modifiers:
+      at_rest: 9
+      cannot_speak_sentence: 10
+      blue_lips: 10
+    otc_categories_allowed: []
+    self_care: >-
+      Sit upright and lean slightly forward. Loosen tight clothes. Use a
+      prescribed inhaler if one is available. Get help immediately.
+    refer_when: >-
+      Always and immediately. Breathing difficulty is an emergency.
+    source: "WHO STG; NICE CKS breathlessness"
+
+  - id: body_ache
+    presentation: "Body ache / muscle and joint pain"
+    aliases:
+      en: [body pain, body ache, muscle pain, joint pain, aches, sprain, pulled muscle, back strain]
+      hi: [badan dard, jodo mein dard, mocha, kamar dard]
+      ta: [udal vali, mootu vali, sundhu vali]
+      te: [ottu noppulu, kandarala noppi]
+      kn: [maimuri, kilu novu]
+      ml: [ശരീരവേദന, sandhi vedana]
+    red_flags:
+      - joint that is hot, red and very swollen
+      - inability to bear weight after an injury
+      - body ache with high fever and rash
+    candidate_questions:
+      - "Which part of the body is paining most?"
+      - "Did it start after an injury, or on its own?"
+      - "Is any joint hot, red, or badly swollen?"
+      - "Is there fever along with it?"
+    severity_modifiers:
+      hot_swollen_joint: 5
+      cannot_bear_weight: 4
+      with_high_fever_and_rash: 5
+    otc_categories_allowed: [analgesic_antipyretic, nsaid]
+    self_care: >-
+      Rest the painful part. For a fresh injury, apply a cold cloth for 15
+      minutes a few times on the first day. Gentle movement afterwards. For a
+      backache, avoid lifting heavy weights and keep gently active.
+    refer_when: >-
+      A hot, red, very swollen joint, inability to stand on the leg after a
+      fall, numbness or weakness, or pain not improving in a week.
+    source: "NICE CKS musculoskeletal pain"
+
+  - id: skin_rash_itch
+    presentation: "Itchy skin or rash"
+    aliases:
+      en: [rash, itching, itchy skin, skin allergy, hives, prickly heat, insect bite, skin irritation]
+      hi: [khujli, daane, chakatte, ghamouri, chubhan]
+      ta: [arippu, thadippu, kurukku]
+      te: [durada, dadduru]
+      kn: [tuttu, kajji]
+      ml: [chorachil, thadippu]
+    red_flags:
+      - rash with fever and feeling very unwell
+      - rash that does not fade when pressed
+      - swelling of lips, tongue or throat
+      - blistering or peeling skin
+    candidate_questions:
+      - "Where on the body is the rash, and is it spreading?"
+      - "Is there fever along with the rash?"
+      - "Did it start after a new medicine, food, or soap?"
+      - "Is there any swelling of the lips, face or throat?"
+    severity_modifiers:
+      with_fever: 4
+      non_blanching: 8
+      facial_swelling: 9
+      blistering: 6
+    otc_categories_allowed: [antipruritic_topical, antihistamine]
+    self_care: >-
+      Keep the skin clean and dry. Cool water compress for itching. Avoid
+      scratching, harsh soap, and any new product you suspect. Loose cotton
+      clothes help in the heat.
+    refer_when: >-
+      Rash with fever, a rash that does not fade when pressed with a glass,
+      swelling of the face or throat, blistering, or a rash spreading rapidly.
+    source: "NICE CKS itch and urticaria"
+
+  - id: fungal_skin
+    presentation: "Fungal skin infection / ringworm"
+    aliases:
+      en: [ringworm, fungal infection, round itchy patch, athlete foot, jock itch, daad]
+      hi: [daad, dad khaj, khujli wala chakatta]
+      ta: [padarthamarai, saruma noi]
+      te: [thamara, fungal]
+      kn: [hulli kajji]
+      ml: [pulli, fungal]
+    red_flags:
+      - infection of the scalp or nails
+      - spreading redness with pus or fever
+      - widespread patches over the body
+    candidate_questions:
+      - "Is the patch round with a raised itchy edge?"
+      - "How long has it been there and is it spreading?"
+      - "Is it on the scalp, or affecting the nails?"
+      - "Has anyone else at home got the same thing?"
+    severity_modifiers:
+      scalp_or_nails: 4
+      widespread: 3
+      with_pus_or_fever: 5
+    otc_categories_allowed: [antifungal_topical]
+    self_care: >-
+      Keep the area clean and completely dry. Do not share towels or clothes.
+      Wash and sun-dry clothing and bedding. Treat everyone at home who has it.
+      Cream must be continued for two weeks after the patch looks clear.
+    refer_when: >-
+      Patches on the scalp or nails (these need tablets from a doctor), very
+      widespread patches, pus or spreading redness, or no improvement after
+      two weeks of cream.
+    source: "NICE CKS fungal skin infection"
+
+  - id: wound_cut
+    presentation: "Cut, wound or minor injury"
+    aliases:
+      en: [cut, wound, injury, bleeding, scrape, graze, gash, hurt myself]
+      hi: [chot, kat gaya, ghaav, zakhm]
+      ta: [kaayam, vettu]
+      te: [gaayam, dhebba]
+      kn: [gaya, kade]
+      ml: [murivu, muriv]
+    red_flags:
+      - bleeding that will not stop with pressure
+      - deep or gaping wound
+      - animal or human bite
+      - rusty or dirty puncture wound
+    candidate_questions:
+      - "Is the bleeding stopping when you press on it with a clean cloth?"
+      - "How deep is the cut - can you see fat or muscle inside?"
+      - "How did it happen - was it a clean blade, a rusty object, or a bite?"
+      - "When did you last have a tetanus injection?"
+    severity_modifiers:
+      bleeding_not_stopping: 9
+      deep_or_gaping: 5
+      animal_bite: 6
+      rusty_or_dirty: 4
+    otc_categories_allowed: [antiseptic_topical, analgesic_antipyretic]
+    self_care: >-
+      Wash your hands, then rinse the wound under clean running water. Press
+      firmly with a clean cloth to stop bleeding. Apply antiseptic and cover
+      with a clean dressing. Change the dressing daily and keep it dry.
+    refer_when: >-
+      Bleeding will not stop after 10 minutes of firm pressure, the wound is
+      deep or gaping, it is an animal or human bite, it was caused by a dirty or
+      rusty object, or there is spreading redness, pus or fever later. Any bite
+      or dirty wound needs a tetanus injection and possibly rabies vaccination.
+    source: "WHO wound care; NICE CKS lacerations"
+
+  - id: burn
+    presentation: "Burn or scald"
+    aliases:
+      en: [burn, burnt, scald, hot water burn, fire burn, blister from heat]
+      hi: [jal gaya, jalan, garam pani se jal gaya]
+      ta: [thee kaayam, sudu]
+      te: [kaalina gaayam]
+      kn: [suttu gaya]
+      ml: [pollal]
+    red_flags:
+      - burn larger than the person's palm
+      - burn on the face, hands, feet, joints or genitals
+      - white, charred or painless burn
+      - any electrical or chemical burn
+    candidate_questions:
+      - "How big is the burnt area compared to your palm?"
+      - "Where on the body is it?"
+      - "Is the skin blistered, or white and hard?"
+      - "How did it happen - hot liquid, fire, electricity, or a chemical?"
+    severity_modifiers:
+      larger_than_palm: 7
+      critical_area: 7
+      full_thickness: 9
+      electrical_or_chemical: 8
+    otc_categories_allowed: [analgesic_antipyretic]
+    self_care: >-
+      Cool the burn under clean running water for 20 minutes as soon as
+      possible. Remove rings and tight clothing near the area. Cover loosely
+      with a clean cloth or cling film. Never apply toothpaste, oil, ghee, ash
+      or ice. Do not break blisters.
+    refer_when: >-
+      Any burn bigger than the palm, burns on the face, hands, feet, joints or
+      private parts, white or charred skin, electrical or chemical burns, or
+      any burn in a small child or elderly person.
+    source: "WHO burn management; NICE CKS burns"
+
+  - id: ear_pain
+    presentation: "Ear pain / ear discharge"
+    aliases:
+      en: [ear pain, earache, ear discharge, pus from ear, ear infection, ear blocked]
+      hi: [kaan mein dard, kaan bahna, kaan band]
+      ta: [kaadhu vali, kaadhil sathai]
+      te: [chevi noppi]
+      kn: [kivi novu]
+      ml: [chevi vedana]
+    red_flags:
+      - swelling or redness of the bone behind the ear
+      - ear pain with high fever and a very unwell child
+      - sudden hearing loss
+    candidate_questions:
+      - "How many days has the ear been paining?"
+      - "Is anything coming out of the ear?"
+      - "Is there fever?"
+      - "Is there any swelling or tenderness behind the ear?"
+    severity_modifiers:
+      swelling_behind_ear: 8
+      discharge: 3
+      age_under_5: 2
+      with_high_fever: 3
+    otc_categories_allowed: [analgesic_antipyretic]
+    self_care: >-
+      Keep the ear dry - do not put water, oil, or any drops inside without a
+      doctor's advice. A warm cloth held against the ear can ease the pain.
+      Never put a stick or cotton bud into the ear.
+    refer_when: >-
+      Discharge from the ear, swelling behind the ear, high fever, sudden
+      hearing loss, or pain lasting more than 2 days. Children with ear
+      discharge need to be seen.
+    source: "WHO IMCI ear problems; NICE CKS otitis media"
+
+  - id: urinary_symptoms
+    presentation: "Burning urine / urinary symptoms"
+    aliases:
+      en: [burning urine, painful urination, frequent urination, urine infection, uti, cannot pass urine]
+      hi: [peshaab mein jalan, baar baar peshaab, peshaab nahi aa raha]
+      ta: [siruneer ericcal, siruneer kaduppu]
+      te: [mutram manta, moothra vishayam]
+      kn: [mootra uri]
+      ml: [moothram erichil]
+    red_flags:
+      - fever with back or flank pain
+      - not passing urine at all
+      - blood in the urine
+      - symptoms in pregnancy
+    candidate_questions:
+      - "Is there burning or pain when you pass urine?"
+      - "Is there fever or pain in the back or side?"
+      - "Is there any blood in the urine?"
+      - "Are you passing urine normally, or has it stopped?"
+      - "For women: is there any chance you are pregnant?"
+    severity_modifiers:
+      fever_with_flank_pain: 7
+      no_urine: 9
+      blood_in_urine: 5
+      pregnant: 6
+      age_over_65: 2
+    otc_categories_allowed: []
+    self_care: >-
+      Drink plenty of water through the day. Do not hold urine. Keep the area
+      clean and wipe front to back.
+    refer_when: >-
+      Always - a urine infection usually needs a prescription antibiotic, which
+      we cannot provide. Go urgently if there is fever with back pain, blood in
+      the urine, no urine at all, or if you are pregnant.
+    source: "NICE CKS urinary tract infection; ICMR STG"
+
+  - id: worms
+    presentation: "Intestinal worms"
+    aliases:
+      en: [worms, worm in stool, itching around anus, deworming, stomach worms]
+      hi: [pet ke keede, keeda, gudda mein khujli]
+      ta: [kudal puzhu, vayitril puzhu]
+      te: [purugulu, kadupulo purugulu]
+      kn: [hotteyalli hulu]
+      ml: [vayattil vira]
+    red_flags:
+      - severe abdominal pain or swelling
+      - vomiting worms
+    candidate_questions:
+      - "Have you actually seen worms in the motion or around the back passage?"
+      - "Is there itching around the back passage, especially at night?"
+      - "How old is the person who needs treatment?"
+      - "Is there any chance of pregnancy?"
+    severity_modifiers:
+      severe_pain: 5
+      age_under_1: 4
+      pregnant: 4
+    otc_categories_allowed: [anthelmintic]
+    self_care: >-
+      Wash hands with soap before eating and after using the toilet. Cut nails
+      short. Wash and sun-dry bedding and underclothes. Wear footwear outdoors.
+      Treat everyone in the household at the same time.
+    refer_when: >-
+      A child under 1 year, pregnancy, severe stomach pain or swelling, or
+      symptoms continuing after treatment.
+    source: "WHO preventive chemotherapy; National Deworming Day"
+
+  - id: allergy_sneezing
+    presentation: "Allergic rhinitis / sneezing and itchy eyes"
+    aliases:
+      en: [allergy, sneezing, itchy eyes, watery eyes, dust allergy, seasonal allergy, itchy nose]
+      hi: [allergy, chheenk, aankh mein khujli, dhool se allergy]
+      ta: [thummal, kann arippu]
+      te: [tummulu, kallu durada]
+      kn: [sincu, kannu tuttu]
+      ml: [thummal, kannu chorachil]
+    red_flags:
+      - wheezing or breathlessness
+      - swelling of face or throat
+    candidate_questions:
+      - "Does it happen at a particular time or place - dust, smoke, or a season?"
+      - "Are the eyes itchy and watery as well?"
+      - "Is there any wheezing or difficulty breathing?"
+      - "How long does it last each time?"
+    severity_modifiers:
+      with_wheeze: 6
+      facial_swelling: 9
+    otc_categories_allowed: [antihistamine, nasal_saline]
+    self_care: >-
+      Avoid the trigger where you can - dust, smoke, strong smells. Rinse the
+      nose with saline. Cover the nose with a cloth while sweeping or in dust.
+      Wash bedding regularly in hot water.
+    refer_when: >-
+      Wheezing or breathlessness, swelling of the face or throat, or symptoms
+      that do not settle with an antihistamine after a week.
+    source: "NICE CKS allergic rhinitis; ARIA"
+
+  - id: weakness_fatigue
+    presentation: "Weakness / tiredness"
+    aliases:
+      en: [weakness, tiredness, fatigue, feeling weak, no energy, giddiness, dizzy, anaemia]
+      hi: [kamzori, thakan, chakkar, khoon ki kami]
+      ta: [sorvu, thalai suttral, ratha soku]
+      te: [balaheenata, nirsatthuva]
+      kn: [balaheenate, sustu]
+      ml: [thalarcha, ksheenam]
+    red_flags:
+      - fainting or near-fainting
+      - chest pain or breathlessness with the weakness
+      - weakness on one side of the body
+      - black stools
+    candidate_questions:
+      - "How long have you been feeling weak?"
+      - "Do you feel giddy or faint when you stand up?"
+      - "Is there any breathlessness or chest discomfort?"
+      - "Are you eating properly? Any heavy periods or black motions?"
+      - "Is the weakness in one particular part of the body?"
+    severity_modifiers:
+      fainting: 7
+      with_chest_symptoms: 8
+      one_sided: 10
+      black_stools: 7
+      pregnant: 3
+    otc_categories_allowed: [supplement, oral_rehydration]
+    self_care: >-
+      Eat regular meals with green leafy vegetables, dal, jaggery and seasonal
+      fruit. Drink enough water. Rest properly at night. Iron-folic acid tablets
+      from the local health centre help if you are anaemic.
+    refer_when: >-
+      Fainting, weakness on one side of the body, breathlessness or chest
+      discomfort, black stools, weakness during pregnancy, or tiredness that
+      keeps getting worse. A blood test for anaemia is usually needed.
+    source: "Anaemia Mukt Bharat; NICE CKS tiredness"
+
+  - id: constipation
+    presentation: "Constipation"
+    aliases:
+      en: [constipation, hard stool, cannot pass motion, no motion for days, straining]
+      hi: [kabz, paikhana nahi ho raha, sakht paikhana]
+      ta: [malachikkal]
+      te: [malabaddhakam]
+      kn: [malabaddhate]
+      ml: [malabandham]
+    red_flags:
+      - no stool and no gas with a swollen painful abdomen
+      - blood in the stool
+      - sudden change in bowel habit over age 45
+    candidate_questions:
+      - "How many days has it been since you passed motion?"
+      - "Is your stomach swollen or painful?"
+      - "Is any gas passing?"
+      - "Is there any blood when you pass motion?"
+    severity_modifiers:
+      no_gas_and_swollen: 9
+      blood_in_stool: 5
+      age_over_45_new_change: 4
+    otc_categories_allowed: []
+    self_care: >-
+      Drink more water through the day. Eat more fibre - vegetables, fruit,
+      whole grains, soaked raisins. Walk daily. Do not ignore the urge to go.
+      Warm water in the morning helps many people.
+    refer_when: >-
+      No stool and no gas with a swollen painful stomach (this is an emergency),
+      blood in the stool, unexplained weight loss, or a new lasting change in
+      bowel habit after age 45.
+    source: "NICE CKS constipation"
+
+  - id: pregnancy_concern
+    presentation: "Pregnancy-related concern"
+    aliases:
+      en: [pregnant, pregnancy, expecting, missed period, morning sickness in pregnancy, baby not moving]
+      hi: [garbhvati, pregnancy, mahwari band, pet mein bacha]
+      ta: [karpam, karuvutru]
+      te: [garbham, garbhavati]
+      kn: [garbhini, garbha]
+      ml: [garbhini, garbham]
+    red_flags:
+      - bleeding in pregnancy
+      - severe abdominal pain
+      - severe headache, blurred vision or swelling of face and hands
+      - reduced or absent baby movements
+      - fits
+    candidate_questions:
+      - "How many months pregnant are you?"
+      - "Is there any bleeding or fluid coming out?"
+      - "Any severe headache, blurred vision, or swelling of the face and hands?"
+      - "Is the baby moving as usual?"
+      - "Are you registered at a health centre and taking iron tablets?"
+    severity_modifiers:
+      bleeding: 9
+      severe_headache_or_vision: 9
+      reduced_movements: 9
+      severe_abdominal_pain: 9
+    otc_categories_allowed: [supplement, oral_rehydration]
+    self_care: >-
+      Keep all antenatal check-ups at the health centre. Take iron-folic acid
+      and calcium tablets as advised. Eat well and rest. Never take any medicine
+      in pregnancy without asking a doctor or ANM first.
+    refer_when: >-
+      Any bleeding, severe headache, blurred vision, swelling of face and hands,
+      severe stomach pain, fits, fever, or reduced baby movements - go to a
+      hospital immediately. Anything else, speak to your ANM or ASHA worker.
+    source: "WHO antenatal care; Government of India MCH guidelines"

@@ -58,11 +58,15 @@ class MedLinkUserData:
     answers: dict[str, str] = field(default_factory=dict)
     questions_asked: int = 0
 
-    # --- triage (KB-driven from P1.5) ---
+    # --- triage (driven by data/triage_kb.yaml) ---
     triage_entry_id: str | None = None
     candidate_questions: list[str] = field(default_factory=list)
     # None => unrestricted OTC search; set() => explicitly no OTC is appropriate.
     allowed_otc_classes: set[str] | None = None
+    # Extra severity points contributed by the matched KB entry's modifiers.
+    kb_severity_bonus: int = 0
+    self_care_advice: str = ""
+    refer_when: str = ""
     severity_score: int = 0
     urgency: str = "unknown"  # unknown | self_care | clinic | urgent | emergency
 

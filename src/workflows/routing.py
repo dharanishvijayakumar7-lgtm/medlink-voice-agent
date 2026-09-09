@@ -49,6 +49,10 @@ def compute_severity(ud: MedLinkUserData) -> int:
     if "severity" in ud.answers:
         score += _severity_from_words(ud.answers["severity"])
 
+    # Presentation-specific modifiers from the triage KB (e.g. fever over 5 days,
+    # blood in stool, exertional chest burning).
+    score += ud.kb_severity_bonus
+
     duration = ud.patient.symptom_duration_days
     if duration is not None and duration > _LONG_DURATION_DAYS:
         score += 2

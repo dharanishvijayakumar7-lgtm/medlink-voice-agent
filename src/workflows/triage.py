@@ -13,6 +13,7 @@ import logging
 from livekit.agents import ChatContext, ChatMessage, RunContext, function_tool
 
 from config import settings
+from knowledge.triage_kb import apply_to_session
 from session_state import MedLinkUserData
 from workflows import routing
 from workflows.base import SHARED_STYLE, MedLinkAgent
@@ -129,11 +130,15 @@ class TriageAgent(MedLinkAgent):
         severe it is - or sooner if the caller cannot answer more.
         """
         data = context.userdata
+        # Re-run the KB now that the answers are in, so presentation-specific
+        # modifiers (fever over 5 days, blood in stool, ...) count toward severity.
+        apply_to_session(data)
         severity, urgency = routing.assess(data)
         logger.info(
             "triage assessed",
             extra={
                 "call_id": data.call_id,
+                "triage_entry": data.triage_entry_id,
                 "severity": severity,
                 "urgency": urgency,
                 "questions": data.questions_asked,
