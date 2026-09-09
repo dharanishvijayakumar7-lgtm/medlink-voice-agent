@@ -14,6 +14,7 @@ import logging
 from livekit.agents import Agent, ChatContext, ChatMessage, StopResponse
 
 from config import settings
+from db import repository as history
 from safety.redflags import detect_redflag
 from session_state import MedLinkUserData
 
@@ -43,6 +44,11 @@ class MedLinkAgent(Agent):
         self, turn_ctx: ChatContext, new_message: ChatMessage
     ) -> None:
         text = new_message.text_content or ""
+
+        # Persist the turn in the background - the caller never waits on the DB.
+        history.fire_and_forget(
+            history.record_turn(self.data, "user", text, self.data.language)
+        )
 
         # --- deterministic emergency guard (runs before the LLM) ---
         hit = detect_redflag(text)

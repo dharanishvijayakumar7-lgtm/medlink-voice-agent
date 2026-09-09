@@ -31,3 +31,7 @@ KMS
 
 # GitHub CLI
 .github/personal-instructions.md
+
+# Local scratch databases
+*.db
+.alembic_scratch.db
