@@ -1,0 +1,136 @@
+# Drugs and drug classes MedLink must NEVER name to a caller.
+#
+# The medicine pipeline already builds its spoken text only from the curated
+# formulary, so this is a backstop for the one failure mode it cannot prevent:
+# the LLM volunteering a drug from its own training data ("just take
+# azithromycin"). Scanned over generated speech before it reaches TTS by
+# src/safety/guardrails.py.
+#
+# Everything here is prescription-only in India (Schedule H/H1/X), withdrawn,
+# or a class that must never be self-prescribed. Add freely - a false positive
+# only costs one re-worded sentence.
+
+classes:
+  - antibiotic
+  - antibiotics
+  - antibiotic tablet
+  - steroid
+  - steroids
+  - corticosteroid
+  - injection
+  - injectable
+  - iv drip
+  - saline drip
+  - painkiller injection
+  - sleeping pill
+  - sleeping pills
+  - sedative
+  - antidepressant
+  - blood thinner
+
+drugs:
+  # Antibiotics (Schedule H1 - the biggest AMR risk in self-medication)
+  - amoxicillin
+  - amoxyclav
+  - augmentin
+  - azithromycin
+  - azithral
+  - ciprofloxacin
+  - cifran
+  - levofloxacin
+  - ofloxacin
+  - norfloxacin
+  - doxycycline
+  - cefixime
+  - taxim
+  - ceftriaxone
+  - metronidazole
+  - flagyl
+  - tinidazole
+  - clarithromycin
+  - erythromycin
+  - rifampicin
+  - isoniazid
+  - linezolid
+  - vancomycin
+  - gentamicin
+  - amikacin
+  - nitrofurantoin
+  - cotrimoxazole
+  - septran
+
+  # Steroids and immunosuppressants
+  - dexamethasone
+  - prednisolone
+  - wysolone
+  - methylprednisolone
+  - hydrocortisone
+  - betamethasone
+  - deflazacort
+
+  # Opioids and controlled analgesics (Schedule H1/X)
+  - tramadol
+  - codeine
+  - morphine
+  - fentanyl
+  - pentazocine
+  - buprenorphine
+  - alprazolam
+  - diazepam
+  - lorazepam
+  - clonazepam
+  - zolpidem
+  - nitrazepam
+
+  # Withdrawn or restricted in India
+  - ranitidine
+  - zantac
+  - nimesulide
+  - phenylbutazone
+  - analgin
+  - metamizole
+
+  # Prescription-only despite being widely misused as OTC
+  - metoclopramide
+  - domperidone
+  - ondansetron
+  - dicyclomine
+  - drotaverine
+  - meftal
+  - mefenamic acid
+  - ketorolac
+  - diclofenac sodium tablet
+  - aceclofenac
+  - piroxicam
+  - omeprazole
+  - pantoprazole
+  - rabeprazole
+  - esomeprazole
+  - salbutamol tablet
+  - montelukast
+  - theophylline
+  - warfarin
+  - clopidogrel
+  - atorvastatin
+  - metformin
+  - glimepiride
+  - insulin
+  - amlodipine
+  - telmisartan
+  - atenolol
+  - losartan
+  - furosemide
+  - lasix
+  - hydroxychloroquine
+  - ivermectin
+  - albendazole syrup for infants
+  - chloroquine
+  - artemether
+  - primaquine
+  - fluconazole tablet
+  - ketoconazole tablet
+  - griseofulvin
+  - terbinafine tablet
+  - acyclovir
+  - oseltamivir
+  - tamiflu
