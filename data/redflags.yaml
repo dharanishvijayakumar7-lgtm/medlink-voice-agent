@@ -1,0 +1,307 @@
+# MedLink deterministic emergency red-flag lexicon.
+#
+# Matched on EVERY transcribed user turn, BEFORE the LLM, by src/safety/redflags.py.
+# If any term matches, the conversation is force-routed to the escalation flow
+# regardless of what the LLM would have done.
+#
+# Bias: OVER-triage. A false emergency ("go to hospital" when not needed) is
+# acceptable; a missed one is not. Keep terms specific enough to avoid absurd
+# false positives, but err toward recall.
+#
+# Each entry:
+#   id:       stable slug
+#   priority: emergency | urgent   (emergency => tell user to call 108/112 now)
+#   advice:   spoken guidance appended by the escalation flow
+#   terms:    phrases in any language / script / romanization. ASCII terms are
+#             matched on word boundaries; non-ASCII terms are substring-matched
+#             on NFKC-normalized text.
+#
+# NOTE: the Dravidian-script and romanized terms below are a starting set and
+# should be reviewed by native speakers before production. Add freely.
+
+categories:
+  - id: cardiac
+    priority: emergency
+    advice: >-
+      This could be a heart problem. Call the ambulance on {ambulance} or go to
+      the nearest hospital right now. Do not drive yourself.
+    terms:
+      - chest pain
+      - chest is paining
+      - pain in my chest
+      - chest pressure
+      - chest tightness
+      - tightness in chest
+      - heaviness in chest
+      - crushing chest
+      - pain spreading to arm
+      - pain in left arm
+      - jaw pain with sweating
+      - heart attack
+      - "seene mein dard"        # Hindi (romanized)
+      - "chhati mein dard"
+      - "dil ka daura"
+      - "सीने में दर्द"            # Hindi
+      - "छाती में दर्द"
+      - "दिल का दौरा"
+      - "நெஞ்சு வலி"              # Tamil: chest pain
+      - "மார்பு வலி"
+      - "నెప్పి ఛాతీ"             # Telugu (approx)
+      - "ఛాతీ నొప్పి"
+      - "ಎದೆ ನೋವು"               # Kannada: chest pain
+      - "നെഞ്ചു വേദന"            # Malayalam: chest pain
+
+  - id: breathing
+    priority: emergency
+    advice: >-
+      Trouble breathing is serious. Call {ambulance} or get to a hospital
+      immediately. Sit upright and try to stay calm.
+    terms:
+      - can't breathe
+      - cannot breathe
+      - can not breathe
+      - cant breathe
+      - not able to breathe
+      - difficulty breathing
+      - difficult to breathe
+      - hard to breathe
+      - trouble breathing
+      - breathing problem
+      - breathless
+      - shortness of breath
+      - short of breath
+      - gasping
+      - choking
+      - suffocating
+      - "saans nahi aa rahi"
+      - "saans lene mein takleef"
+      - "dam ghut raha"
+      - "साँस नहीं आ रही"
+      - "साँस लेने में तकलीफ"
+      - "மூச்சு வாங்க முடியல"      # Tamil: can't breathe
+      - "மூச்சுத் திணறல்"
+      - "ఊపిరి ఆడటం లేదు"         # Telugu
+      - "ಉಸಿರಾಟ ಕಷ್ಟ"            # Kannada
+      - "ശ്വാസം കിട്ടുന്നില്ല"     # Malayalam
+
+  - id: stroke
+    priority: emergency
+    advice: >-
+      These can be signs of a stroke. Every minute matters. Call {ambulance}
+      now and note the time the symptoms started.
+    terms:
+      - face drooping
+      - face is drooping
+      - mouth is twisted
+      - one side of face
+      - slurred speech
+      - can't speak properly
+      - unable to speak
+      - sudden weakness
+      - weakness on one side
+      - one side of body
+      - arm went numb suddenly
+      - sudden numbness
+      - can't move my arm
+      - can't move one side
+      - sudden confusion
+      - sudden vision loss
+      - "lakwa"                    # paralysis (Hindi/Urdu)
+      - "पक्षाघात"
+      - "मुँह टेढ़ा"
+      - "பக்கவாதம்"                # Tamil: stroke/paralysis
+      - "పక్షవాతం"                 # Telugu
+      - "ಪಾರ್ಶ್ವವಾಯು"            # Kannada
+      - "പക്ഷാഘാതം"               # Malayalam
+
+  - id: severe_bleeding
+    priority: emergency
+    advice: >-
+      Heavy bleeding needs immediate care. Press firmly on the wound with a
+      clean cloth and get to a hospital or call {ambulance} now.
+    terms:
+      - severe bleeding
+      - heavy bleeding
+      - bleeding a lot
+      - lot of blood
+      - won't stop bleeding
+      - can't stop the bleeding
+      - blood is not stopping
+      - vomiting blood
+      - coughing up blood
+      - blood in vomit
+      - passing blood
+      - "bahut khoon"
+      - "khoon band nahi ho raha"
+      - "बहुत खून बह रहा"
+      - "खून नहीं रुक रहा"
+      - "ரத்தம் நிற்கவில்லை"       # Tamil: bleeding not stopping
+      - "అధిక రక్తస్రావం"          # Telugu
+      - "ತೀವ್ರ ರಕ್ತಸ್ರಾವ"        # Kannada
+      - "കടുത്ത രക്തസ്രാവം"       # Malayalam
+
+  - id: unconscious
+    priority: emergency
+    advice: >-
+      If the person is not responding, call {ambulance} immediately, lay them
+      on their side, and stay with them.
+    terms:
+      - unconscious
+      - not responding
+      - won't wake up
+      - not waking up
+      - passed out
+      - fainted and not waking
+      - collapsed
+      - became unresponsive
+      - "behosh"
+      - "बेहोश"
+      - "मूर्छित"
+      - "மயக்கம்"                  # Tamil: faint/unconscious
+      - "స్పృహ లేదు"               # Telugu: no consciousness
+      - "ಪ್ರಜ್ಞೆ ಇಲ್ಲ"           # Kannada
+      - "ബോധം ഇല്ല"               # Malayalam
+
+  - id: seizure
+    priority: emergency
+    advice: >-
+      During a fit, keep the person safe from injury, turn them on their side,
+      do not put anything in their mouth, and call {ambulance} if it lasts more
+      than 5 minutes or repeats.
+    terms:
+      - seizure
+      - having a fit
+      - convulsion
+      - convulsing
+      - shaking uncontrollably
+      - jerking movements
+      - "mirgi"
+      - "daura pad raha"
+      - "मिर्गी का दौरा"
+      - "வலிப்பு"                  # Tamil: seizure
+      - "మూర్ఛ"                   # Telugu
+      - "ಅಪಸ್ಮಾರ"                # Kannada
+      - "അപസ്മാരം"                # Malayalam
+
+  - id: anaphylaxis
+    priority: emergency
+    advice: >-
+      This can be a severe allergic reaction. Call {ambulance} now. If an
+      adrenaline auto-injector is available, use it.
+    terms:
+      - severe allergic reaction
+      - throat closing
+      - throat is closing
+      - throat closing up
+      - throat is swelling
+      - tongue swelling
+      - tongue is swelling
+      - lips swelling
+      - lips are swelling
+      - face swelling with rash
+      - hives all over
+      - anaphylaxis
+      - "gale mein sujan"
+      - "गले में सूजन"
+      - "தொண்டை வீக்கம்"           # Tamil: throat swelling
+
+  - id: self_harm
+    priority: emergency
+    advice: >-
+      I'm really glad you told me. You deserve support right now. Please call
+      the KIRAN helpline on 1800-599-0019, or reach out to someone you trust
+      immediately. If you are in immediate danger, call {emergency}.
+    terms:
+      - kill myself
+      - end my life
+      - want to die
+      - don't want to live
+      - suicide
+      - suicidal
+      - hurt myself
+      - harm myself
+      - "khudkushi"
+      - "apni jaan"
+      - "आत्महत्या"
+      - "जीना नहीं चाहता"
+      - "தற்கொலை"                  # Tamil: suicide
+      - "ఆత్మహత్య"                 # Telugu
+      - "ಆತ್ಮಹತ್ಯೆ"              # Kannada
+      - "ആത്മഹത്യ"                # Malayalam
+
+  - id: poisoning_bite
+    priority: emergency
+    advice: >-
+      Get to a hospital immediately and, if safe, bring the substance or a
+      photo of the snake. Do not cut the wound or apply a tight tourniquet.
+      Call {ambulance}.
+    terms:
+      - snake bite
+      - snakebite
+      - bitten by a snake
+      - scorpion sting
+      - ate poison
+      - swallowed poison
+      - drank pesticide
+      - took an overdose
+      - overdosed
+      - rat poison
+      - "saap ne kaata"
+      - "साँप ने काटा"
+      - "जहर खा लिया"
+      - "பாம்பு கடித்தது"          # Tamil: snake bite
+      - "పాము కాటు"               # Telugu
+      - "ಹಾವು ಕಡಿತ"              # Kannada
+      - "പാമ്പ് കടിച്ചു"           # Malayalam
+
+  - id: obstetric
+    priority: emergency
+    advice: >-
+      In pregnancy these are danger signs. Go to the nearest hospital or call
+      {ambulance} now.
+    terms:
+      - pregnant and bleeding
+      - bleeding during pregnancy
+      - pregnant with severe pain
+      - baby not moving
+      - water broke early
+      - fits during pregnancy
+      - severe headache pregnant
+      - "garbhvati aur khoon"
+      - "गर्भावस्था में खून"
+
+  - id: infant_danger
+    priority: emergency
+    advice: >-
+      For a baby, these are danger signs. Take the child to a hospital
+      immediately or call {ambulance}.
+    terms:
+      - baby not drinking
+      - baby is not drinking
+      - not drinking milk
+      - refusing to feed
+      - infant not feeding
+      - baby is limp
+      - baby turned blue
+      - newborn not breathing well
+      - baby having fits
+      - baby very drowsy
+      - sunken eyes baby
+      - "bacha doodh nahi pi raha"
+      - "बच्चा दूध नहीं पी रहा"
+
+  - id: severe_dehydration
+    priority: urgent
+    advice: >-
+      This suggests significant dehydration. Start oral rehydration solution
+      (ORS) now and get to a clinic today; go to a hospital if there is no
+      urine, extreme drowsiness, or it worsens.
+    terms:
+      - no urine since
+      - not passed urine all day
+      - cannot keep any fluids down
+      - vomiting everything
+      - too weak to stand
+      - very dizzy when standing
+      - "peshaab nahi aa raha"
+      - "पेशाब नहीं आ रहा"
