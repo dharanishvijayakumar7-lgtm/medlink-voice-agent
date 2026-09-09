@@ -22,7 +22,7 @@ dependencies = [
     { name = "cryptography" },
     { name = "fastembed" },
     { name = "httpx" },
-    { name = "livekit-agents", extra = ["google", "sarvam"] },
+    { name = "livekit-agents", extra = ["google"] },
     { name = "livekit-plugins-ai-coustics" },
     { name = "pgvector" },
     { name = "pydantic-settings" },
@@ -47,7 +47,7 @@ requires-dist = [
     { name = "cryptography", specifier = ">=44.0" },
     { name = "fastembed", specifier = ">=0.4" },
     { name = "httpx", specifier = ">=0.28" },
-    { name = "livekit-agents", extras = ["google", "sarvam"], specifier = ">=1.8.0" },
+    { name = "livekit-agents", extras = ["google"], specifier = ">=1.8.0" },
     { name = "livekit-plugins-ai-coustics", specifier = "~=0.2" },
     { name = "pgvector", specifier = ">=0.3.6" },
     { name = "pydantic-settings", specifier = ">=2.5" },
@@ -1494,22 +1494,8 @@ wheels = [
 ]
 
 [package.optional-dependencies]
-codecs = [
-    { name = "numpy", version = "2.2.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
-    { name = "numpy", version = "2.4.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version == '3.11.*'" },
-    { name = "numpy", version = "2.5.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
-]
 google = [
     { name = "livekit-plugins-google" },
-]
-images = [
-    { name = "pillow" },
-]
-openai = [
-    { name = "livekit-plugins-openai" },
-]
-sarvam = [
-    { name = "livekit-plugins-sarvam" },
 ]
 
 [[package]]
@@ -1628,34 +1614,6 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/ab/fd/e66ffc264f2919d3bf78769b500bbc6cf44ec737d23e0a711b6b386d5711/livekit_plugins_google-1.8.0.tar.gz", hash = "sha256:a43b9efb936c1b3bce64d59682ec1b1cf569ac7b77debb5540a49b92899fa9e3", size = 54994, upload-time = "2026-09-05T00:10:55.311Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/1b/9f/8bf4fe187c079293f3354e0ac9621b3ddca207af6482decd1bd137cb59d7/livekit_plugins_google-1.8.0-py3-none-any.whl", hash = "sha256:06569587987e3e569449ab22185ed4037d0bf7885e745b2c7df874f8584008d4", size = 63886, upload-time = "2026-09-05T00:10:53.961Z" },
-]
-
-[[package]]
-name = "livekit-plugins-openai"
-version = "1.8.0"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "livekit-agents", extra = ["codecs", "images"] },
-    { name = "openai", extra = ["realtime"] },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/36/c6/aebb47955b2c6b310a643182f35979710451dc619c24f7b344deae3493a3/livekit_plugins_openai-1.8.0.tar.gz", hash = "sha256:5caa61bf6b5a1bc0a78eee0ea50479cfc927f2c58b19b8026cd48cbd77909bf7", size = 55235, upload-time = "2026-09-05T00:11:40.513Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/e4/82/d28d1e79785debd651a155e9bea2d551e72882bee0df8754a72b787d2e18/livekit_plugins_openai-1.8.0-py3-none-any.whl", hash = "sha256:f343bb10d3eabf7163bf4f19f9f84e1e313e43e2d98caf6a8b74043ac532c262", size = 61011, upload-time = "2026-09-05T00:11:39.223Z" },
-]
-
-[[package]]
-name = "livekit-plugins-sarvam"
-version = "1.8.0"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "livekit-agents", extra = ["codecs", "openai"] },
-    { name = "numpy", version = "2.2.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
-    { name = "numpy", version = "2.4.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version == '3.11.*'" },
-    { name = "numpy", version = "2.5.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/05/e0/dcbc62a8f08e30a3a3b3792c2baeb0afe4c745c41a8bfe074fc0a40f9869/livekit_plugins_sarvam-1.8.0.tar.gz", hash = "sha256:0ebd65de8c29efc7f43cbbbefd14f2c16f2d32e55a13aab4402269510d19bdfa", size = 46321, upload-time = "2026-09-05T00:12:02.262Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/9f/10/4b65321bca3508bed9633aaa9ddad03c48db91c4cbfeeaa79c26e9d010a0/livekit_plugins_sarvam-1.8.0-py3-none-any.whl", hash = "sha256:ad1d3a24be17f084d2c43499615435aa64ab8b7fbae5fff66f2b10fed1211757", size = 50226, upload-time = "2026-09-05T00:12:00.697Z" },
 ]
 
 [[package]]
@@ -2376,11 +2334,6 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/50/9a/8c75e8c8a5b407a0586faeb2afac91674ff955c191ecc1d6d3b6669f6788/openai-2.54.0.tar.gz", hash = "sha256:e3e6f8bc1ba30ddf381ace1a14340eed381cb984a1a59bd0f34b5be3b5d49cfa", size = 1100285, upload-time = "2026-08-11T18:46:59.035Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/64/a8/bb76c7356de8ad57f59d5ff993d434df0607f07f08bcc9c9a5c275e399c0/openai-2.54.0-py3-none-any.whl", hash = "sha256:89089789197ccdb87f173a03145ed1598d00795220c93e96cf712b1cbf5e5f2b", size = 1660351, upload-time = "2026-08-11T18:46:56.684Z" },
-]
-
-[package.optional-dependencies]
-realtime = [
-    { name = "websockets" },
 ]
 
 [[package]]

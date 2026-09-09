@@ -9,8 +9,9 @@ description = "Simple voice AI assistant built with LiveKit Agents for Python"
 requires-python = ">=3.10, <3.15"
 
 dependencies = [
-    # google = default STT/TTS/LLM provider; sarvam kept for optional per-language STT override
-    "livekit-agents[google,sarvam]>=1.8.0",
+    # google extra is used ONLY for the free-tier Gemini LLM (AI Studio key).
+    # Speech is Bhashini (free, custom wrapper) - no paid STT/TTS provider.
+    "livekit-agents[google]>=1.8.0",
     "livekit-plugins-ai-coustics~=0.2",
     "python-dotenv",
     "pydantic-settings>=2.5",

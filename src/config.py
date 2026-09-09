@@ -49,10 +49,12 @@ class Settings(BaseSettings):
     agent_name: str = Field(default="medlink-agent", alias="LIVEKIT_AGENT_NAME")
 
     # --- Speech / LLM ---
-    # Primary provider for STT + TTS. Bhashini is always wired as the free
-    # fallback underneath via LiveKit's FallbackAdapter (see speech/providers.py).
-    # One of: google | azure | sarvam | bhashini.
-    speech_provider: str = Field(default="google", alias="MEDLINK_SPEECH_PROVIDER")
+    # ZERO-COST STACK. Speech is Bhashini (free, government ULCA/ONDC APIs).
+    # The LLM is Gemini via a Google AI Studio key, which has a genuinely free
+    # tier and is NOT billed Google Cloud. Nothing here should ever incur spend.
+    # One of: bhashini | google | azure | sarvam (the last three cost money and
+    # are opt-in only).
+    speech_provider: str = Field(default="bhashini", alias="MEDLINK_SPEECH_PROVIDER")
     # BCP-47 codes MedLink recognizes; passed to the STT as a multi-language config.
     stt_language_codes: list[str] = Field(
         default=["en-IN", "hi-IN", "ta-IN", "te-IN", "kn-IN", "ml-IN"]
@@ -62,28 +64,27 @@ class Settings(BaseSettings):
     # 8000 Hz mono for SIP/telephony; 22050 for web frontends.
     audio_sample_rate: int = Field(default=8000, alias="MEDLINK_AUDIO_SAMPLE_RATE")
     # LLM: language-agnostic reasoning (English prompts, multilingual I/O).
-    llm_model: str = Field(default="gemini-2.5-flash-lite", alias="MEDLINK_LLM_MODEL")
-
-    # Google (default provider): STT v2 / Chirp, Chirp3-HD TTS, Gemini LLM.
+    # Gemini free tier via Google AI Studio (https://aistudio.google.com/apikey)
+    # - no credit card, no Google Cloud billing account.
+    llm_model: str = Field(default="gemini-2.0-flash", alias="MEDLINK_LLM_MODEL")
     google_api_key: str = Field(default="", alias="GOOGLE_API_KEY")
-    google_application_credentials: str = Field(
-        default="", alias="GOOGLE_APPLICATION_CREDENTIALS"
+    # If no Gemini key is set, fall back to LiveKit Inference (bundled with the
+    # LiveKit Cloud free tier) so `console` mode still runs.
+    llm_fallback_model: str = Field(
+        default="google/gemma-3-27b-it", alias="MEDLINK_LLM_FALLBACK_MODEL"
     )
-    gcp_project: str = Field(default="", alias="GOOGLE_CLOUD_PROJECT")
-    gcp_location: str = Field(default="global", alias="GOOGLE_CLOUD_LOCATION")
 
-    # Azure (alternative provider - strongest managed code-switching via continuous LID).
+    # --- Paid providers: opt-in only, never used unless speech_provider selects them ---
     azure_speech_key: str = Field(default="", alias="AZURE_SPEECH_KEY")
     azure_speech_region: str = Field(default="", alias="AZURE_SPEECH_REGION")
-
-    # Sarvam (optional per-language STT override; cheap Saarika STT, skip Bulbul TTS).
     sarvam_api_key: str = Field(default="", alias="SARVAM_API_KEY")
     sarvam_stt_model: str = Field(default="saaras:v4", alias="MEDLINK_SARVAM_STT_MODEL")
 
-    # --- Bhashini (free fallback speech provider; custom wrapper, no LiveKit plugin) ---
+    # --- Bhashini (DEFAULT speech provider - free; custom wrapper, no LiveKit plugin) ---
     bhashini_api_key: str = Field(default="", alias="BHASHINI_API_KEY")
     bhashini_user_id: str = Field(default="", alias="BHASHINI_USER_ID")
     bhashini_pipeline_id: str = Field(default="", alias="BHASHINI_PIPELINE_ID")
+    bhashini_auth_token: str = Field(default="", alias="BHASHINI_AUTH_TOKEN")
 
     # --- Persistence ---
     database_url: str = Field(default="", alias="DATABASE_URL")
@@ -110,9 +111,9 @@ class Settings(BaseSettings):
     # --- Feature flags (let the demo run without every service wired) ---
     enable_db: bool = Field(default=False, alias="MEDLINK_ENABLE_DB")
     enable_telephony: bool = Field(default=False, alias="MEDLINK_ENABLE_TELEPHONY")
-    enable_bhashini_fallback: bool = Field(
-        default=False, alias="MEDLINK_ENABLE_BHASHINI"
-    )
+    # Hard guard: refuse to construct any provider that bills. Keep this True
+    # unless you have deliberately decided to spend money.
+    free_tier_only: bool = Field(default=True, alias="MEDLINK_FREE_TIER_ONLY")
 
     # --- Data files ---
     formulary_path: Path = Field(default=DATA_DIR / "formulary.json")
