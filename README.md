@@ -151,6 +151,15 @@ src/
 Built on [LiveKit Agents](https://github.com/livekit/agents). See
 [AGENTS.md](AGENTS.md) for development conventions.
 
+## About the commit history
+
+This repository was created from the MIT-licensed
+[`agent-starter-python`](https://github.com/livekit-examples/agent-starter-python)
+template, and its full upstream history was kept for provenance. As a result the
+GitHub contributor list and the older commits (anything before
+`Add MedLink safety core`) belong to the LiveKit template, not to MedLink. All
+MedLink work is authored by the repository owner.
+
 ## Disclaimer
 
 MedLink provides general health information, not medical advice or diagnosis.
