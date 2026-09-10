@@ -5,7 +5,9 @@ in `workflows/`; all safety logic in `safety/` and `medicine/`. Keep this file
 thin - the Dockerfile runs it directly (`uv run src/agent.py start`).
 """
 
+import contextlib
 import logging
+import sys
 
 from livekit.agents import (
     AgentServer,
@@ -16,7 +18,13 @@ from livekit.agents import (
     inference,
     room_io,
 )
-from livekit.plugins import ai_coustics
+
+# Import every optional provider plugin we might build here, on the main thread:
+# LiveKit refuses to register a plugin from the job worker thread, so the lazy
+# `from livekit.plugins import ...` inside llm_factory / speech.providers must
+# find it already registered. Safe to import unconditionally - all are declared
+# deps and registration is cheap.
+from livekit.plugins import ai_coustics, google, silero  # noqa: F401
 
 from config import settings
 from db import repository as history
@@ -101,4 +109,11 @@ async def medlink_session(ctx: JobContext):
 
 
 if __name__ == "__main__":
+    # Windows terminals often default to a legacy codepage (e.g. cp1252) that
+    # cannot encode the emoji the LiveKit CLI prints on startup, which crashes
+    # `console` mode with a UnicodeEncodeError. Force UTF-8 on the std streams.
+    for _stream in (sys.stdout, sys.stderr):
+        with contextlib.suppress(AttributeError, ValueError):
+            _stream.reconfigure(encoding="utf-8")  # type: ignore[union-attr]
+
     cli.run_app(server)
