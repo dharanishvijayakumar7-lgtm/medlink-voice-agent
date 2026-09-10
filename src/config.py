@@ -73,7 +73,7 @@ class Settings(BaseSettings):
     # LLM: language-agnostic reasoning (English prompts, multilingual I/O).
     # Gemini free tier via Google AI Studio (https://aistudio.google.com/apikey)
     # - no credit card, no Google Cloud billing account.
-    llm_model: str = Field(default="gemini-2.0-flash", alias="MEDLINK_LLM_MODEL")
+    llm_model: str = Field(default="gemini-3.6-flash", alias="MEDLINK_LLM_MODEL")
     google_api_key: str = Field(default="", alias="GOOGLE_API_KEY")
     # If no Gemini key is set, fall back to LiveKit Inference (bundled with the
     # LiveKit Cloud free tier) so `console` mode still runs.
