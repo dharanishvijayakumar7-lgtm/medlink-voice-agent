@@ -32,13 +32,16 @@ from db import session as db_session
 from db.crypto import encrypt, hash_phone
 from db.models import (
     SOURCE_AI_RECOMMENDED,
+    SOURCE_PATIENT_REPORTED,
     AuditLog,
     Call,
     CallAnswer,
     Consent,
     Escalation,
+    MedicalHistory,
     Medication,
     Message,
+    Symptom,
     TriageAssessment,
     User,
 )
@@ -241,11 +244,62 @@ async def _finish_call(ud: MedLinkUserData) -> None:
         call.is_emergency = bool(ud.red_flag and ud.red_flag.is_emergency)
 
         # Clinical detail only with consent.
+        user_uuid = UUID(ud.user_id) if ud.user_id else None
         if may_store_content(ud):
             call.chief_complaint = ud.chief_complaint
             call.summary_en = ud.clinical_summary()
             for slot, answer in ud.answers.items():
                 session.add(CallAnswer(call_id=call.id, slot=slot, answer=answer))
+
+            symptom = ud.structured_symptom()
+            if symptom is not None:
+                session.add(Symptom(call_id=call.id, user_id=user_uuid, **symptom))
+
+            # Background belongs to the patient, not the call, so it is only
+            # written for an identified caller. Skip anything already on file.
+            if user_uuid is not None and ud.medical_history:
+                known = set(
+                    (
+                        await session.execute(
+                            select(MedicalHistory.kind, MedicalHistory.detail).where(
+                                MedicalHistory.user_id == user_uuid
+                            )
+                        )
+                    ).all()
+                )
+                for item in ud.medical_history:
+                    if (item["kind"], item["detail"]) in known:
+                        continue
+                    session.add(
+                        MedicalHistory(
+                            user_id=user_uuid,
+                            call_id=call.id,
+                            kind=item["kind"],
+                            detail=item["detail"],
+                        )
+                    )
+
+            # Medicines the caller says they are ALREADY on - never our advice.
+            for name in ud.patient.current_medications:
+                session.add(
+                    Medication(
+                        call_id=call.id,
+                        user_id=user_uuid,
+                        source=SOURCE_PATIENT_REPORTED,
+                        generic_name=name[:128],
+                    )
+                )
+
+            # Demographics, only where the caller actually gave them.
+            if user_uuid is not None:
+                user = await session.get(User, user_uuid)
+                if user is not None:
+                    if ud.patient_name:
+                        user.name = ud.patient_name
+                    if ud.patient_gender:
+                        user.gender = ud.patient_gender
+                    if ud.patient.age_years is not None:
+                        user.age_years = ud.patient.age_years
 
         session.add(
             TriageAssessment(
