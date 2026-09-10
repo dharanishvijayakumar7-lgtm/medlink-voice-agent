@@ -1,17 +1,23 @@
 """Assemble STT and TTS from `settings.speech_provider`.
 
-Free-tier only by default: Bhashini (government ULCA APIs, no cost) is the
-primary. Bhashini's inference is request/response rather than streaming, so its
-STT is wrapped in LiveKit's ``stt.StreamAdapter`` with a local Silero VAD, which
-segments the caller's audio into utterances and calls Bhashini per utterance.
-Silero runs on-device and is also free.
+Free-tier only by default. Two free providers:
 
-If Bhashini credentials are missing or the module cannot load, we degrade to
-LiveKit Inference (bundled with the LiveKit Cloud free tier) so the agent always
-starts and `console` mode always works.
+- ``livekit`` (the default): STT/TTS via LiveKit Inference (Deepgram + Cartesia),
+  bundled with the LiveKit Cloud free tier - no extra key. English and Hindi are
+  solid; other Indic languages are weak, which is why Bhashini is the planned
+  upgrade.
+- ``bhashini``: Government of India ULCA APIs, better Indic quality, no cost.
+  Bhashini's inference is request/response rather than streaming, so its STT is
+  wrapped in LiveKit's ``stt.StreamAdapter`` with a local (free) Silero VAD that
+  segments the caller's audio into utterances. Selected by setting
+  ``speech_provider=bhashini`` and filling the ``BHASHINI_*`` keys.
 
-``free_tier_only`` (default True) is a hard guard: providers that bill are
-refused outright rather than silently costing money.
+Any provider that cannot start (missing key, import error, unknown name) degrades
+to LiveKit Inference so the agent always starts and `console` mode always works.
+
+``free_tier_only`` (default True) is a hard guard: providers that bill
+(``google`` / ``azure`` / ``sarvam``) are refused outright rather than silently
+costing money.
 """
 
 from __future__ import annotations
@@ -28,11 +34,9 @@ logger = logging.getLogger("medlink.speech")
 # Providers that bill per use. Blocked while settings.free_tier_only is True.
 PAID_PROVIDERS = frozenset({"google", "azure", "sarvam"})
 
-# LiveKit Inference defaults - bundled with the LiveKit Cloud free tier.
-# nova-3:multi is the only multilingual option here; Indic quality is mediocre,
-# which is exactly why Bhashini is the primary.
-_FALLBACK_STT = "deepgram/nova-3:multi"
-_FALLBACK_TTS = "cartesia/sonic-2"
+# LiveKit Inference model IDs come from settings (MEDLINK_STT_MODEL /
+# MEDLINK_TTS_MODEL), defaulting to deepgram/nova-3:multi and cartesia/sonic-2.
+# This is both the "livekit" provider and the universal fallback.
 
 
 class PaidProviderBlockedError(RuntimeError):
@@ -63,12 +67,16 @@ def build_stt() -> stt.STT:
     provider = settings.speech_provider.lower()
     _check_allowed(provider)
 
+    if provider in ("livekit", "inference"):
+        logger.info("STT: LiveKit Inference %s (free tier)", settings.stt_model)
+        return inference.STT(model=settings.stt_model)
+
     if provider == "bhashini":
         if not _bhashini_ready():
             logger.warning(
                 "speech_provider=bhashini but BHASHINI_API_KEY is not set - "
                 "using LiveKit Inference STT (%s) for now.",
-                _FALLBACK_STT,
+                settings.stt_model,
             )
         else:
             try:
@@ -80,22 +88,26 @@ def build_stt() -> stt.STT:
                 return stt.StreamAdapter(stt=BhashiniSTT(), vad=get_vad())
             except Exception:
                 logger.exception(
-                    "could not start Bhashini STT - falling back to %s", _FALLBACK_STT
+                    "could not start Bhashini STT - falling back to %s", settings.stt_model
                 )
 
-    return inference.STT(model=_FALLBACK_STT)
+    return inference.STT(model=settings.stt_model)
 
 
 def build_tts() -> tts.TTS:
     provider = settings.speech_provider.lower()
     _check_allowed(provider)
 
+    if provider in ("livekit", "inference"):
+        logger.info("TTS: LiveKit Inference %s (free tier)", settings.tts_model)
+        return inference.TTS(model=settings.tts_model)
+
     if provider == "bhashini":
         if not _bhashini_ready():
             logger.warning(
                 "speech_provider=bhashini but BHASHINI_API_KEY is not set - "
                 "using LiveKit Inference TTS (%s) for now.",
-                _FALLBACK_TTS,
+                settings.tts_model,
             )
         else:
             try:
@@ -105,7 +117,7 @@ def build_tts() -> tts.TTS:
                 return BhashiniTTS(sample_rate=settings.audio_sample_rate)
             except Exception:
                 logger.exception(
-                    "could not start Bhashini TTS - falling back to %s", _FALLBACK_TTS
+                    "could not start Bhashini TTS - falling back to %s", settings.tts_model
                 )
 
-    return inference.TTS(model=_FALLBACK_TTS)
+    return inference.TTS(model=settings.tts_model)

@@ -49,12 +49,19 @@ class Settings(BaseSettings):
     agent_name: str = Field(default="medlink-agent", alias="LIVEKIT_AGENT_NAME")
 
     # --- Speech / LLM ---
-    # ZERO-COST STACK. Speech is Bhashini (free, government ULCA/ONDC APIs).
+    # ZERO-COST STACK. Speech defaults to LiveKit Inference (Deepgram + Cartesia),
+    # bundled with the LiveKit Cloud free tier - no extra key, no card. Bhashini
+    # (free government ULCA/ONDC APIs, better Indic quality) is the intended
+    # upgrade: fill the BHASHINI_* keys and set this to "bhashini".
     # The LLM is Gemini via a Google AI Studio key, which has a genuinely free
     # tier and is NOT billed Google Cloud. Nothing here should ever incur spend.
-    # One of: bhashini | google | azure | sarvam (the last three cost money and
-    # are opt-in only).
-    speech_provider: str = Field(default="bhashini", alias="MEDLINK_SPEECH_PROVIDER")
+    # One of: livekit | bhashini | google | azure | sarvam (the last three cost
+    # money and are opt-in only).
+    speech_provider: str = Field(default="livekit", alias="MEDLINK_SPEECH_PROVIDER")
+    # LiveKit Inference model IDs used when speech_provider is "livekit" (or as the
+    # fallback for any provider that cannot start). Tunable without code edits.
+    stt_model: str = Field(default="deepgram/nova-3:multi", alias="MEDLINK_STT_MODEL")
+    tts_model: str = Field(default="cartesia/sonic-2", alias="MEDLINK_TTS_MODEL")
     # BCP-47 codes MedLink recognizes; passed to the STT as a multi-language config.
     stt_language_codes: list[str] = Field(
         default=["en-IN", "hi-IN", "ta-IN", "te-IN", "kn-IN", "ml-IN"]

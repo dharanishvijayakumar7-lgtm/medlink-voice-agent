@@ -62,7 +62,8 @@ Four independent layers have to fail before a caller hears something unsafe.
 | OTC medicine safety pipeline + curated formulary | ✅ |
 | Output guardrail (prescription-drug denylist) + prompt-injection guard | ✅ |
 | PostgreSQL call history, returning-caller recall, consent gating, erasure | ✅ |
-| Bhashini speech (free) behind a provider factory | ✅ *(awaiting API key for a live smoke test)* |
+| Speech: LiveKit Inference (Deepgram + Cartesia) on the free tier — **active** | ✅ |
+| Bhashini speech wrapper (better Indic quality) behind a one-setting switch | ✅ *(awaiting API key)* |
 | Telephony (SIP inbound), doctor escalation automation, SMS | ⏳ next |
 
 **211 tests**, `ruff` clean.
@@ -75,7 +76,7 @@ bills.
 
 | Need | Choice | Cost |
 |---|---|---|
-| Speech (STT/TTS) | **Bhashini** — Government of India ULCA/Dhruva | free |
+| Speech (STT/TTS) | **LiveKit Inference** (Deepgram + Cartesia), bundled with the LiveKit Cloud free tier. **Bhashini** — Government of India ULCA/Dhruva — is the planned upgrade for better Tamil/Telugu/Kannada/Malayalam; until then those languages are weak. | free |
 | Voice-activity detection | **Silero**, on-device | free |
 | Reasoning | **Gemini free tier** via Google AI Studio (*not* billed Google Cloud — `vertexai=False` is enforced) | free |
 | Transport, turn detection, SIP | **LiveKit Cloud** free tier | free |
@@ -103,11 +104,11 @@ cp .env.example .env.local     # then fill in the keys
 uv run python src/agent.py console
 ```
 
-The agent starts and works with **no keys at all** — it falls back to LiveKit
-Inference and logs a warning. Add keys to improve it:
+Speech works with **no extra keys** — the default `MEDLINK_SPEECH_PROVIDER=livekit`
+runs STT/TTS through LiveKit Inference on the free tier. Add keys to improve it:
 
-- `GOOGLE_API_KEY` — free Gemini key from [aistudio.google.com/apikey](https://aistudio.google.com/apikey) (no card)
-- `BHASHINI_API_KEY` / `BHASHINI_USER_ID` / `BHASHINI_PIPELINE_ID` — from [bhashini.gov.in](https://bhashini.gov.in)
+- `GOOGLE_API_KEY` — free Gemini key from [aistudio.google.com/apikey](https://aistudio.google.com/apikey) (no card). Without it the LLM falls back to LiveKit Inference and logs a warning.
+- `BHASHINI_API_KEY` / `BHASHINI_USER_ID` / `BHASHINI_PIPELINE_ID` — from [bhashini.gov.in](https://bhashini.gov.in); then set `MEDLINK_SPEECH_PROVIDER=bhashini` for stronger Tamil/Telugu/Kannada/Malayalam.
 
 Optional call history:
 
