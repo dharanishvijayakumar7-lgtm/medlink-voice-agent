@@ -48,6 +48,10 @@ class MedLinkUserData:
     channel: str = "web"  # web | pstn | console
     is_returning_caller: bool = False
     previous_summary: str | None = None
+    # True once the `calls` row exists. Later writes reference it by foreign key,
+    # so if the row was never created they are skipped rather than each throwing
+    # an integrity error and filling the log with tracebacks mid-call.
+    call_row_ready: bool = False
 
     # --- language ---
     language: str = DEFAULT_LANGUAGE_CODE

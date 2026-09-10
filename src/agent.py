@@ -86,7 +86,13 @@ async def medlink_session(ctx: JobContext):
         turn_handling=TurnHandlingOptions(
             turn_detection=inference.TurnDetector(),
             interruption={"mode": "adaptive"},
-            preemptive_generation={"enabled": True},
+            # Preemptive generation starts a speculative LLM call before the
+            # caller's turn is confirmed, then throws it away if they keep
+            # talking. Those wasted calls still count against the Gemini free
+            # tier, and hitting the limit costs ~40s of retry backoff - far
+            # worse than the fraction of a second it saves. Re-enable it on a
+            # paid key.
+            preemptive_generation={"enabled": False},
         ),
     )
 

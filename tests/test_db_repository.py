@@ -368,6 +368,23 @@ async def test_demographics_are_stored_when_volunteered(db):
     assert users[0].age_years == 29
 
 
+async def test_writes_are_skipped_when_the_call_row_is_missing(db):
+    """If start_call never landed, dependent writes must not throw FK errors.
+
+    Otherwise every turn of a live call fills the log with integrity-error
+    tracebacks, which is what happens when the calls row disappears mid-session.
+    """
+    ud = _ud(consent_store=True, chief_complaint="headache")
+    # Deliberately skip start_call, so no calls row exists.
+    assert ud.call_row_ready is False
+
+    await repo.record_turn(ud, "user", "I have a headache")
+    await repo.finish_call(ud)
+
+    assert await _rows(Message) == []
+    assert await _rows(Call) == []
+
+
 async def test_preferred_language_is_remembered(db):
     first = _ud(language="ta-IN")
     await repo.start_call(first)
