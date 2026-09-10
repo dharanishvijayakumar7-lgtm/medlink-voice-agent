@@ -18,7 +18,9 @@ from db.models import (
     CallAnswer,
     Consent,
     Escalation,
+    MedicalHistory,
     Message,
+    Symptom,
     TriageAssessment,
     User,
 )
@@ -269,6 +271,101 @@ async def test_medicine_recommendations_are_persisted_with_audit_detail(db):
     assert rows[0].formulary_id == "paracetamol_tab_500"
     assert rows[0].dose_text == "1 tablet every 4 to 6 hours"
     assert rows[0].details["generic_name"] == "Paracetamol"
+
+
+async def test_medicine_source_distinguishes_advice_from_what_the_caller_takes(db):
+    """The safety-critical distinction: our suggestion is never a prescription."""
+    ud = _ud(
+        consent_store=True,
+        chief_complaint="headache",
+        recommendations=[{"id": "paracetamol_tab_500", "generic_name": "Paracetamol"}],
+    )
+    ud.patient.current_medications = ["Cetirizine"]
+    await repo.start_call(ud)
+    ud.consent_store = True
+    await repo.finish_call(ud)
+
+    by_source = {row.source: row for row in await _rows(MedRow)}
+    assert by_source["ai_recommended"].generic_name == "Paracetamol"
+    assert by_source["patient_reported"].generic_name == "Cetirizine"
+    # Nothing on this path may ever claim to be a doctor's prescription.
+    assert "doctor_prescribed" not in by_source
+
+
+async def test_symptom_row_records_only_what_was_asked(db):
+    """Unasked fields stay NULL rather than being invented."""
+    ud = _ud(consent_store=True, chief_complaint="headache since yesterday")
+    ud.record_answer("duration", "since yesterday")
+    ud.record_answer("severity", "moderate")
+    await repo.start_call(ud)
+    ud.consent_store = True
+    await repo.finish_call(ud)
+
+    rows = await _rows(Symptom)
+    assert len(rows) == 1
+    assert rows[0].symptom == "headache since yesterday"
+    assert rows[0].duration == "since yesterday"
+    assert rows[0].severity == "moderate"
+    assert rows[0].onset is None  # never asked, so never guessed
+
+
+async def test_no_symptom_row_without_a_complaint(db):
+    ud = _ud(consent_store=True)
+    await repo.start_call(ud)
+    ud.consent_store = True
+    await repo.finish_call(ud)
+    assert await _rows(Symptom) == []
+
+
+async def test_medical_history_is_not_duplicated_across_calls(db):
+    first = _ud(consent_store=True, chief_complaint="headache")
+    first.medical_history = [
+        {"kind": "condition", "detail": "migraine"},
+        {"kind": "allergy", "detail": "penicillin"},
+    ]
+    await repo.start_call(first)
+    first.consent_store = True
+    await repo.finish_call(first)
+
+    second = _ud(consent_store=True, chief_complaint="headache again")
+    second.medical_history = [{"kind": "condition", "detail": "migraine"}]
+    await repo.start_call(second)
+    second.consent_store = True
+    await repo.finish_call(second)
+
+    rows = await _rows(MedicalHistory)
+    assert {(r.kind, r.detail) for r in rows} == {
+        ("condition", "migraine"),
+        ("allergy", "penicillin"),
+    }
+    assert len(rows) == 2  # migraine was offered twice, stored once
+
+
+async def test_demographics_stay_null_unless_the_caller_gave_them(db):
+    ud = _ud(consent_store=True, chief_complaint="headache")
+    await repo.start_call(ud)
+    ud.consent_store = True
+    await repo.finish_call(ud)
+
+    users = await _rows(User)
+    assert users[0].name is None
+    assert users[0].gender is None
+    assert users[0].age_years is None
+
+
+async def test_demographics_are_stored_when_volunteered(db):
+    ud = _ud(consent_store=True, chief_complaint="headache")
+    ud.patient_name = "Rahul"
+    ud.patient_gender = "male"
+    ud.patient.age_years = 29
+    await repo.start_call(ud)
+    ud.consent_store = True
+    await repo.finish_call(ud)
+
+    users = await _rows(User)
+    assert users[0].name == "Rahul"
+    assert users[0].gender == "male"
+    assert users[0].age_years == 29
 
 
 async def test_preferred_language_is_remembered(db):

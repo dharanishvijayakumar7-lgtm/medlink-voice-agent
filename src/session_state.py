@@ -52,11 +52,18 @@ class MedLinkUserData:
     # --- language ---
     language: str = DEFAULT_LANGUAGE_CODE
 
+    # --- who the caller is (only ever what they volunteered; never inferred) ---
+    patient_name: str | None = None
+    patient_gender: str | None = None
+
     # --- clinical picture ---
     chief_complaint: str | None = None
     patient: PatientContext = field(default_factory=PatientContext)
     answers: dict[str, str] = field(default_factory=dict)
     questions_asked: int = 0
+    # Background the caller volunteered: {"kind": condition|allergy|past_issue,
+    # "detail": "..."}. Persisted to the medical_history table at call end.
+    medical_history: list[dict[str, str]] = field(default_factory=list)
 
     # --- triage (driven by data/triage_kb.yaml) ---
     triage_entry_id: str | None = None
@@ -97,6 +104,24 @@ class MedLinkUserData:
         out = [q for q in self.candidate_questions if q not in self.answers.values()]
         out += [SLOT_QUESTIONS[s] for s in self.unanswered_slots()]
         return out[:limit]
+
+    def structured_symptom(self) -> dict[str, str | None] | None:
+        """The call's health concern as one structured row, or None.
+
+        Built only from what the caller actually said: the complaint they gave
+        and the follow-up slots they filled. Anything unasked stays None rather
+        than being guessed at.
+        """
+        if not self.chief_complaint:
+            return None
+        return {
+            "symptom": self.chief_complaint[:128],
+            "description": self.chief_complaint,
+            "severity": self.answers.get("severity"),
+            "duration": self.answers.get("duration"),
+            "onset": self.answers.get("onset"),
+            "context": self.answers.get("associated") or self.answers.get("location"),
+        }
 
     def clinical_summary(self) -> str:
         """Compact English summary for the LLM, the DB, and doctor handoff."""

@@ -105,11 +105,22 @@ class TriageAgent(MedLinkAgent):
         is_breastfeeding: bool | None = None,
         known_conditions: list[str] | None = None,
         current_medications: list[str] | None = None,
+        allergies: list[str] | None = None,
+        past_medical_issues: list[str] | None = None,
     ) -> str:
         """Record safety-relevant background about the person who is unwell.
 
         Only call this for details the caller actually volunteered or confirmed.
-        These directly gate which medicines are safe to suggest.
+        Never guess or infer any of it. These directly gate which medicines are
+        safe to suggest.
+
+        Args:
+            is_pregnant: Only if the caller said so.
+            is_breastfeeding: Only if the caller said so.
+            known_conditions: Ongoing conditions they mentioned, e.g. diabetes.
+            current_medications: Medicines they say they are ALREADY taking.
+            allergies: Drug or other allergies they mentioned.
+            past_medical_issues: Relevant past illnesses, surgery or admissions.
         """
         data = context.userdata
         if is_pregnant is not None:
@@ -118,8 +129,42 @@ class TriageAgent(MedLinkAgent):
             data.patient.is_breastfeeding = is_breastfeeding
         if known_conditions:
             data.patient.known_conditions.extend(known_conditions)
+            data.medical_history.extend(
+                {"kind": "condition", "detail": c} for c in known_conditions
+            )
         if current_medications:
             data.patient.current_medications.extend(current_medications)
+        if allergies:
+            data.medical_history.extend(
+                {"kind": "allergy", "detail": a} for a in allergies
+            )
+        if past_medical_issues:
+            data.medical_history.extend(
+                {"kind": "past_issue", "detail": p} for p in past_medical_issues
+            )
+        return "Recorded."
+
+    @function_tool
+    async def record_caller_identity(
+        self,
+        context: RunContext[MedLinkUserData],
+        name: str | None = None,
+        gender: str | None = None,
+    ) -> str:
+        """Record the caller's name or gender, ONLY if they stated it themselves.
+
+        Never ask for these and never infer them - not from the voice, not from
+        the name. Call this only when the caller has volunteered the detail.
+
+        Args:
+            name: The name they gave for the person who is unwell.
+            gender: Only if explicitly stated, e.g. "male", "female".
+        """
+        data = context.userdata
+        if name and name.strip():
+            data.patient_name = name.strip()[:128]
+        if gender and gender.strip():
+            data.patient_gender = gender.strip()[:16]
         return "Recorded."
 
     @function_tool
