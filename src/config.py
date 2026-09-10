@@ -103,6 +103,12 @@ class Settings(BaseSettings):
     db_connect_timeout: float = Field(default=3.0, alias="MEDLINK_DB_CONNECT_TIMEOUT")
 
     # --- Telephony ---
+    # Console/web sessions carry no caller ID, so there is no phone number to
+    # identify a patient by and no `users` row gets created. Set this locally to
+    # pretend a console session came from a given number, which makes the
+    # returning-caller flow testable without telephony. Ignored whenever a real
+    # SIP caller ID is present, and must stay unset in production.
+    dev_caller_phone: str = Field(default="", alias="MEDLINK_DEV_CALLER_PHONE")
     sms_provider: str = Field(default="", alias="MEDLINK_SMS_PROVIDER")  # plivo|exotel
     emergency_number: str = Field(default="112", alias="MEDLINK_EMERGENCY_NUMBER")
     ambulance_number: str = Field(default="108", alias="MEDLINK_AMBULANCE_NUMBER")
