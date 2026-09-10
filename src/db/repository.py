@@ -31,12 +31,13 @@ from config import settings
 from db import session as db_session
 from db.crypto import encrypt, hash_phone
 from db.models import (
+    SOURCE_AI_RECOMMENDED,
     AuditLog,
     Call,
     CallAnswer,
     Consent,
     Escalation,
-    MedicineRecommendationRow,
+    Medication,
     Message,
     TriageAssessment,
     User,
@@ -257,13 +258,18 @@ async def _finish_call(ud: MedLinkUserData) -> None:
             )
         )
 
+        # Anything the agent suggested is ALWAYS ai_recommended. Nothing on this
+        # path may ever be written as a doctor's prescription.
         for rec in ud.recommendations:
             session.add(
-                MedicineRecommendationRow(
+                Medication(
                     call_id=call.id,
-                    formulary_id=rec.get("id", "unknown"),
+                    user_id=UUID(ud.user_id) if ud.user_id else None,
+                    source=SOURCE_AI_RECOMMENDED,
+                    formulary_id=rec.get("id"),
                     generic_name=rec.get("generic_name", "unknown"),
                     dose_text=rec.get("adult_dose"),
+                    indication=ud.chief_complaint,
                     details=rec,
                 )
             )

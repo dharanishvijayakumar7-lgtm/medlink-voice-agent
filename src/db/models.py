@@ -41,13 +41,30 @@ class Base(DeclarativeBase):
 
 
 class User(Base):
-    """A caller, identified only by a hash of their phone number."""
+    """A caller. The phone number is only ever stored hashed or encrypted.
+
+    ``first_seen_at`` / ``last_seen_at`` serve as this row's created/updated
+    timestamps.
+
+    NOTE ON PII: ``name``, ``age_years`` and ``gender`` are stored in plain
+    text. This was a deliberate prototype decision to keep the data easy to
+    inspect during development; it is inconsistent with the encrypted
+    ``phone_enc`` above. Before this handles real callers, these should either
+    be encrypted the same way or justified in a privacy review - the database
+    currently holds identifiable health information in the clear.
+
+    Every one of them is nullable and must stay NULL unless the caller actually
+    volunteered the information. Never infer them.
+    """
 
     __tablename__ = "users"
 
     id: Mapped[UUID] = mapped_column(Uuid, primary_key=True, default=uuid4)
     phone_hash: Mapped[str] = mapped_column(String(64), unique=True, index=True)
     phone_enc: Mapped[bytes | None] = mapped_column(LargeBinary, default=None)
+    name: Mapped[str | None] = mapped_column(String(128), default=None)
+    age_years: Mapped[int | None] = mapped_column(Integer, default=None)
+    gender: Mapped[str | None] = mapped_column(String(16), default=None)
     preferred_language: Mapped[str | None] = mapped_column(String(16), default=None)
     first_seen_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), default=_now
@@ -100,7 +117,10 @@ class Call(Base):
     assessments: Mapped[list[TriageAssessment]] = relationship(
         back_populates="call", cascade="all, delete-orphan"
     )
-    recommendations: Mapped[list[MedicineRecommendationRow]] = relationship(
+    medications: Mapped[list[Medication]] = relationship(
+        back_populates="call", cascade="all, delete-orphan"
+    )
+    symptoms: Mapped[list[Symptom]] = relationship(
         back_populates="call", cascade="all, delete-orphan"
     )
     escalations: Mapped[list[Escalation]] = relationship(
@@ -156,21 +176,97 @@ class TriageAssessment(Base):
     call: Mapped[Call] = relationship(back_populates="assessments")
 
 
-class MedicineRecommendationRow(Base):
-    """What was actually suggested, plus the structured record behind it."""
+# How a medication came to be on the record. Conflating these would let an AI
+# suggestion be read back later as if a doctor had prescribed it, so `source` is
+# mandatory and has no default at the database level.
+SOURCE_PATIENT_REPORTED = "patient_reported"  # "I already take this"
+SOURCE_AI_RECOMMENDED = "ai_recommended"  # MedLink suggested it - NOT a prescription
+SOURCE_DOCTOR_PRESCRIBED = "doctor_prescribed"  # a real clinician prescribed it
+MEDICATION_SOURCES = frozenset(
+    {SOURCE_PATIENT_REPORTED, SOURCE_AI_RECOMMENDED, SOURCE_DOCTOR_PRESCRIBED}
+)
 
-    __tablename__ = "medicine_recommendations"
+
+class Medication(Base):
+    """A medicine discussed on a call, from any of three distinct sources.
+
+    ``source`` is the safety-critical column: MedLink must never present its own
+    suggestion as a doctor's prescription. Rows written by the agent are always
+    ``ai_recommended``; ``doctor_prescribed`` may only be set from a real
+    clinician's input, never inferred from the conversation.
+    """
+
+    __tablename__ = "medications"
 
     id: Mapped[UUID] = mapped_column(Uuid, primary_key=True, default=uuid4)
     call_id: Mapped[UUID] = mapped_column(ForeignKey("calls.id"), index=True)
-    formulary_id: Mapped[str] = mapped_column(String(64))
+    user_id: Mapped[UUID | None] = mapped_column(
+        ForeignKey("users.id"), default=None, index=True
+    )
+    source: Mapped[str] = mapped_column(String(24), index=True)
+    # Set when the medicine came from our curated formulary; NULL for anything
+    # the caller merely named.
+    formulary_id: Mapped[str | None] = mapped_column(String(64), default=None)
     generic_name: Mapped[str] = mapped_column(String(128))
     dose_text: Mapped[str | None] = mapped_column(Text, default=None)
+    frequency: Mapped[str | None] = mapped_column(String(128), default=None)
+    duration_text: Mapped[str | None] = mapped_column(String(128), default=None)
+    indication: Mapped[str | None] = mapped_column(Text, default=None)
     # Audit trail: the structured fields the spoken advice was built from.
     details: Mapped[dict | None] = mapped_column(JSON, default=None)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now)
 
-    call: Mapped[Call] = relationship(back_populates="recommendations")
+    call: Mapped[Call] = relationship(back_populates="medications")
+
+
+class Symptom(Base):
+    """One health concern raised on a call.
+
+    Every descriptive field is nullable on purpose: store NULL rather than
+    inventing a severity, duration or onset the caller never gave.
+    """
+
+    __tablename__ = "symptoms"
+
+    id: Mapped[UUID] = mapped_column(Uuid, primary_key=True, default=uuid4)
+    call_id: Mapped[UUID] = mapped_column(ForeignKey("calls.id"), index=True)
+    user_id: Mapped[UUID | None] = mapped_column(
+        ForeignKey("users.id"), default=None, index=True
+    )
+    symptom: Mapped[str] = mapped_column(String(128))
+    description: Mapped[str | None] = mapped_column(Text, default=None)
+    severity: Mapped[str | None] = mapped_column(String(32), default=None)
+    duration: Mapped[str | None] = mapped_column(String(64), default=None)
+    onset: Mapped[str | None] = mapped_column(String(64), default=None)
+    context: Mapped[str | None] = mapped_column(Text, default=None)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now)
+
+    call: Mapped[Call] = relationship(back_populates="symptoms")
+
+
+HISTORY_CONDITION = "condition"
+HISTORY_ALLERGY = "allergy"
+HISTORY_PAST_ISSUE = "past_issue"
+HISTORY_OTHER = "other"
+
+
+class MedicalHistory(Base):
+    """Background a caller volunteered, kept against the patient across calls.
+
+    Only ever written from something the caller actually said. ``call_id``
+    records which call it was learned on, so a claim can be traced back.
+    """
+
+    __tablename__ = "medical_history"
+
+    id: Mapped[UUID] = mapped_column(Uuid, primary_key=True, default=uuid4)
+    user_id: Mapped[UUID] = mapped_column(ForeignKey("users.id"), index=True)
+    call_id: Mapped[UUID | None] = mapped_column(
+        ForeignKey("calls.id"), default=None, index=True
+    )
+    kind: Mapped[str] = mapped_column(String(24))  # condition|allergy|past_issue|other
+    detail: Mapped[str] = mapped_column(Text)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now)
 
 
 class Provider(Base):
