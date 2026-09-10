@@ -39,7 +39,12 @@ server = AgentServer()
 
 
 def _caller_phone(ctx: JobContext) -> str | None:
-    """Best-effort caller number for SIP calls (used for returning-caller lookup)."""
+    """Best-effort caller number for SIP calls (used for returning-caller lookup).
+
+    Falls back to ``MEDLINK_DEV_CALLER_PHONE`` so console sessions, which carry
+    no caller ID, still create a patient record and can exercise the
+    returning-caller path. A real SIP number always wins.
+    """
     try:
         for participant in ctx.room.remote_participants.values():
             number = (participant.attributes or {}).get("sip.phoneNumber")
@@ -47,6 +52,12 @@ def _caller_phone(ctx: JobContext) -> str | None:
                 return number
     except Exception:  # pragma: no cover - never break a call over this
         logger.debug("could not read caller phone", exc_info=True)
+
+    if settings.dev_caller_phone:
+        logger.warning(
+            "no caller ID; using MEDLINK_DEV_CALLER_PHONE - development only"
+        )
+        return settings.dev_caller_phone
     return None
 
 
@@ -55,9 +66,11 @@ async def medlink_session(ctx: JobContext):
     ctx.log_context_fields = {"room": ctx.room.name}
 
     phone = _caller_phone(ctx)
+    # A dev fallback number is not a real phone call, so don't log it as one.
+    is_sip_call = bool(phone) and phone != settings.dev_caller_phone
     userdata = MedLinkUserData(
         caller_phone=phone,
-        channel="pstn" if phone else "web",
+        channel="pstn" if is_sip_call else "web",
     )
     ctx.log_context_fields["call_id"] = userdata.call_id
 
