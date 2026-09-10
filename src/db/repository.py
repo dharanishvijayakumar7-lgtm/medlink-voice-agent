@@ -55,6 +55,16 @@ def fire_and_forget(coro: Awaitable[Any]) -> None:
     task.add_done_callback(_BACKGROUND_TASKS.discard)
 
 
+def may_store_content(ud: MedLinkUserData) -> bool:
+    """May we persist this call's clinical content (words, complaint, summary)?
+
+    True when the caller consented, or when consent is deliberately relaxed for
+    local development (``MEDLINK_REQUIRE_CONSENT=false``). Operational rows -
+    timings, urgency, triage outcome - are always written and never gated.
+    """
+    return ud.consent_store or not settings.require_consent
+
+
 async def _safe(factory: Callable[[], Awaitable[Any]], what: str) -> Any:
     """Run a persistence op, or skip it entirely when the DB is disabled.
 
@@ -99,7 +109,7 @@ async def _start_call(ud: MedLinkUserData) -> None:
                 if user.preferred_language:
                     ud.language = user.preferred_language
                 # Only recall what they previously agreed we could keep.
-                if user.consent_store:
+                if user.consent_store or not settings.require_consent:
                     ud.previous_summary = await _previous_summary(session, user.id)
 
             ud.user_id = str(user.id)
@@ -146,8 +156,8 @@ async def _previous_summary(session, user_id: UUID) -> str | None:
 async def record_turn(
     ud: MedLinkUserData, role: str, text: str, language: str | None = None
 ) -> None:
-    """Store one conversational turn. Requires consent_store."""
-    if not text or not ud.consent_store:
+    """Store one conversational turn. Gated by :func:`may_store_content`."""
+    if not text or not may_store_content(ud):
         return
     await _safe(lambda: _record_turn(ud, role, text, language), "record_turn")
 
@@ -230,7 +240,7 @@ async def _finish_call(ud: MedLinkUserData) -> None:
         call.is_emergency = bool(ud.red_flag and ud.red_flag.is_emergency)
 
         # Clinical detail only with consent.
-        if ud.consent_store:
+        if may_store_content(ud):
             call.chief_complaint = ud.chief_complaint
             call.summary_en = ud.clinical_summary()
             for slot, answer in ud.answers.items():
@@ -282,7 +292,8 @@ async def _finish_call(ud: MedLinkUserData) -> None:
                 detail={
                     "urgency": ud.urgency,
                     "escalated": ud.escalated,
-                    "stored_content": ud.consent_store,
+                    "stored_content": may_store_content(ud),
+                    "consent_store": ud.consent_store,
                 },
             )
         )
