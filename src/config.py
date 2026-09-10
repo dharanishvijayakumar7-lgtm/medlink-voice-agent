@@ -120,6 +120,11 @@ class Settings(BaseSettings):
     # --- Feature flags (let the demo run without every service wired) ---
     enable_db: bool = Field(default=False, alias="MEDLINK_ENABLE_DB")
     enable_telephony: bool = Field(default=False, alias="MEDLINK_ENABLE_TELEPHONY")
+    # Clinical content (transcript, complaint, answers, summary) is stored only
+    # with the caller's spoken consent. Set MEDLINK_REQUIRE_CONSENT=false in
+    # LOCAL DEVELOPMENT ONLY, so there is data to inspect before the consent
+    # flow is wired. Must stay True in production.
+    require_consent: bool = Field(default=True, alias="MEDLINK_REQUIRE_CONSENT")
     # Hard guard: refuse to construct any provider that bills. Keep this True
     # unless you have deliberately decided to spend money.
     free_tier_only: bool = Field(default=True, alias="MEDLINK_FREE_TIER_ONLY")

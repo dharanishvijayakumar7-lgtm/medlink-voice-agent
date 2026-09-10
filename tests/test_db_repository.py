@@ -185,6 +185,27 @@ async def test_clinical_detail_withheld_without_consent(db):
     assert await _rows(CallAnswer) == []
 
 
+async def test_dev_bypass_stores_clinical_detail_without_consent(db, monkeypatch):
+    """MEDLINK_REQUIRE_CONSENT=false is the local-development escape hatch.
+
+    It exists so there is data to inspect before the spoken consent flow is
+    built. Consent must still be the default (see conftest); this pins that the
+    bypass genuinely works when deliberately enabled.
+    """
+    monkeypatch.setattr(settings, "require_consent", False)
+    ud = _ud(chief_complaint="loose motions")
+    ud.record_answer("duration", "two days")
+    await repo.start_call(ud)
+    await repo.record_turn(ud, "user", "I have loose motions", "en-IN")
+    await repo.finish_call(ud)
+
+    calls = await _rows(Call)
+    assert calls[0].chief_complaint == "loose motions"
+    assert calls[0].summary_en is not None
+    assert len(await _rows(CallAnswer)) == 1
+    assert len(await _rows(Message)) == 1
+
+
 async def test_clinical_detail_stored_with_consent(db):
     ud = _ud(chief_complaint="loose motions", consent_store=True)
     ud.record_answer("duration", "two days")
