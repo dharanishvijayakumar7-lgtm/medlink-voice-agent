@@ -10,11 +10,16 @@ import base64
 
 import httpx
 import pytest
-from livekit.agents import APIStatusError, stt
+from livekit.agents import APIStatusError, inference, stt
 
 from config import settings
 from speech import bhashini as bh
-from speech.providers import PaidProviderBlockedError, build_stt, build_tts
+from speech.providers import (
+    PAID_PROVIDERS,
+    PaidProviderBlockedError,
+    build_stt,
+    build_tts,
+)
 
 SAMPLE_RATE = 16000
 CONFIG_RESPONSE = {
@@ -293,6 +298,17 @@ def test_paid_providers_are_refused_under_free_tier_only(monkeypatch, provider):
 
 def test_bhashini_is_never_treated_as_a_paid_provider():
     """The free provider must never be caught by the spend guard."""
-    from speech.providers import PAID_PROVIDERS
-
     assert "bhashini" not in PAID_PROVIDERS
+
+
+def test_livekit_is_never_treated_as_paid():
+    """The default free provider must never be caught by the spend guard."""
+    assert "livekit" not in PAID_PROVIDERS
+
+
+def test_livekit_is_the_explicit_free_default(monkeypatch):
+    """speech_provider=livekit builds LiveKit Inference STT/TTS, no spend guard."""
+    monkeypatch.setattr(settings, "speech_provider", "livekit")
+    monkeypatch.setattr(settings, "free_tier_only", True)
+    assert isinstance(build_stt(), inference.STT)
+    assert isinstance(build_tts(), inference.TTS)
