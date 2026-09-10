@@ -22,7 +22,7 @@ from db.models import (
     TriageAssessment,
     User,
 )
-from db.models import MedicineRecommendationRow as MedRow
+from db.models import Medication as MedRow
 from safety.redflags import detect_redflag
 from session_state import MedLinkUserData
 
