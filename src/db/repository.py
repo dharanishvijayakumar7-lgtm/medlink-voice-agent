@@ -136,6 +136,7 @@ async def _start_call(ud: MedLinkUserData) -> None:
                 detail={"channel": ud.channel, "returning": ud.is_returning_caller},
             )
         )
+        ud.call_row_ready = True
 
 
 async def _previous_summary(session, user_id: UUID) -> str | None:
@@ -161,7 +162,7 @@ async def record_turn(
     ud: MedLinkUserData, role: str, text: str, language: str | None = None
 ) -> None:
     """Store one conversational turn. Gated by :func:`may_store_content`."""
-    if not text or not may_store_content(ud):
+    if not text or not ud.call_row_ready or not may_store_content(ud):
         return
     await _safe(lambda: _record_turn(ud, role, text, language), "record_turn")
 
@@ -223,6 +224,9 @@ async def _record_consent(
 
 async def finish_call(ud: MedLinkUserData) -> None:
     """Write the outcome of the call. Safe to call exactly once, at shutdown."""
+    if not ud.call_row_ready:
+        logger.warning("no call row for %s - skipping finish_call", ud.call_id)
+        return
     await _safe(lambda: _finish_call(ud), "finish_call")
 
 

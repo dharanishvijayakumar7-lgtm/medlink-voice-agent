@@ -73,7 +73,10 @@ class Settings(BaseSettings):
     # LLM: language-agnostic reasoning (English prompts, multilingual I/O).
     # Gemini free tier via Google AI Studio (https://aistudio.google.com/apikey)
     # - no credit card, no Google Cloud billing account.
-    llm_model: str = Field(default="gemini-3.6-flash", alias="MEDLINK_LLM_MODEL")
+    # Flash-Lite, not Flash: the free tier allows far more requests per minute
+    # (Flash gave us 5 RPM, which a voice call blows through in seconds and then
+    # spends 40s in retry backoff), and it measured faster to first token.
+    llm_model: str = Field(default="gemini-flash-lite-latest", alias="MEDLINK_LLM_MODEL")
     google_api_key: str = Field(default="", alias="GOOGLE_API_KEY")
     # If no Gemini key is set, fall back to LiveKit Inference (bundled with the
     # LiveKit Cloud free tier) so `console` mode still runs.
