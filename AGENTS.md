@@ -51,3 +51,16 @@ Important: When modifying core agent behavior such as instructions, tool descrip
 ## LiveKit CLI
 
 Beyond documentation access, the LiveKit CLI (`lk`) supports other tasks such as managing SIP trunks for telephony-based agents. Run `lk --help` to explore available commands.
+
+
+
+
+## Git commits
+
+When committing or pushing changes, write a clear, understandable commit message that
+describes what changed and why — not a generic message like "update" or "fix". Use
+`git commit -m "message"`, where the message inside the quotes is a complete,
+readable sentence a human would write.
+
+Do not add Claude (or any AI) as a co-author or include any AI attribution trailers
+(e.g. `Co-Authored-By: Claude`) in commit messages or pull requests.
