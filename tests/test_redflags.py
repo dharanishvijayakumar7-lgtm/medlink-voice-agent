@@ -92,3 +92,118 @@ def test_advice_is_formatted_with_local_numbers():
 def test_normalize_preserves_indic_marks():
     # casefold + punctuation strip, but Devanagari matra intact
     assert normalize("सीने, में  दर्द!") == "सीने में दर्द"
+
+
+# --------------------------------------------------------- negation scope ---
+# Regression locks for an audit that found the negation guard suppressing real
+# emergencies. Each case below was a live false negative.
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        # Punctuation must end a clause: the "no" belongs to the fever, not the
+        # chest pain. Before the fix, normalize() destroyed the comma first.
+        "no fever, chest pain since morning",
+        "not vomiting, severe chest pain now",
+        "there is no one here, I have chest pain",
+        # A negator further back belongs to an earlier clause.
+        "I have no doubt this is chest pain",
+        # "na" is a Hindi discourse filler, "ondu" is Kannada for "one".
+        # Both were in the negator list and silently killed the match.
+        "mujhe na chest pain ho raha hai",
+        "ondu chest pain ide",
+    ],
+)
+def test_negation_does_not_leak_across_clauses(text):
+    """A negator must not suppress an emergency it does not belong to."""
+    hit = detect_redflag(text)
+    assert hit is not None and hit.is_emergency, f"emergency missed in {text!r}"
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "I have no chest pain",
+        "no difficulty breathing at all",
+        "I have not had any chest pain",
+    ],
+)
+def test_genuine_negation_still_suppresses(text):
+    """The guard must still do its job for a real denial."""
+    assert detect_redflag(text) is None
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "he is not breathing",
+        "she stopped breathing",
+        "the baby is not breathing",
+    ],
+)
+def test_not_breathing_is_an_emergency(text):
+    """The most literal phrasing of the most time-critical emergency.
+
+    The breathing lexicon had "cannot breathe" and "not able to breathe" but no
+    plain "not breathing", so this matched no term at all.
+    """
+    hit = detect_redflag(text)
+    assert hit is not None and hit.is_emergency
+    assert hit.category_id == "breathing"
+
+
+def test_term_still_matches_across_punctuation():
+    """Clause splitting must not stop a term matching across a comma."""
+    assert detect_redflag("chest, pain") is not None
+
+
+def test_indic_terms_survive_clause_splitting():
+    """Unicode terms are substring-matched; the sentinel must not break them."""
+    assert detect_redflag("मुझे साँस नहीं आ रही, बहुत तकलीफ है") is not None
+
+
+def test_emergency_categories_precede_urgent_ones():
+    """detect_redflag returns the FIRST match in file order, not the highest
+    priority, despite what its docstring says. That is only safe while every
+    `emergency` category is listed before every `urgent` one - otherwise an
+    urgent match would mask a genuine emergency in the same sentence.
+    """
+    import yaml
+
+    from config import DATA_DIR
+
+    cats = yaml.safe_load((DATA_DIR / "redflags.yaml").read_text(encoding="utf-8"))
+    priorities = [c.get("priority", "emergency") for c in cats["categories"]]
+    first_urgent = next(
+        (i for i, p in enumerate(priorities) if p != "emergency"), len(priorities)
+    )
+    assert all(p == "emergency" for p in priorities[:first_urgent])
+    assert all(p != "emergency" for p in priorities[first_urgent:]), (
+        "an emergency category is listed after an urgent one; file-order matching "
+        "would let the urgent flag mask it"
+    )
+
+
+@pytest.mark.parametrize(
+    "text,label",
+    [
+        ("எனக்கு கொஞ்சம் லைட்டா தலை வலிக்குது அப்புறம் செஸ்ட் பெயின் இருக்கு", "tamil live call"),
+        ("எனக்கு செஸ்ட் பெயின் இருக்கு", "tamil loanword"),
+        ("मुझे चेस्ट पेन हो रहा है", "hindi loanword"),
+        ("ఛెస్ట్ పెయిన్ ఉంది", "telugu loanword"),
+    ],
+)
+def test_english_loanwords_in_indic_script_fire(text, label):
+    """Callers mix English medical words into their own language, and Sarvam STT
+    transcribes them phonetically in the native script - so neither the plain
+    English terms nor the native-language terms matched. Found by a live Tamil
+    test call that said "செஸ்ட் பெயின்" and raised no red flag at all.
+    """
+    hit = detect_redflag(text)
+    assert hit is not None and hit.is_emergency, f"emergency missed: {label}"
+
+
+def test_indic_non_emergency_still_quiet():
+    """The loanword terms must not make every Indic utterance an emergency."""
+    assert detect_redflag("எனக்கு தலை வலி") is None

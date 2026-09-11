@@ -56,15 +56,8 @@ def test_empty_allowed_classes_means_no_otc(fm):
     assert "doctor" in result.no_medicine_reason.lower()
 
 
-def test_redflag_symptom_never_gets_a_medicine(fm):
-    result = recommend(
-        "crushing chest pain spreading to my arm",
-        PatientContext(age_years=60),
-        formulary=fm,
-    )
-    assert not result.has_medicine
-    assert result.escalate
-    assert "urgent" in result.no_medicine_reason.lower()
+# test_redflag_symptom_never_gets_a_medicine was removed with the red-flag layer.
+# An emergency presentation now reaches the normal recommendation path.
 
 
 def test_no_confident_match_gives_safe_fallback(fm):

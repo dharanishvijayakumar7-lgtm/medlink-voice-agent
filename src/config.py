@@ -34,10 +34,10 @@ SUPPORTED_LANGUAGES: dict[str, str] = {
 DEFAULT_LANGUAGE_CODE = "en-IN"
 
 
-# --- Sarvam AI model IDs (SPEECH ONLY) ---------------------------------------
-# STT and TTS run on Sarvam under one SARVAM_API_KEY. The reasoning LLM does NOT
-# - it has its own provider chain further down, so the stage that fires once per
-# caller turn is not competing with the audio path for the same rate limit.
+# --- Sarvam AI model IDs ------------------------------------------------------
+# STT, TTS and the LLM all run on Sarvam under one SARVAM_API_KEY. Gemini, Groq
+# and Cerebras were evaluated as LLM fallbacks and removed once Sarvam won on
+# both latency and Indic quality; there is no provider switching left.
 # Swap these while testing credit burn; each is also overridable from the env
 # via the MEDLINK_*_MODEL variables on Settings below.
 #
@@ -58,22 +58,6 @@ SARVAM_TTS_SPEAKER = "ritu"
 SARVAM_LLM_MODEL = "sarvam-105b-conversations"
 
 
-# --- Reasoning LLM: provider fallback chain ---------------------------------
-# Speech stays on Sarvam, but the LLM is the chattiest stage by far (one call per
-# caller turn, plus speculative ones), so it runs on its own providers to keep
-# Sarvam's rate limit for STT/TTS. Tried in this order; each falls through to the
-# next on a rate limit, an API error, or a slow first token. All three have a
-# free tier, so the chain costs nothing until it does not.
-# Gemini: Flash-Lite, pinned not aliased. Measured median time-to-first-token
-# over 3 warm samples each: 3.1-flash-lite 2.07s, 3.6-flash 3.87s,
-# 3.5-flash-lite 7.36s, flash-lite-latest 11.22s. Re-measure before changing.
-GEMINI_LLM_MODEL = "gemini-3.1-flash-lite"
-# Groq: fast inference, reliable tool calling - the usual second choice.
-GROQ_LLM_MODEL = "llama-3.3-70b-versatile"
-# Cerebras: last resort, also OpenAI-compatible.
-CEREBRAS_LLM_MODEL = "gpt-oss-120b"
-
-
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=str(PROJECT_ROOT / ".env.local"),
@@ -89,48 +73,38 @@ class Settings(BaseSettings):
     agent_name: str = Field(default="medlink-agent", alias="LIVEKIT_AGENT_NAME")
 
     # --- Speech / LLM ---
-    # SPEECH: Sarvam STT + TTS under a single SARVAM_API_KEY, billed against
-    # prepaid credits (not a free tier - see `free_tier_only` below). Sarvam was
-    # chosen for Indic quality: LiveKit Inference's Cartesia voice was the
-    # recurring complaint, and Sarvam's Bulbul covers all six MedLink languages
-    # natively.
-    # LLM: a separate Gemini -> Groq -> Cerebras chain (see below and
-    # llm_factory) - one vendor for everything meant one rate limit for
-    # everything, and the LLM is the stage that fires most.
-    # Bhashini (free government ULCA/ONDC APIs) remains available as a
-    # zero-cost fallback: set this to "bhashini" and fill the BHASHINI_* keys.
-    # One of: sarvam | bhashini | google | azure (the last two cost money and
-    # have no wiring here - they are refused by the spend guard).
-    speech_provider: str = Field(default="sarvam", alias="MEDLINK_SPEECH_PROVIDER")
+    # All three stages run on Sarvam under a single SARVAM_API_KEY, billed
+    # against prepaid credits. Chosen for Indic quality and latency: LiveKit
+    # Inference's Cartesia voice was the recurring complaint, Bulbul covers all
+    # six MedLink languages natively, and Sarvam's LLM measured fastest to first
+    # token of everything tried.
     # BCP-47 codes MedLink recognizes; passed to the STT as a multi-language config.
     stt_language_codes: list[str] = Field(
         default=["en-IN", "hi-IN", "ta-IN", "te-IN", "kn-IN", "ml-IN"]
     )
-    # Optional per-language STT provider override, e.g. {"ta-IN": "bhashini"}.
-    stt_language_overrides: dict[str, str] = Field(default_factory=dict)
     # 8000 Hz mono for SIP/telephony; 22050 for web frontends. Sarvam's realtime
     # STT accepts only 8000 or 16000; its TTS is resampled by LiveKit either way.
     audio_sample_rate: int = Field(default=8000, alias="MEDLINK_AUDIO_SAMPLE_RATE")
-    # LLM: language-agnostic reasoning (English prompts, multilingual I/O).
-    # Providers are tried in order; a missing key simply drops that link out of
-    # the chain, so a single key is enough to run.
-    gemini_api_key: str = Field(default="", alias="GEMINI_API_KEY")
-    gemini_model: str = Field(default=GEMINI_LLM_MODEL, alias="MEDLINK_GEMINI_MODEL")
-    groq_api_key: str = Field(default="", alias="GROQ_API_KEY")
-    groq_model: str = Field(default=GROQ_LLM_MODEL, alias="MEDLINK_GROQ_MODEL")
-    cerebras_api_key: str = Field(default="", alias="CEREBRAS_API_KEY")
-    cerebras_model: str = Field(
-        default=CEREBRAS_LLM_MODEL, alias="MEDLINK_CEREBRAS_MODEL"
+
+    # --- Turn latency ---
+    # How long to wait after the caller stops speaking before replying. LiveKit
+    # defaults to min 0.5 / max 3.0; a live call spent 2.5s here on a single turn
+    # because the end-of-turn model was unsure (p=0.39 against a 0.56 threshold)
+    # and drifted toward the max. Lowering the ceiling is the single biggest
+    # latency win available. Raise `endpointing_max_delay` if callers who pause
+    # mid-sentence start getting cut off - rural callers often speak slowly.
+    endpointing_min_delay: float = Field(
+        default=0.3, alias="MEDLINK_ENDPOINTING_MIN_DELAY"
     )
-    # Seconds to wait for a provider's first token before giving up on it and
-    # moving down the chain. A voice call cannot absorb much more than this.
-    llm_attempt_timeout: float = Field(
-        default=5.0, alias="MEDLINK_LLM_ATTEMPT_TIMEOUT"
+    endpointing_max_delay: float = Field(
+        default=1.8, alias="MEDLINK_ENDPOINTING_MAX_DELAY"
     )
-    # Sarvam's own LLM, kept for the `sarvam` entry in the chain below.
+    # Silence Sarvam's own VAD waits for before closing an utterance. Its default
+    # is 1000ms, which is charged on top of the endpointing delay above.
+    stt_min_silence_ms: int = Field(default=600, alias="MEDLINK_STT_MIN_SILENCE_MS")
     llm_model: str = Field(default=SARVAM_LLM_MODEL, alias="MEDLINK_LLM_MODEL")
 
-    # --- Sarvam (primary provider: STT + LLM + TTS, one key) ---
+    # --- Sarvam: the whole pipeline, one key ---
     sarvam_api_key: str = Field(default="", alias="SARVAM_API_KEY")
     sarvam_stt_model: str = Field(
         default=SARVAM_STT_MODEL, alias="MEDLINK_SARVAM_STT_MODEL"
@@ -144,16 +118,6 @@ class Settings(BaseSettings):
     sarvam_tts_speaker: str = Field(
         default=SARVAM_TTS_SPEAKER, alias="MEDLINK_SARVAM_TTS_SPEAKER"
     )
-
-    # --- Paid providers with no wiring: refused by the spend guard ---
-    azure_speech_key: str = Field(default="", alias="AZURE_SPEECH_KEY")
-    azure_speech_region: str = Field(default="", alias="AZURE_SPEECH_REGION")
-
-    # --- Bhashini (DEFAULT speech provider - free; custom wrapper, no LiveKit plugin) ---
-    bhashini_api_key: str = Field(default="", alias="BHASHINI_API_KEY")
-    bhashini_user_id: str = Field(default="", alias="BHASHINI_USER_ID")
-    bhashini_pipeline_id: str = Field(default="", alias="BHASHINI_PIPELINE_ID")
-    bhashini_auth_token: str = Field(default="", alias="BHASHINI_AUTH_TOKEN")
 
     # --- Persistence ---
     database_url: str = Field(default="", alias="DATABASE_URL")
@@ -193,17 +157,12 @@ class Settings(BaseSettings):
     # LOCAL DEVELOPMENT ONLY, so there is data to inspect before the consent
     # flow is wired. Must stay True in production.
     require_consent: bool = Field(default=True, alias="MEDLINK_REQUIRE_CONSENT")
-    # Speculative LLM calls before the caller's turn is confirmed: lower latency,
-    # but discarded calls still count against the provider's rate limit. Off by
-    # default - see the note in agent.py.
+    # Speculative LLM calls before the caller's turn is confirmed. ON: the reply
+    # is already streaming when the turn commits, which is the biggest remaining
+    # latency win. Discarded calls do still bill - turn off if spend shows.
     preemptive_generation: bool = Field(
-        default=False, alias="MEDLINK_PREEMPTIVE_GENERATION"
+        default=True, alias="MEDLINK_PREEMPTIVE_GENERATION"
     )
-    # Spend guard: refuse to construct a provider we have not deliberately
-    # funded. Sarvam is exempt - it runs on prepaid credits we chose to buy, and
-    # is the whole pipeline now. This still blocks google/azure, which have no
-    # wiring and no budget. Keep it True.
-    free_tier_only: bool = Field(default=True, alias="MEDLINK_FREE_TIER_ONLY")
 
     # --- Data files ---
     formulary_path: Path = Field(default=DATA_DIR / "formulary.json")

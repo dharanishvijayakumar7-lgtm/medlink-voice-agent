@@ -27,9 +27,29 @@ GREETINGS: dict[str, str] = {
         "Telugu, Kannada, Malayalam or English. Please tell me, what is troubling you?"
     ),
     "hi-IN": (
-        "Namaste, main MedLink hoon, ek swasthya helpline. Main doctor nahi hoon, "
-        "lekin main aapki baat sunkar bata sakta hoon ki aage kya karna chahiye. "
-        "Bataiye, aapko kya takleef ho rahi hai?"
+        "नमस्ते, मैं मेडलिंक हूँ, एक स्वास्थ्य हेल्पलाइन। मैं डॉक्टर नहीं हूँ, "
+        "लेकिन आपकी बात सुनकर बता सकता हूँ कि आगे क्या करना चाहिए। "
+        "बताइए, आपको क्या तकलीफ हो रही है?"
+    ),
+    "ta-IN": (
+        "வணக்கம், நான் மெட்லிங்க், ஒரு சுகாதார உதவி எண். நான் மருத்துவர் அல்ல, "
+        "ஆனால் நீங்கள் சொல்வதைக் கேட்டு அடுத்து என்ன செய்வது என்று சொல்ல முடியும். "
+        "சொல்லுங்கள், உங்களுக்கு என்ன பிரச்சினை?"
+    ),
+    "te-IN": (
+        "నమస్కారం, నేను మెడ్‌లింక్, ఒక ఆరోగ్య సహాయ లైన్. నేను వైద్యుడిని కాదు, "
+        "కానీ మీరు చెప్పేది విని తర్వాత ఏమి చేయాలో చెప్పగలను. "
+        "చెప్పండి, మీకు ఏమి ఇబ్బంది?"
+    ),
+    "kn-IN": (
+        "ನಮಸ್ಕಾರ, ನಾನು ಮೆಡ್‌ಲಿಂಕ್, ಒಂದು ಆರೋಗ್ಯ ಸಹಾಯವಾಣಿ. ನಾನು ವೈದ್ಯನಲ್ಲ, "
+        "ಆದರೆ ನೀವು ಹೇಳುವುದನ್ನು ಕೇಳಿ ಮುಂದೆ ಏನು ಮಾಡಬೇಕೆಂದು ಹೇಳಬಲ್ಲೆ. "
+        "ಹೇಳಿ, ನಿಮಗೆ ಏನು ತೊಂದರೆ?"
+    ),
+    "ml-IN": (
+        "നമസ്കാരം, ഞാൻ മെഡ്‌ലിങ്ക്, ഒരു ആരോഗ്യ ഹെൽപ്പ്‌ലൈൻ. ഞാൻ ഡോക്ടറല്ല, "
+        "പക്ഷേ നിങ്ങൾ പറയുന്നത് കേട്ട് അടുത്തത് എന്ത് ചെയ്യണമെന്ന് പറയാൻ കഴിയും. "
+        "പറയൂ, നിങ്ങൾക്ക് എന്താണ് ബുദ്ധിമുട്ട്?"
     ),
 }
 
@@ -61,6 +81,17 @@ class IntakeAgent(MedLinkAgent):
     async def on_enter(self) -> None:
         data: MedLinkUserData = self.data
         greeting = GREETINGS.get(data.language) or GREETINGS[DEFAULT_LANGUAGE_CODE]
+        # A returning caller's stored language means the greeting is not English,
+        # so the voice has to be retargeted before it speaks - otherwise Bulbul
+        # reads Tamil script with English phonetics. New callers stay on the
+        # default until their first utterance is transcribed, at which point
+        # agent.py's `user_input_transcribed` hook takes over.
+        tts = self.session.tts
+        if data.language != DEFAULT_LANGUAGE_CODE and hasattr(tts, "update_options"):
+            try:
+                tts.update_options(target_language_code=data.language)
+            except Exception:
+                logger.exception("could not set greeting language %s", data.language)
         # say() not generate_reply(): deterministic wording, no LLM round trip.
         await self.session.say(greeting)
 
