@@ -9,29 +9,21 @@ description = "Simple voice AI assistant built with LiveKit Agents for Python"
 requires-python = ">=3.10, <3.15"
 
 dependencies = [
-    # `google` extra = the Gemini LLM (AI Studio key), primary link in the
-    # provider chain. >=1.8.1 is the floor livekit-plugins-sarvam requires.
-    "livekit-agents[google,silero]>=1.8.1",
+    # >=1.8.1 is the floor livekit-plugins-sarvam requires.
+    "livekit-agents>=1.8.1",
     "livekit-plugins-ai-coustics~=0.2",
-    # Sarvam AI: STT + TTS on one SARVAM_API_KEY. Pulls livekit-agents[codecs,
-    # openai] transitively - which is also what backs Cerebras below.
+    # Sarvam AI: STT + TTS + LLM, the entire pipeline on one SARVAM_API_KEY.
     "livekit-plugins-sarvam>=1.8.1",
-    # Groq: second link in the LLM fallback chain. Cerebras is third and needs no
-    # dependency of its own - it rides the openai plugin Sarvam already pulls.
-    "livekit-plugins-groq>=1.8.1",
     "python-dotenv",
     "pydantic-settings>=2.5",
     "pyyaml>=6.0",
     "rank-bm25>=0.2.2",
-    "tenacity>=9.0",
-    "httpx>=0.28",
     # Persistence. Relational only - triage/formulary retrieval is lexical,
     # so there is no vector store and no embedding model to download.
     "sqlalchemy[asyncio]>=2.0.36",
     "asyncpg>=0.30",
     "alembic>=1.14",
     "cryptography>=44.0",
-    "livekit-plugins-groq>=1.8.1",
 ]
 
 [dependency-groups]

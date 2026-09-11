@@ -29,7 +29,7 @@ from sqlalchemy import delete, desc, select
 
 from config import settings
 from db import session as db_session
-from db.crypto import encrypt, hash_phone
+from db.crypto import encrypt, hash_phone, is_usable_phone
 from db.models import (
     SOURCE_AI_RECOMMENDED,
     SOURCE_PATIENT_REPORTED,
@@ -97,7 +97,10 @@ async def _start_call(ud: MedLinkUserData) -> None:
     async with db_session.session_scope() as session:
         user: User | None = None
 
-        if ud.caller_phone:
+        # A withheld caller ID ("anonymous", "unknown", "+") is not an identity.
+        # Linking on it merged every such caller into one patient record and
+        # replayed the previous caller's summary to the next one.
+        if is_usable_phone(ud.caller_phone):
             phone_hash = hash_phone(ud.caller_phone)
             user = (
                 await session.execute(select(User).where(User.phone_hash == phone_hash))
@@ -368,6 +371,10 @@ async def _finish_call(ud: MedLinkUserData) -> None:
 
 async def delete_caller_data(phone: str) -> int:
     """Erase everything for one caller. Returns the number of calls removed."""
+    if not is_usable_phone(phone):
+        # Never let a junk or withheld value select a record to erase.
+        logger.warning("refusing erasure for an unusable caller ID")
+        return 0
     result = await _safe(lambda: _delete_caller_data(phone), "delete_caller_data")
     return result or 0
 

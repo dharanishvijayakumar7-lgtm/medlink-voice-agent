@@ -47,15 +47,38 @@ def normalise_phone(phone: str) -> str:
     return cleaned
 
 
+# Shortest digit count we will treat as a real subscriber number. SIP sends
+# literals like "anonymous", "unknown" or "restricted" when the caller withholds
+# their number; those strip to "" and, before this guard, every one of them
+# hashed to the same value - so every withheld-ID caller shared a single patient
+# record and was read back the previous caller's history as their own.
+MIN_PHONE_DIGITS = 7
+
+
+def is_usable_phone(phone: str | None) -> bool:
+    """True if `phone` carries enough digits to identify one subscriber."""
+    return len(normalise_phone(phone or "")) >= MIN_PHONE_DIGITS
+
+
 def hash_phone(phone: str) -> str:
-    """Deterministic, non-reversible lookup key for a phone number."""
+    """Deterministic, non-reversible lookup key for a phone number.
+
+    Refuses anything that is not a usable number rather than returning a shared
+    hash: a collision here silently merges two patients' records.
+    """
     key = settings.phone_hash_key
     if not key:
         raise CryptoNotConfiguredError(
             "MEDLINK_PHONE_HASH_KEY is required when MEDLINK_ENABLE_DB=true. "
             "Set it to any long random string."
         )
-    return hmac.new(key.encode(), normalise_phone(phone).encode(), sha256).hexdigest()
+    canonical = normalise_phone(phone)
+    if len(canonical) < MIN_PHONE_DIGITS:
+        raise ValueError(
+            f"refusing to hash an unusable caller ID ({phone!r}): it normalises to "
+            f"{canonical!r}. Guard with is_usable_phone() before calling."
+        )
+    return hmac.new(key.encode(), canonical.encode(), sha256).hexdigest()
 
 
 @lru_cache(maxsize=1)

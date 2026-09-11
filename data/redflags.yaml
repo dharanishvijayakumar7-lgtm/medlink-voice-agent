@@ -50,6 +50,19 @@ categories:
       - "ఛాతీ నొప్పి"
       - "ಎದೆ ನೋವು"               # Kannada: chest pain
       - "നെഞ്ചു വേദന"            # Malayalam: chest pain
+      # English medical loanwords written in Indic script. Rural callers mix
+      # English terms into their own language constantly, and Sarvam's STT
+      # transcribes them phonetically in the native script - so the plain
+      # English terms above never match. A live Tamil test call said
+      # "செஸ்ட் பெயின்" and no red flag fired at all.
+      - "செஸ்ட் பெயின்"           # Tamil: "chest pain"
+      - "செஸ்ட் பைன்"
+      - "ஹார்ட் அட்டாக்"          # Tamil: "heart attack"
+      - "चेस्ट पेन"               # Hindi: "chest pain"
+      - "हार्ट अटैक"              # Hindi: "heart attack"
+      - "ఛెస్ట్ పెయిన్"           # Telugu: "chest pain"
+      - "ಚೆಸ್ಟ್ ಪೇನ್"            # Kannada: "chest pain"
+      - "ചെസ്റ്റ് പെയിൻ"          # Malayalam: "chest pain"
 
   - id: breathing
     priority: emergency
@@ -62,6 +75,12 @@ categories:
       - can not breathe
       - cant breathe
       - not able to breathe
+      - unable to breathe
+      # The most literal phrasing of the most time-critical emergency was
+      # missing entirely: "he is not breathing" matched no term at all.
+      - not breathing
+      - stopped breathing
+      - no breathing
       - difficulty breathing
       - difficult to breathe
       - hard to breathe
@@ -127,6 +146,13 @@ categories:
       - won't stop bleeding
       - can't stop the bleeding
       - blood is not stopping
+      - bleeding is not stopping
+      - bleeding not stopping
+      - blood not stopping
+      - bleeding won't stop
+      - blood won't stop
+      - blood is coming out
+      - blood coming out
       - vomiting blood
       - coughing up blood
       - blood in vomit

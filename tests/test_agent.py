@@ -78,3 +78,39 @@ def test_recommend_prompt_forbids_prescription_drugs():
     instructions = RecommendAgent().instructions.lower()
     assert "antibiotic" in instructions
     assert "prescription" in instructions
+
+
+# ----------------------------------------------------- multilingual output ---
+
+
+def test_every_supported_language_has_a_greeting():
+    """The caller hears the greeting before any LLM runs, so a missing language
+    silently falls back to English. Only en-IN and hi-IN existed, which is part
+    of why the agent appeared to speak just Hindi and English.
+    """
+    from config import SUPPORTED_LANGUAGES
+    from workflows.intake import GREETINGS
+
+    missing = sorted(set(SUPPORTED_LANGUAGES.values()) - set(GREETINGS))
+    assert not missing, f"no greeting for {missing}"
+
+
+def test_greetings_are_in_native_script():
+    """Sarvam's Bulbul expects native script; romanised text is mispronounced."""
+    from workflows.intake import GREETINGS
+
+    for code, text in GREETINGS.items():
+        if code == "en-IN":
+            continue
+        assert any(ord(ch) > 0x0900 for ch in text), f"{code} greeting is not native script"
+
+
+def test_sarvam_tts_can_retarget_every_supported_language():
+    """The runtime language switch depends on this; all six must be accepted."""
+    from livekit.plugins.sarvam.tts import SarvamTTSLanguages
+
+    from config import SUPPORTED_LANGUAGES
+
+    allowed = set(SarvamTTSLanguages.__args__)
+    missing = sorted(set(SUPPORTED_LANGUAGES.values()) - allowed)
+    assert not missing, f"Sarvam TTS cannot speak {missing}"

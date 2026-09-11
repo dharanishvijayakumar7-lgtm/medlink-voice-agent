@@ -66,7 +66,7 @@ Four independent layers have to fail before a caller hears something unsafe.
 | Bhashini speech wrapper (better Indic quality) behind a one-setting switch | ✅ *(awaiting API key)* |
 | Telephony (SIP inbound), doctor escalation automation, SMS | ⏳ next |
 
-**228 tests**, `ruff` clean.
+**231 tests**, `ruff` clean.
 
 ## Everything runs on free infrastructure
 
@@ -78,7 +78,7 @@ bills.
 |---|---|---|
 | Speech (STT/TTS) | **Sarvam AI** — `saaras:v3-realtime` STT and `bulbul:v3` TTS, both native WebSocket streaming. Built for Indian languages, so all six MedLink languages are first-class. **Bhashini** (Government of India ULCA/Dhruva) stays wired as the free fallback. | prepaid credits |
 | Voice-activity detection | **Silero**, on-device | free |
-| Reasoning | **Fallback chain: Gemini → Groq → Cerebras.** `gemini-3.1-flash-lite` primary; falls through on a rate limit, API error, or slow first token. Kept off Sarvam so the chattiest stage does not eat the speech rate limit. | free tiers |
+| Reasoning | **Fallback chain: Gemini → Groq → Cerebras → Sarvam.** `gemini-3.1-flash-lite` primary; falls through on a rate limit, API error, or slow first token. The three free tiers carry the load; Sarvam is the floor that always answers. | free tiers + credits |
 | Transport, turn detection, SIP | **LiveKit Cloud** free tier | free |
 | Retrieval | lexical BM25 + curated multilingual aliases — no embedding model, no vector DB | free |
 | Database | self-hosted PostgreSQL | free |
@@ -113,7 +113,7 @@ a provider rate-limits, errors, or takes longer than
 `MEDLINK_LLM_ATTEMPT_TIMEOUT` (5s) to produce a first token.
 
 - `SARVAM_API_KEY` — required, speech only (STT + TTS).
-- `GEMINI_API_KEY` / `GROQ_API_KEY` / `CEREBRAS_API_KEY` — the LLM chain, tried in that order. **At least one is required**; a provider with no key is dropped from the chain at startup, so one is enough to run. All three have a free tier.
+- `GEMINI_API_KEY` / `GROQ_API_KEY` / `CEREBRAS_API_KEY` — the LLM chain, tried in that order, all free tiers. A provider with no key is dropped from the chain at startup. `SARVAM_API_KEY` is appended automatically as the last link, so the chain always has a floor even with none of these set.
 
 Model IDs are named constants at the top of [`src/config.py`](src/config.py); override any of them with the `MEDLINK_*` variables in `.env.example`.
 - `BHASHINI_API_KEY` / `BHASHINI_USER_ID` / `BHASHINI_PIPELINE_ID` — from [bhashini.gov.in](https://bhashini.gov.in); then set `MEDLINK_SPEECH_PROVIDER=bhashini` for stronger Tamil/Telugu/Kannada/Malayalam.

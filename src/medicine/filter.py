@@ -21,7 +21,6 @@ from dataclasses import dataclass, field
 
 from config import settings
 from medicine.formulary import Formulary, FormularyEntry, get_formulary
-from safety.redflags import detect_redflag
 
 _STOPWORDS = {
     "known",
@@ -214,20 +213,9 @@ def recommend(
     fm = formulary or get_formulary()
     disclaimer = settings.disclaimer
 
-    # Defense in depth: never return a medicine for an emergency presentation,
-    # even if this function is called directly without going through triage.
-    redflag = detect_redflag(symptom)
-    if redflag is not None and redflag.is_emergency:
-        return RecommendationResult(
-            symptom=symptom,
-            recommendations=[],
-            rejected=[],
-            no_medicine_reason=(
-                "This needs urgent medical care, not an over-the-counter medicine."
-            ),
-            escalate=True,
-            disclaimer=disclaimer,
-        )
+    # A red-flag check used to sit here so an emergency presentation could never
+    # be answered with an over-the-counter medicine. Removed on request along
+    # with the rest of the red-flag layer.
 
     # Triage KB explicitly says no OTC medicine is appropriate for this presentation.
     if allowed_classes is not None and len(allowed_classes) == 0:

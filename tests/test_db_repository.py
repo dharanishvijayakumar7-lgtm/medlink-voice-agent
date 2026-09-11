@@ -469,3 +469,62 @@ async def test_database_failure_does_not_break_the_call(monkeypatch):
     assert ud.user_id is None  # nothing was loaded, call continues regardless
 
     db_session.reset_for_tests()
+
+
+# ------------------------------------------------------ identity linking ---
+# Regression locks from an audit: a withheld SIP caller ID ("anonymous",
+# "unknown", "+") normalised to "" and hashed to one shared value, so every
+# such caller collapsed into a single patient record and the next one was
+# greeted as a returning caller and read back the previous caller's summary.
+
+
+@pytest.mark.parametrize(
+    "withheld",
+    ["anonymous", "Anonymous", "unknown", "restricted", "private", "+", "abc", "", "  "],
+)
+def test_withheld_caller_ids_are_not_identities(withheld):
+    from db.crypto import is_usable_phone
+
+    assert not is_usable_phone(withheld)
+
+
+@pytest.mark.parametrize("withheld", ["anonymous", "unknown", "+", ""])
+def test_hash_phone_refuses_unusable_ids(monkeypatch, withheld):
+    """Must raise rather than return a hash two callers could share."""
+    from config import settings as cfg
+    from db.crypto import hash_phone
+
+    monkeypatch.setattr(cfg, "phone_hash_key", "k" * 32)
+    with pytest.raises(ValueError, match="unusable caller ID"):
+        hash_phone(withheld)
+
+
+def test_real_numbers_still_hash_to_one_identity(monkeypatch):
+    """The formats a real Indian SIP caller arrives in must still converge."""
+    from config import settings as cfg
+    from db.crypto import hash_phone, is_usable_phone
+
+    monkeypatch.setattr(cfg, "phone_hash_key", "k" * 32)
+    variants = [
+        "+919876543210",
+        "919876543210",
+        "09876543210",
+        "9876543210",
+        "+91 98765 43210",
+        "+91-98765-43210",
+    ]
+    assert all(is_usable_phone(v) for v in variants)
+    assert len({hash_phone(v) for v in variants}) == 1
+
+
+async def test_anonymous_caller_is_not_linked_to_a_user(db):
+    """No user row, so no returning-caller recall across two withheld callers."""
+    first = MedLinkUserData(caller_phone="anonymous", channel="pstn")
+    await repo.start_call(first)
+    second = MedLinkUserData(caller_phone="anonymous", channel="pstn")
+    await repo.start_call(second)
+
+    assert first.user_id is None
+    assert second.user_id is None
+    assert second.is_returning_caller is False
+    assert second.previous_summary is None

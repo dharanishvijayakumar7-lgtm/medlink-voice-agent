@@ -1,10 +1,10 @@
 """Shared base for every MedLink workflow agent.
 
-Its one critical job is the **red-flag safety hook**: `on_user_turn_completed`
-runs on every transcribed user turn *before* the LLM sees it. If a deterministic
-emergency phrase matches, the LLM's reply is suppressed entirely
-(`StopResponse`) and the session is force-handed to the escalation agent. The
-model never gets the chance to talk a caller out of an emergency.
+Carries the shared voice guidance, the per-turn persistence hook, the
+prompt-injection guard, and the prescription-drug output guard.
+
+The deterministic emergency red-flag hook that used to run here was removed on
+request; emergency handling is the model's judgement now.
 """
 
 from __future__ import annotations
@@ -13,12 +13,11 @@ import logging
 from collections.abc import AsyncIterable
 
 from livekit import rtc
-from livekit.agents import Agent, ChatContext, ChatMessage, ModelSettings, StopResponse
+from livekit.agents import Agent, ChatContext, ChatMessage, ModelSettings
 
 from config import settings
 from db import repository as history
 from safety.guardrails import OutputGuard, detect_prompt_injection
-from safety.redflags import detect_redflag
 from session_state import MedLinkUserData
 
 logger = logging.getLogger("medlink.workflow")
@@ -53,30 +52,12 @@ class MedLinkAgent(Agent):
             history.record_turn(self.data, "user", text, self.data.language)
         )
 
-        # --- deterministic emergency guard (runs before the LLM) ---
-        hit = detect_redflag(text)
-        if hit is not None and hit.is_emergency and not self.data.emergency_handled:
-            logger.warning(
-                "red flag detected",
-                extra={
-                    "call_id": self.data.call_id,
-                    "category": hit.category_id,
-                    "matched": hit.matched_term,
-                },
-            )
-            self.data.red_flag = hit
-            self.data.emergency_handled = True
-
-            # Import here to avoid a circular import at module load.
-            from workflows.escalate import EscalateAgent
-
-            self.session.update_agent(EscalateAgent(chat_ctx=self.chat_ctx))
-            # Suppress this agent's reply; EscalateAgent.on_enter speaks instead.
-            raise StopResponse()
-
-        if hit is not None and self.data.red_flag is None:
-            # Non-emergency (urgent) flag: record it, let the conversation continue.
-            self.data.red_flag = hit
+        # The deterministic emergency red-flag guard used to run here, before the
+        # LLM, and force-hand the session to EscalateAgent. Removed on request.
+        # Emergency handling is now entirely the model's judgement.
+        # `userdata.red_flag` stays None, so the routing/persistence branches that
+        # read it are inert rather than removed - restoring this means putting the
+        # detect_redflag() call back, nothing else.
 
         # --- prompt-injection / role-override guard ---
         # Narrow by design: "can I take an antibiotic?" is a real clinical
