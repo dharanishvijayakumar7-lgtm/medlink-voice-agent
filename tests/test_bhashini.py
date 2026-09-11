@@ -10,13 +10,15 @@ import base64
 
 import httpx
 import pytest
-from livekit.agents import APIStatusError, inference, stt
+from livekit.agents import APIStatusError, stt
+from livekit.plugins import sarvam
 
 from config import settings
 from speech import bhashini as bh
 from speech.providers import (
     PAID_PROVIDERS,
     PaidProviderBlockedError,
+    SarvamNotConfiguredError,
     build_stt,
     build_tts,
 )
@@ -278,15 +280,17 @@ def test_missing_credentials_fail_loudly(monkeypatch):
 # ------------------------------------------------------- provider selection ---
 
 
-def test_missing_key_degrades_to_livekit_inference(monkeypatch):
+def test_missing_key_degrades_to_sarvam(monkeypatch):
+    """Bhashini selected but unconfigured falls back to Sarvam, not to nothing."""
     monkeypatch.setattr(settings, "speech_provider", "bhashini")
     monkeypatch.setattr(settings, "bhashini_api_key", "")
+    monkeypatch.setattr(settings, "sarvam_api_key", "test-key")
     # Must not raise - the agent has to start regardless.
     assert build_stt() is not None
     assert build_tts() is not None
 
 
-@pytest.mark.parametrize("provider", ["google", "azure", "sarvam"])
+@pytest.mark.parametrize("provider", ["google", "azure"])
 def test_paid_providers_are_refused_under_free_tier_only(monkeypatch, provider):
     monkeypatch.setattr(settings, "speech_provider", provider)
     monkeypatch.setattr(settings, "free_tier_only", True)
@@ -301,14 +305,35 @@ def test_bhashini_is_never_treated_as_a_paid_provider():
     assert "bhashini" not in PAID_PROVIDERS
 
 
-def test_livekit_is_never_treated_as_paid():
-    """The default free provider must never be caught by the spend guard."""
-    assert "livekit" not in PAID_PROVIDERS
+def test_sarvam_is_never_treated_as_paid():
+    """Sarvam is prepaid and is the whole pipeline - the guard must not block it."""
+    assert "sarvam" not in PAID_PROVIDERS
 
 
-def test_livekit_is_the_explicit_free_default(monkeypatch):
-    """speech_provider=livekit builds LiveKit Inference STT/TTS, no spend guard."""
-    monkeypatch.setattr(settings, "speech_provider", "livekit")
+def test_sarvam_is_the_explicit_default(monkeypatch):
+    """speech_provider=sarvam builds Sarvam STT/TTS, no spend guard."""
+    monkeypatch.setattr(settings, "speech_provider", "sarvam")
     monkeypatch.setattr(settings, "free_tier_only", True)
-    assert isinstance(build_stt(), inference.STT)
-    assert isinstance(build_tts(), inference.TTS)
+    monkeypatch.setattr(settings, "sarvam_api_key", "test-key")
+    assert isinstance(build_stt(), sarvam.STTRealtime)
+    assert isinstance(build_tts(), sarvam.TTS)
+
+
+def test_sarvam_stt_streams_natively(monkeypatch):
+    """No StreamAdapter on the Sarvam path - it is a native WebSocket stream."""
+    monkeypatch.setattr(settings, "speech_provider", "sarvam")
+    monkeypatch.setattr(settings, "sarvam_api_key", "test-key")
+    built = build_stt()
+    assert not isinstance(built, stt.StreamAdapter)
+    assert built.capabilities.streaming is True
+    assert build_tts().capabilities.streaming is True
+
+
+def test_missing_sarvam_key_fails_loudly(monkeypatch):
+    """No silent downgrade to another vendor when the key is absent."""
+    monkeypatch.setattr(settings, "speech_provider", "sarvam")
+    monkeypatch.setattr(settings, "sarvam_api_key", "")
+    with pytest.raises(SarvamNotConfiguredError, match="SARVAM_API_KEY"):
+        build_stt()
+    with pytest.raises(SarvamNotConfiguredError, match="SARVAM_API_KEY"):
+        build_tts()

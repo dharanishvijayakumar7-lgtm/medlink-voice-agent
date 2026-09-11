@@ -24,7 +24,17 @@ from livekit.agents import (
 # `from livekit.plugins import ...` inside llm_factory / speech.providers must
 # find it already registered. Safe to import unconditionally - all are declared
 # deps and registration is cheap.
-from livekit.plugins import ai_coustics, google, silero  # noqa: F401
+# `sarvam` serves STT and TTS off SARVAM_API_KEY. The reasoning LLM runs on its
+# own fallback chain (Gemini -> Groq -> Cerebras, see llm_factory) so the
+# chattiest stage does not eat Sarvam's rate limit; `openai` backs Cerebras.
+from livekit.plugins import (  # noqa: F401
+    ai_coustics,
+    google,
+    groq,
+    openai,
+    sarvam,
+    silero,
+)
 
 from config import settings
 from db import repository as history
@@ -88,11 +98,13 @@ async def medlink_session(ctx: JobContext):
             interruption={"mode": "adaptive"},
             # Preemptive generation starts a speculative LLM call before the
             # caller's turn is confirmed, then throws it away if they keep
-            # talking. Those wasted calls still count against the Gemini free
-            # tier, and hitting the limit costs ~40s of retry backoff - far
-            # worse than the fraction of a second it saves. Re-enable it on a
-            # paid key.
-            preemptive_generation={"enabled": False},
+            # talking. Off by default: the wasted calls are the fastest way to
+            # burn a free-tier rate limit, which is the thing the provider chain
+            # exists to avoid. The chain now absorbs a limit by falling through
+            # to Groq rather than stalling ~40s in retry backoff, so this is
+            # safe to flip on if the quota turns out to have room -
+            # MEDLINK_PREEMPTIVE_GENERATION=true.
+            preemptive_generation={"enabled": settings.preemptive_generation},
         ),
     )
 

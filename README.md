@@ -62,11 +62,11 @@ Four independent layers have to fail before a caller hears something unsafe.
 | OTC medicine safety pipeline + curated formulary | ✅ |
 | Output guardrail (prescription-drug denylist) + prompt-injection guard | ✅ |
 | PostgreSQL call history, returning-caller recall, consent gating, erasure | ✅ |
-| Speech: LiveKit Inference (Deepgram + Cartesia) on the free tier — **active** | ✅ |
+| Speech: Sarvam AI (Saaras STT + Bulbul TTS), both streaming — **active** | ✅ |
 | Bhashini speech wrapper (better Indic quality) behind a one-setting switch | ✅ *(awaiting API key)* |
 | Telephony (SIP inbound), doctor escalation automation, SMS | ⏳ next |
 
-**211 tests**, `ruff` clean.
+**228 tests**, `ruff` clean.
 
 ## Everything runs on free infrastructure
 
@@ -76,9 +76,9 @@ bills.
 
 | Need | Choice | Cost |
 |---|---|---|
-| Speech (STT/TTS) | **LiveKit Inference** (Deepgram + Cartesia), bundled with the LiveKit Cloud free tier. **Bhashini** — Government of India ULCA/Dhruva — is the planned upgrade for better Tamil/Telugu/Kannada/Malayalam; until then those languages are weak. | free |
+| Speech (STT/TTS) | **Sarvam AI** — `saaras:v3-realtime` STT and `bulbul:v3` TTS, both native WebSocket streaming. Built for Indian languages, so all six MedLink languages are first-class. **Bhashini** (Government of India ULCA/Dhruva) stays wired as the free fallback. | prepaid credits |
 | Voice-activity detection | **Silero**, on-device | free |
-| Reasoning | **Gemini free tier** via Google AI Studio (*not* billed Google Cloud — `vertexai=False` is enforced) | free |
+| Reasoning | **Fallback chain: Gemini → Groq → Cerebras.** `gemini-3.1-flash-lite` primary; falls through on a rate limit, API error, or slow first token. Kept off Sarvam so the chattiest stage does not eat the speech rate limit. | free tiers |
 | Transport, turn detection, SIP | **LiveKit Cloud** free tier | free |
 | Retrieval | lexical BM25 + curated multilingual aliases — no embedding model, no vector DB | free |
 | Database | self-hosted PostgreSQL | free |
@@ -104,10 +104,18 @@ cp .env.example .env.local     # then fill in the keys
 uv run python src/agent.py console
 ```
 
-Speech works with **no extra keys** — the default `MEDLINK_SPEECH_PROVIDER=livekit`
-runs STT/TTS through LiveKit Inference on the free tier. Add keys to improve it:
+**Speech runs on Sarvam; reasoning runs on its own provider chain.** One
+`SARVAM_API_KEY` from [dashboard.sarvam.ai](https://dashboard.sarvam.ai) serves
+STT and TTS. The LLM is deliberately elsewhere — it makes a call per caller turn,
+and pinning it to the same vendor as the audio path doubled the load on one rate
+limit. `llm.FallbackAdapter` moves down the chain mid-call, with no restart, when
+a provider rate-limits, errors, or takes longer than
+`MEDLINK_LLM_ATTEMPT_TIMEOUT` (5s) to produce a first token.
 
-- `GOOGLE_API_KEY` — free Gemini key from [aistudio.google.com/apikey](https://aistudio.google.com/apikey) (no card). Without it the LLM falls back to LiveKit Inference and logs a warning.
+- `SARVAM_API_KEY` — required, speech only (STT + TTS).
+- `GEMINI_API_KEY` / `GROQ_API_KEY` / `CEREBRAS_API_KEY` — the LLM chain, tried in that order. **At least one is required**; a provider with no key is dropped from the chain at startup, so one is enough to run. All three have a free tier.
+
+Model IDs are named constants at the top of [`src/config.py`](src/config.py); override any of them with the `MEDLINK_*` variables in `.env.example`.
 - `BHASHINI_API_KEY` / `BHASHINI_USER_ID` / `BHASHINI_PIPELINE_ID` — from [bhashini.gov.in](https://bhashini.gov.in); then set `MEDLINK_SPEECH_PROVIDER=bhashini` for stronger Tamil/Telugu/Kannada/Malayalam.
 
 Optional call history:
