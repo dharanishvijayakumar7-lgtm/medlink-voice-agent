@@ -1,0 +1,15 @@
+{
+  "dispatch_rule": {
+    "rule": {
+      "dispatchRuleIndividual": {
+        "roomPrefix": "medlink-call"
+      }
+    },
+    "name": "MedLink inbound dispatch",
+    "roomConfig": {
+      "agents": [
+        { "agentName": "medlink-agent" }
+      ]
+    }
+  }
+}
