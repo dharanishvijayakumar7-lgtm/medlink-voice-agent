@@ -1,7 +1,9 @@
 {
   "trunk": {
     "name": "MedLink inbound (VoiceLink IN)",
-    "numbers": ["+919429397308"],
-    "allowed_addresses": ["160.30.71.108"]
+    "numbers": [
+      "+919429397308",
+      "919429397308"
+    ]
   }
 }
