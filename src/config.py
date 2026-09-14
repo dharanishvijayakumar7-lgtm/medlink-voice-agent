@@ -86,22 +86,28 @@ class Settings(BaseSettings):
     # STT accepts only 8000 or 16000; its TTS is resampled by LiveKit either way.
     audio_sample_rate: int = Field(default=8000, alias="MEDLINK_AUDIO_SAMPLE_RATE")
 
-    # --- Turn latency ---
-    # How long to wait after the caller stops speaking before replying. LiveKit
-    # defaults to min 0.5 / max 3.0; a live call spent 2.5s here on a single turn
-    # because the end-of-turn model was unsure (p=0.39 against a 0.56 threshold)
-    # and drifted toward the max. Lowering the ceiling is the single biggest
-    # latency win available. Raise `endpointing_max_delay` if callers who pause
-    # mid-sentence start getting cut off - rural callers often speak slowly.
+    # --- Turn taking ---
+    # How long to wait after the caller stops speaking before replying. These
+    # were cut to 0.3 / 1.8s (and Sarvam's silence to 600ms) for latency, and a
+    # real phone call showed the cost: the agent answered half a sentence after
+    # a natural pause and talked over the caller. Back to LiveKit's defaults -
+    # the end-of-turn model only waits toward max_delay when the caller sounds
+    # mid-thought. Rural callers pause; lower these only with a real call to test.
     endpointing_min_delay: float = Field(
-        default=0.3, alias="MEDLINK_ENDPOINTING_MIN_DELAY"
+        default=0.5, alias="MEDLINK_ENDPOINTING_MIN_DELAY"
     )
     endpointing_max_delay: float = Field(
-        default=1.8, alias="MEDLINK_ENDPOINTING_MAX_DELAY"
+        default=3.0, alias="MEDLINK_ENDPOINTING_MAX_DELAY"
     )
-    # Silence Sarvam's own VAD waits for before closing an utterance. Its default
-    # is 1000ms, which is charged on top of the endpointing delay above.
-    stt_min_silence_ms: int = Field(default=600, alias="MEDLINK_STT_MIN_SILENCE_MS")
+    # Silence Sarvam's own VAD waits for before closing an utterance (its default).
+    stt_min_silence_ms: int = Field(default=1000, alias="MEDLINK_STT_MIN_SILENCE_MS")
+    # A transcript below this confidence AND at most MAX_NOISE_WORDS long is
+    # treated as line noise or echo and ignored. Real speech on a test call came
+    # through at 0.98-0.99; the fragments that kept restarting the agent were
+    # 0.46-0.47. A clearly heard "no" is high-confidence, so it is still kept.
+    min_turn_confidence: float = Field(
+        default=0.6, alias="MEDLINK_MIN_TURN_CONFIDENCE"
+    )
     llm_model: str = Field(default=SARVAM_LLM_MODEL, alias="MEDLINK_LLM_MODEL")
 
     # --- Sarvam: the whole pipeline, one key ---
@@ -127,6 +133,23 @@ class Settings(BaseSettings):
     history_retention_days: int = Field(default=90, alias="MEDLINK_RETENTION_DAYS")
     # Seconds to wait for a database connection before giving up on the write.
     db_connect_timeout: float = Field(default=3.0, alias="MEDLINK_DB_CONNECT_TIMEOUT")
+
+    # --- Firestore export (call summaries for the mobile app) ---
+    # After each call, a structured summary is written to Firestore under the
+    # caller's phone number. This is the store the separate mobile app reads;
+    # Postgres above stays the agent's own history.
+    enable_firestore_export: bool = Field(
+        default=False, alias="MEDLINK_ENABLE_FIRESTORE"
+    )
+    # Service-account JSON. Relative paths resolve against the project root.
+    # Gitignored - the key has full admin access to the Firebase project.
+    firebase_credentials_path: Path = Field(
+        default=PROJECT_ROOT / "MEDLINK_FIREBASE_CREDENTIALS.json",
+        alias="MEDLINK_FIREBASE_CREDENTIALS",
+    )
+    # The caller has already hung up by the time this runs, so a few seconds is
+    # fine - but it must never hold up worker shutdown indefinitely.
+    firestore_timeout: float = Field(default=10.0, alias="MEDLINK_FIRESTORE_TIMEOUT")
 
     # --- Telephony ---
     # Console/web sessions carry no caller ID, so there is no phone number to
@@ -157,11 +180,10 @@ class Settings(BaseSettings):
     # LOCAL DEVELOPMENT ONLY, so there is data to inspect before the consent
     # flow is wired. Must stay True in production.
     require_consent: bool = Field(default=True, alias="MEDLINK_REQUIRE_CONSENT")
-    # Speculative LLM calls before the caller's turn is confirmed. ON: the reply
-    # is already streaming when the turn commits, which is the biggest remaining
-    # latency win. Discarded calls do still bill - turn off if spend shows.
+    # Speculative LLM calls before the caller's turn is confirmed. Off: on a real
+    # call it contributed to the agent starting to answer mid-sentence.
     preemptive_generation: bool = Field(
-        default=True, alias="MEDLINK_PREEMPTIVE_GENERATION"
+        default=False, alias="MEDLINK_PREEMPTIVE_GENERATION"
     )
 
     # --- Data files ---

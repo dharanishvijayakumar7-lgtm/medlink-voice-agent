@@ -1,0 +1,39 @@
+rules_version = '2';
+
+// Security rules for the MedLink call-summary store.
+//
+// The agent writes through the Firebase Admin SDK, which bypasses these rules
+// entirely, so clients never need write access. The mobile app only reads.
+//
+// These documents hold health details next to a readable phone number.
+// `request.auth != null` lets ANY signed-in user of the app read ALL patients.
+// Before real patients use this, narrow it - e.g. to staff accounts with a
+// custom claim: `request.auth.token.role == "staff"`.
+//
+// Publish from the Firebase console (Firestore -> Rules) or:
+//   firebase deploy --only firestore:rules
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    match /patients/{phone} {
+      allow read: if request.auth != null;
+      allow write: if false;
+
+      match /calls/{callId} {
+        allow read: if request.auth != null;
+        allow write: if false;
+      }
+    }
+
+    match /unidentified_calls/{callId} {
+      allow read: if request.auth != null;
+      allow write: if false;
+    }
+
+    // Everything else is closed.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

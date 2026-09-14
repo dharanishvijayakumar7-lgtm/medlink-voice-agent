@@ -5,16 +5,19 @@ in `workflows/`; all safety logic in `safety/` and `medicine/`. Keep this file
 thin - the Dockerfile runs it directly (`uv run src/agent.py start`).
 """
 
+import asyncio
 import contextlib
 import logging
 import sys
 
+from livekit import rtc
 from livekit.agents import (
     AgentServer,
     AgentSession,
     JobContext,
     TurnHandlingOptions,
     cli,
+    inference,
     room_io,
 )
 
@@ -24,6 +27,7 @@ from livekit.agents import (
 # `sarvam` serves all three stages (STT, LLM, TTS) off SARVAM_API_KEY.
 from livekit.plugins import ai_coustics, sarvam  # noqa: F401
 
+import firestore_export
 from config import SUPPORTED_LANGUAGES, settings
 from db import repository as history
 from llm_factory import build_llm
@@ -36,23 +40,55 @@ logger = logging.getLogger("agent")
 server = AgentServer()
 
 
-def _caller_phone(ctx: JobContext) -> str | None:
+# How long to wait for the caller to appear in the room after connecting. A SIP
+# caller is normally already there when the agent is dispatched, so this only
+# bounds the pathological case.
+CALLER_WAIT_TIMEOUT = 5.0
+
+
+async def _caller_phone(ctx: JobContext) -> str | None:
     """Best-effort caller number for SIP calls (used for returning-caller lookup).
+
+    Must run after ``ctx.connect()``: before that the room has no remote
+    participants, so the SIP caller's ``sip.phoneNumber`` attribute was never
+    found and every real phone call was filed under the dev fallback number.
 
     Falls back to ``MEDLINK_DEV_CALLER_PHONE`` so console sessions, which carry
     no caller ID, still create a patient record and can exercise the
     returning-caller path. A real SIP number always wins.
     """
-    try:
-        for participant in ctx.room.remote_participants.values():
-            number = (participant.attributes or {}).get("sip.phoneNumber")
-            # Must be a real string. In console mode the room is a MagicMock, so
-            # this lookup returns a truthy mock that blew up downstream in
-            # normalise_phone() and killed every database write for the call.
-            if isinstance(number, str) and number.strip():
-                return number
-    except Exception:  # pragma: no cover - never break a call over this
-        logger.debug("could not read caller phone", exc_info=True)
+    if ctx.room.name != "console":  # console mode has no participants to wait for
+        try:
+            # Default kinds cover SIP and ordinary participants, so a web tester
+            # returns immediately instead of waiting out the timeout.
+            participant = await asyncio.wait_for(
+                ctx.wait_for_participant(), timeout=CALLER_WAIT_TIMEOUT
+            )
+            attributes = participant.attributes or {}
+            if participant.kind == rtc.ParticipantKind.PARTICIPANT_KIND_SIP:
+                number = attributes.get("sip.phoneNumber")
+                # Must be a real string - a mocked room returns a truthy mock
+                # that would blow up downstream in normalise_phone().
+                if isinstance(number, str) and number.strip():
+                    logger.info("caller identified from SIP", extra={"room": ctx.room.name})
+                    return number
+            # Loud on purpose: a silent fallback here is what filed real phone
+            # calls under the dev number with no trace in the logs.
+            logger.warning(
+                "joined participant has no usable caller number",
+                extra={
+                    "room": ctx.room.name,
+                    "participant_kind": participant.kind,
+                    "attribute_keys": sorted(attributes),
+                },
+            )
+        except asyncio.TimeoutError:
+            logger.warning(
+                "no participant joined within %ss", CALLER_WAIT_TIMEOUT,
+                extra={"room": ctx.room.name},
+            )
+        except Exception:  # never break a call over caller ID
+            logger.exception("could not read caller phone", extra={"room": ctx.room.name})
 
     if settings.dev_caller_phone:
         logger.warning(
@@ -66,7 +102,10 @@ def _caller_phone(ctx: JobContext) -> str | None:
 async def medlink_session(ctx: JobContext):
     ctx.log_context_fields = {"room": ctx.room.name}
 
-    phone = _caller_phone(ctx)
+    # Connect before anything else: the SIP caller (and their phone number) is
+    # only visible as a remote participant once the agent is in the room.
+    await ctx.connect()
+    phone = await _caller_phone(ctx)
     # A dev fallback number is not a real phone call, so don't log it as one.
     is_sip_call = bool(phone) and phone != settings.dev_caller_phone
     userdata = MedLinkUserData(
@@ -85,26 +124,31 @@ async def medlink_session(ctx: JobContext):
         stt=build_stt(),
         tts=build_tts(),
         turn_handling=TurnHandlingOptions(
-            # "stt" = trust Sarvam's server-side VAD endpointing, which already
-            # decides where an utterance ends and only emits a final there.
-            # This replaced inference.TurnDetector(), a LiveKit-hosted end-of-turn
-            # model that cost a network round trip on every single turn and then
-            # usually agreed with Sarvam anyway.
-            turn_detection="stt",
-            interruption={"mode": "adaptive"},
-            # Dead air after the caller stops talking. See config.py - the
-            # LiveKit default ceiling of 3.0s was the largest single component
-            # of per-turn latency.
+            # Semantic end-of-turn model: decides whether the caller has actually
+            # FINISHED, not just paused. It was swapped for turn_detection="stt"
+            # to save a round trip, and on a real phone call that made the agent
+            # cut in on a natural ~1s pause mid-sentence and answer half a thought.
+            # Being talked over is worse than a slightly slower reply.
+            turn_detection=inference.TurnDetector(),
+            interruption={
+                "mode": "adaptive",
+                # Phone lines carry echo and noise. On a real call, 1- and
+                # 3-character "utterances" at ~0.46 confidence kept interrupting
+                # the agent and restarting its reply. A real barge-in is at least
+                # two words and most of a second of speech.
+                "min_words": 2,
+                "min_duration": 0.8,
+            },
+            # Wait after the caller stops talking. The turn detector moves this
+            # toward min_delay when it is confident they finished, and toward
+            # max_delay when they sound mid-thought.
             endpointing={
                 "min_delay": settings.endpointing_min_delay,
                 "max_delay": settings.endpointing_max_delay,
             },
-            # Preemptive generation starts a speculative LLM call before the
-            # caller's turn is confirmed and discards it if they keep talking.
-            # ON: it is the largest remaining latency win, because the reply is
-            # already streaming by the time the turn commits. The cost is extra
-            # Sarvam LLM calls against the same credits - set
-            # MEDLINK_PREEMPTIVE_GENERATION=false if the spend shows.
+            # Preemptive generation starts a reply before the caller's turn is
+            # confirmed. Off by default: combined with eager endpointing it made
+            # the agent start answering while the caller was still talking.
             preemptive_generation={"enabled": settings.preemptive_generation},
         ),
     )
@@ -125,6 +169,14 @@ async def medlink_session(ctx: JobContext):
         if not getattr(ev, "is_final", False):
             return
         code = getattr(ev, "language", None)
+        # Diagnostic: shows whether the STT is producing words at all on a
+        # phone line. A run of empty finals means the caller's audio isn't
+        # reaching Sarvam intact (narrowband phone audio, noise suppression).
+        transcript = getattr(ev, "transcript", "") or ""
+        logger.info(
+            "stt final",
+            extra={"call_id": userdata.call_id, "language": code, "chars": len(transcript.strip())},
+        )
         if not code or code not in SUPPORTED_LANGUAGES.values():
             return  # unknown, or outside the six MedLink supports
         if code == userdata.language:
@@ -139,6 +191,9 @@ async def medlink_session(ctx: JobContext):
 
     async def _log_outcome():
         await history.finish_call(userdata)
+        # App-facing copy of the call summary. Independent of Postgres, bounded
+        # by its own timeout, and never raises - see firestore_export.
+        await firestore_export.export_call(userdata)
         logger.info(
             "call ended",
             extra={
@@ -151,7 +206,30 @@ async def medlink_session(ctx: JobContext):
             },
         )
 
-    ctx.add_shutdown_callback(_log_outcome)
+    # Save the call exactly once, as early as possible.
+    # The job's shutdown callback alone was not enough: on hangup LiveKit closes
+    # the *session* at once, but the *job* lingers until the empty room times out.
+    # A worker stopped in that window (Ctrl+C, redeploy, crash) lost the whole
+    # call - a real phone call ended with no Postgres summary and nothing in
+    # Firestore. finish_call inserts rows, so it must never run twice.
+    outcome: asyncio.Task | None = None
+
+    def _save_outcome() -> asyncio.Task:
+        nonlocal outcome
+        if outcome is None:
+            outcome = asyncio.create_task(_log_outcome())
+        return outcome
+
+    @session.on("close")
+    def _on_session_close(_ev) -> None:
+        _save_outcome()  # caller hung up (or the session errored): save now
+
+    async def _on_job_shutdown() -> None:
+        # Fallback if the session never emitted close; otherwise waits for the
+        # save already in flight so the worker doesn't exit mid-write.
+        await _save_outcome()
+
+    ctx.add_shutdown_callback(_on_job_shutdown)
 
     await session.start(
         agent=IntakeAgent(),
@@ -164,8 +242,6 @@ async def medlink_session(ctx: JobContext):
             ),
         ),
     )
-
-    await ctx.connect()
 
 
 if __name__ == "__main__":

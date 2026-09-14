@@ -80,6 +80,10 @@ class MedLinkUserData:
     refer_when: str = ""
     severity_score: int = 0
     urgency: str = "unknown"  # unknown | self_care | clinic | urgent | emergency
+    # What it might be, suggested by the LLM once questioning is done. Saved for
+    # the clinic's records only - never presented to the caller as a diagnosis.
+    possible_causes: list[str] = field(default_factory=list)
+    possible_causes_reasoning: str | None = None
 
     # --- safety ---
     red_flag: RedFlagHit | None = None

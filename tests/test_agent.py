@@ -114,3 +114,85 @@ def test_sarvam_tts_can_retarget_every_supported_language():
     allowed = set(SarvamTTSLanguages.__args__)
     missing = sorted(set(SUPPORTED_LANGUAGES.values()) - allowed)
     assert not missing, f"Sarvam TTS cannot speak {missing}"
+
+
+# ------------------------------------------------------------ caller identity ---
+# Real phone calls were being filed under MEDLINK_DEV_CALLER_PHONE: the caller's
+# number was read from the room before the agent had connected, when there are
+# no remote participants yet. These pin the fixed lookup.
+
+
+class _Participant:
+    def __init__(self, kind, attributes):
+        self.kind = kind
+        self.attributes = attributes
+
+
+class _Room:
+    def __init__(self, name):
+        self.name = name
+
+
+class _Ctx:
+    def __init__(self, room_name="medlink-call_x", participant=None, delay=0.0):
+        self.room = _Room(room_name)
+        self._participant = participant
+        self._delay = delay
+        self.waited = False
+
+    async def wait_for_participant(self, **_):
+        import asyncio
+
+        self.waited = True
+        await asyncio.sleep(self._delay)
+        return self._participant
+
+
+async def test_sip_caller_number_is_read_from_the_joined_participant(monkeypatch):
+    from livekit import rtc
+
+    import agent
+
+    monkeypatch.setattr(settings, "dev_caller_phone", "+919000000000")
+    sip = _Participant(
+        rtc.ParticipantKind.PARTICIPANT_KIND_SIP, {"sip.phoneNumber": "+916361754795"}
+    )
+    assert await agent._caller_phone(_Ctx(participant=sip)) == "+916361754795"
+
+
+async def test_non_sip_participant_falls_back_to_the_dev_number(monkeypatch):
+    from livekit import rtc
+
+    import agent
+
+    monkeypatch.setattr(settings, "dev_caller_phone", "+919000000000")
+    web = _Participant(rtc.ParticipantKind.PARTICIPANT_KIND_STANDARD, {})
+    assert await agent._caller_phone(_Ctx(participant=web)) == "+919000000000"
+
+
+async def test_console_session_does_not_wait_for_a_participant(monkeypatch):
+    import agent
+
+    monkeypatch.setattr(settings, "dev_caller_phone", "+919000000000")
+    ctx = _Ctx(room_name="console")
+    assert await agent._caller_phone(ctx) == "+919000000000"
+    assert ctx.waited is False
+
+
+async def test_caller_that_never_joins_times_out_to_the_fallback(monkeypatch):
+    import agent
+
+    monkeypatch.setattr(settings, "dev_caller_phone", "")
+    monkeypatch.setattr(agent, "CALLER_WAIT_TIMEOUT", 0.01)
+    assert await agent._caller_phone(_Ctx(delay=1.0)) is None
+
+
+async def test_mocked_non_string_phone_attribute_is_ignored(monkeypatch):
+    """A mocked room returns a truthy non-string that broke normalise_phone()."""
+    from livekit import rtc
+
+    import agent
+
+    monkeypatch.setattr(settings, "dev_caller_phone", "")
+    odd = _Participant(rtc.ParticipantKind.PARTICIPANT_KIND_SIP, {"sip.phoneNumber": object()})
+    assert await agent._caller_phone(_Ctx(participant=odd)) is None
