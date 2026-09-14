@@ -35,3 +35,9 @@ KMS
 # Local scratch databases
 *.db
 .alembic_scratch.db
+
+# Firebase service-account keys (full admin access to the project - never commit)
+MEDLINK_FIREBASE_CREDENTIALS.json
+*firebase-adminsdk*.json
+firebase-service-account*.json
+service-account*.json

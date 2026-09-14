@@ -17,18 +17,24 @@ from workflows.base import SHARED_STYLE, MedLinkAgent
 
 logger = logging.getLogger("medlink.workflow")
 
+# Placeholder strings a model emits for "no name given" - never a real name.
+_NO_NAME = {"null", "none", "unknown", "n/a", "na", "not given", "not provided"}
+
 # Fixed opening line - spoken verbatim, no LLM, so the call always starts the
-# same way and with zero time-to-first-word. Extend per language as TTS voices
-# are added in P1.7.
+# same way and with zero time-to-first-word. Kept short and warm: the English
+# version used to list all six languages and took ~15 seconds to say.
+# The TTS voice is female, so gendered languages use feminine first-person forms
+# (Hindi "सकती", not "सकता"), and Telugu/Kannada use the neutral loanword
+# "doctor" instead of the masculine native noun.
 GREETINGS: dict[str, str] = {
     "en-IN": (
-        "Hello, this is MedLink, a health helpline. I am not a doctor, but I can "
-        "listen and help you decide what to do next. You can speak in Hindi, Tamil, "
-        "Telugu, Kannada, Malayalam or English. Please tell me, what is troubling you?"
+        "Hello, this is MedLink. I'm not a doctor, but I'm here to listen and help, "
+        "in whichever language you're comfortable with. "
+        "Tell me, what's been troubling you?"
     ),
     "hi-IN": (
         "नमस्ते, मैं मेडलिंक हूँ, एक स्वास्थ्य हेल्पलाइन। मैं डॉक्टर नहीं हूँ, "
-        "लेकिन आपकी बात सुनकर बता सकता हूँ कि आगे क्या करना चाहिए। "
+        "लेकिन आपकी बात सुनकर बता सकती हूँ कि आगे क्या करना चाहिए। "
         "बताइए, आपको क्या तकलीफ हो रही है?"
     ),
     "ta-IN": (
@@ -37,12 +43,12 @@ GREETINGS: dict[str, str] = {
         "சொல்லுங்கள், உங்களுக்கு என்ன பிரச்சினை?"
     ),
     "te-IN": (
-        "నమస్కారం, నేను మెడ్‌లింక్, ఒక ఆరోగ్య సహాయ లైన్. నేను వైద్యుడిని కాదు, "
+        "నమస్కారం, నేను మెడ్‌లింక్, ఒక ఆరోగ్య సహాయ లైన్. నేను డాక్టర్‌ని కాదు, "
         "కానీ మీరు చెప్పేది విని తర్వాత ఏమి చేయాలో చెప్పగలను. "
         "చెప్పండి, మీకు ఏమి ఇబ్బంది?"
     ),
     "kn-IN": (
-        "ನಮಸ್ಕಾರ, ನಾನು ಮೆಡ್‌ಲಿಂಕ್, ಒಂದು ಆರೋಗ್ಯ ಸಹಾಯವಾಣಿ. ನಾನು ವೈದ್ಯನಲ್ಲ, "
+        "ನಮಸ್ಕಾರ, ನಾನು ಮೆಡ್‌ಲಿಂಕ್, ಒಂದು ಆರೋಗ್ಯ ಸಹಾಯವಾಣಿ. ನಾನು ಡಾಕ್ಟರ್ ಅಲ್ಲ, "
         "ಆದರೆ ನೀವು ಹೇಳುವುದನ್ನು ಕೇಳಿ ಮುಂದೆ ಏನು ಮಾಡಬೇಕೆಂದು ಹೇಳಬಲ್ಲೆ. "
         "ಹೇಳಿ, ನಿಮಗೆ ಏನು ತೊಂದರೆ?"
     ),
@@ -54,23 +60,21 @@ GREETINGS: dict[str, str] = {
 }
 
 INSTRUCTIONS = f"""\
-You are MedLink, a health helpline assistant taking a phone call.
-
-Your ONLY job right now is to find out:
-1. What is troubling the caller (their main complaint, in their own words).
-2. Who it is for - the caller themselves, or someone else such as a child.
-3. Roughly how old that person is.
+You are MedLink, answering a health helpline call. You have just greeted the
+caller. Right now you are simply getting to know what is wrong.
 
 {SHARED_STYLE}
 
-# Rules
-- The caller has already been greeted. Do NOT greet them again.
-- Let them describe the problem in their own words first. Do not interrupt.
-- Ask at most TWO short questions here (who it is for, and their age) and only
-  if you do not already know.
-- As soon as you know the complaint, call `record_complaint`. Do not try to
-  diagnose, reassure at length, or suggest any medicine - another part of the
-  system does that next.
+# This part of the call
+- Do NOT greet them again. Let them tell you what is wrong in their own words.
+- If they share their name or age first but not the problem, welcome that
+  warmly and gently ask what has been troubling them. Never reply with just
+  "anything else?".
+- Once you know what is wrong, show you understand in a few kind words. If you
+  don't yet know who it is for or roughly their age, ask naturally.
+- Then call `record_complaint` (with their name and age if they said them).
+  Don't try to work out the cause or suggest medicine yet - you will come back
+  to that once you understand more.
 """
 
 
@@ -102,6 +106,7 @@ class IntakeAgent(MedLinkAgent):
         complaint: str,
         patient_age_years: int | None = None,
         is_for_child: bool = False,
+        patient_name: str | None = None,
     ):
         """Record the caller's main health complaint and who it is about.
 
@@ -112,12 +117,20 @@ class IntakeAgent(MedLinkAgent):
             complaint: The main problem in the caller's own words, in English.
             patient_age_years: Age of the person who is unwell, if known.
             is_for_child: True if the caller is asking on behalf of a child.
+            patient_name: The unwell person's name, only if the caller said it.
         """
         data = context.userdata
         data.chief_complaint = complaint
         data.patient.is_for_child = is_for_child
         if patient_age_years is not None:
             data.patient.age_years = patient_age_years
+        # Callers often open with their name. Intake used to have nowhere to put
+        # it, so it was acknowledged ("Thank you, Dharanish") and then lost.
+        # The model sometimes fills an unknown name with the *string* "null",
+        # which would otherwise be saved as a patient called "null".
+        name = (patient_name or "").strip()
+        if name and name.casefold() not in _NO_NAME and data.patient_name is None:
+            data.patient_name = name[:128]
 
         # Pull this presentation's follow-up questions, allowed OTC categories
         # and referral criteria from the curated triage KB.
@@ -134,7 +147,8 @@ class IntakeAgent(MedLinkAgent):
 
         from workflows.triage import TriageAgent
 
-        return (
-            TriageAgent(chat_ctx=self.chat_ctx),
-            "Thank you. Let me ask a few quick questions.",
-        )
+        # No tool result on purpose: a returned string is handed to the LLM, which
+        # then speaks it before the hand-off ("Thank you. Let me ask a few quick
+        # questions.") - a scripted gear-change the caller hears. The triage
+        # agent's on_enter carries the conversation on instead.
+        return TriageAgent(chat_ctx=self.chat_ctx)

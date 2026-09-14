@@ -86,15 +86,22 @@ def should_escalate(ud: MedLinkUserData) -> bool:
     return ud.urgency in (URGENT, EMERGENCY)
 
 
-def has_enough_information(ud: MedLinkUserData) -> bool:
-    """Stop interrogating once we can triage safely, or we've asked enough.
+# What a careful clinician needs before explaining and advising: how long, how
+# bad, and whether anything else is going on (the warning-sign check).
+ESSENTIAL_SLOTS: tuple[str, ...] = ("duration", "severity", "associated")
 
-    Minimum viable picture: how long, and how bad. Anything beyond that is a
-    bonus - the goal is the fewest questions that still make the call safe.
+
+def has_enough_information(ud: MedLinkUserData) -> bool:
+    """Stop asking once we can triage safely, or we've asked enough.
+
+    Duration and severity alone used to count as enough. A simulated call showed
+    why that is unsafe: a caller who gave both in one sentence was handed a
+    paracetamol dose with no check for fever, vomiting or vision problems. The
+    associated-symptoms answer is that check.
     """
     if ud.questions_asked >= settings.max_followup_questions:
         return True
-    return "duration" in ud.answers and "severity" in ud.answers
+    return all(slot in ud.answers for slot in ESSENTIAL_SLOTS)
 
 
 def assess(ud: MedLinkUserData) -> tuple[int, str]:

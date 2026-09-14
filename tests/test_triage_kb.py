@@ -138,6 +138,41 @@ def test_keyword_modifiers_read_the_answers(kb):
     assert score_modifiers(entry, bloody) > score_modifiers(entry, plain)
 
 
+def test_denied_symptoms_add_no_severity(kb):
+    """From a simulated call: "No fever, no neck stiffness" scored
+    with_neck_stiffness (+8) and turned a mild tension headache into an
+    emergency. The agent now asks exactly this question on most headache calls."""
+    ud = _ud(chief_complaint="moderate headache since this morning")
+    ud.record_answer("duration", "since this morning, built up slowly")
+    ud.record_answer("associated", "No fever, no neck stiffness, no vomiting")
+    ud.record_answer("history", "first time having a headache like this")
+    assert score_modifiers(kb.by_id["headache"], ud) == 0
+
+
+def test_affirmed_symptom_still_adds_severity(kb):
+    ud = _ud(chief_complaint="headache")
+    ud.record_answer("associated", "yes, fever and neck stiffness since last night")
+    assert score_modifiers(kb.by_id["headache"], ud) > 0
+
+
+def test_a_denial_in_one_answer_does_not_cancel_another(kb):
+    """Each answer is its own clause: "no fever" must not negate a later answer."""
+    ud = _ud(chief_complaint="headache")
+    ud.record_answer("associated", "no fever")
+    ud.record_answer("history", "neck stiffness started today")
+    assert score_modifiers(kb.by_id["headache"], ud) > 0
+
+
+def test_mild_headache_with_denied_warning_signs_is_not_an_emergency(kb):
+    ud = _ud(chief_complaint="moderate headache since this morning")
+    ud.record_answer("duration", "since this morning")
+    ud.record_answer("severity", "moderate")
+    ud.record_answer("associated", "No fever, no neck stiffness, no vomiting")
+    apply_to_session(ud)
+    _, urgency = routing.assess(ud)
+    assert urgency not in (routing.URGENT, routing.EMERGENCY)
+
+
 # ------------------------------------------------- session integration ---
 
 

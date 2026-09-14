@@ -28,7 +28,7 @@ from pydantic import BaseModel, Field
 from rank_bm25 import BM25Okapi
 
 from config import settings
-from safety.redflags import normalize
+from safety.redflags import CLAUSE_SENTINEL, _is_negated, _normalize_clauses, normalize
 
 _TOKEN_RE = re.compile(r"[^\w]+", re.UNICODE)
 # BM25 fallback needs a clear signal before it overrides "no match".
@@ -142,18 +142,29 @@ def score_modifiers(entry: TriageEntry, ud) -> int:
     if entry is None:
         return 0
 
-    answers_text = " ".join(ud.answers.values()).casefold()
-    if ud.chief_complaint:
-        answers_text += " " + ud.chief_complaint.casefold()
+    # Each answer is its own clause, so "no" in one answer can't negate the next.
+    parts = [*ud.answers.values(), ud.chief_complaint or ""]
+    clauses = _normalize_clauses(" . ".join(p for p in parts if p))
+    flat = clauses.replace(CLAUSE_SENTINEL, " ")
 
     total = 0
     for key, points in entry.severity_modifiers.items():
-        if _modifier_matches(key, ud, answers_text):
+        if _modifier_matches(key, ud, flat, clauses):
             total += points
     return total
 
 
-def _modifier_matches(key: str, ud, answers_text: str) -> bool:
+def _affirmed(words: list[str], flat: str, clauses: str) -> bool:
+    """True if the words occur, as a phrase, at least once without a negator.
+
+    Reuses the red-flag module's negation scope (clause breaks, punctuation,
+    3-token lookback), which was tested against real negated phrasings.
+    """
+    pattern = r"\b" + r"\s+".join(re.escape(w) for w in words) + r"\b"
+    return any(not _is_negated(clauses, m.start()) for m in re.finditer(pattern, flat))
+
+
+def _modifier_matches(key: str, ud, flat: str, clauses: str) -> bool:
     if match := re.fullmatch(r"age_under_(\d+)", key):
         age = ud.patient.age_years
         return age is not None and age < int(match.group(1))
@@ -172,14 +183,17 @@ def _modifier_matches(key: str, ud, answers_text: str) -> bool:
     # Keyword modifiers. Match the whole phrase first ("blood in stool"), then
     # fall back to requiring every word. Short qualifiers such as "no" are kept:
     # dropping them would turn "no_urine" into a match on any mention of urine.
-    stem = key.removeprefix("with_")
-    phrase = stem.replace("_", " ")
-    if phrase and phrase in answers_text:
-        return True
-    words = stem.split("_")
+    #
+    # Negation-aware: this used to be a plain substring test, so "No fever, no
+    # neck stiffness" scored with_neck_stiffness (+8) and turned a mild tension
+    # headache into an emergency. A phrase that is itself negative ("no urine")
+    # still matches, because the negator is part of the phrase, not before it.
+    words = [w for w in key.removeprefix("with_").split("_") if w]
     if not words:
         return False
-    return all(re.search(rf"\b{re.escape(w)}\b", answers_text) for w in words)
+    if _affirmed(words, flat, clauses):
+        return True
+    return all(_affirmed([w], flat, clauses) for w in words)
 
 
 def apply_to_session(ud, complaint: str | None = None) -> TriageEntry | None:

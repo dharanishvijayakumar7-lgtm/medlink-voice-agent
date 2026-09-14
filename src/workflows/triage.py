@@ -12,36 +12,39 @@ import logging
 
 from livekit.agents import ChatContext, ChatMessage, RunContext, function_tool
 
-from config import settings
 from knowledge.triage_kb import apply_to_session
-from session_state import MedLinkUserData
+from session_state import SLOT_QUESTIONS, MedLinkUserData
 from workflows import routing
 from workflows.base import SHARED_STYLE, MedLinkAgent
+from workflows.intake import _NO_NAME
 
 logger = logging.getLogger("medlink.workflow")
 
 INSTRUCTIONS = f"""\
-You are MedLink, continuing a health helpline call. The caller has told you
-their main problem. Now you gather just enough detail to judge how serious it is.
+You are MedLink, in a health helpline call. The caller has told you what is
+wrong. Now understand their situation the way a good doctor would on the phone.
 
 {SHARED_STYLE}
 
-# How to question
-- Ask ONE question per turn, then wait for the answer.
-- Ask the FEWEST questions needed - at most {settings.max_followup_questions}
-  in total. Never interrogate.
-- Prefer the suggested questions you are given; they are chosen for this
-  specific symptom. Skip any the caller has already answered.
-- After each answer, call `record_answer` with a short slot name and what they said.
-- Ask about pregnancy, ongoing conditions, or current medicines ONLY if it is
-  relevant to what they described - then call `record_patient_context`.
-- When you know how long it has been going on and how bad it is, call
-  `finish_questions`. Do not keep asking out of habit.
+# Understanding what is going on
+- Ask about what matters for THIS problem: how long, how bad, and any worrying
+  signs that go with it. Let their answers lead your next question.
+- ONE question per turn. Never two or three in one breath.
+- Keep acknowledging them. A caring word matters more than speed.
+- Never re-ask something they already told you. If they give several details
+  at once, take them all in.
+- Quietly save what you learn with `record_answer`. Save each thing once.
+- Ask about regular medicines, health conditions or pregnancy only if it
+  matters here, in one gentle question - then `record_patient_context`.
+- If they share their name or gender themselves, save it with
+  `record_caller_identity`. Never ask for or guess these.
+- Like a good doctor, stop asking once you know how long, how bad, and whether
+  anything worrying is present. Then call `finish_questions` with up to 3
+  `possible_causes` (most likely first) and a one-line `reasoning`.
 
-# Never
-- Never name a medicine here.
-- Never state a diagnosis. You may say "this sounds like it could be ..." only
-  after `finish_questions` has routed the call.
+# Not yet
+- Don't name any medicine, and don't give your conclusion - you'll explain
+  what it might be and what to do right after `finish_questions`.
 """
 
 
@@ -50,29 +53,39 @@ class TriageAgent(MedLinkAgent):
         super().__init__(instructions=INSTRUCTIONS, **kwargs)
 
     async def on_enter(self) -> None:
-        suggestions = self.data.next_questions(limit=3)
-        hint = "\n".join(f"- {q}" for q in suggestions)
+        hint = "\n".join(f"- {q}" for q in open_questions(self.data))
         await self.session.generate_reply(
             instructions=(
                 f"{self._context_block()}\n\n"
-                f"# Suggested next questions (pick the single most useful one)\n{hint}\n\n"
-                "Ask that one question now, in one short sentence. Do not greet again."
+                "# Things a doctor would want to know about this problem\n"
+                f"{hint}\n\n"
+                "Continue the conversation naturally - don't greet again. If you "
+                "haven't yet shown you understand how they feel, do that first in "
+                "a few words. Then ask the one thing you most need to know."
             )
         )
 
     async def on_turn(self, turn_ctx: ChatContext, new_message: ChatMessage) -> None:
-        """Refresh the candidate-question hint each turn (KB-driven from P1.5)."""
-        suggestions = self.data.next_questions(limit=3)
-        if suggestions:
-            turn_ctx.add_message(
-                role="assistant",
-                content=(
-                    "Questions still worth asking, most useful first: "
-                    + "; ".join(suggestions)
-                    + f". You have asked {self.data.questions_asked} of "
-                    f"{settings.max_followup_questions} allowed."
-                ),
+        """Keep the clinically useful unknowns in view, KB-driven from P1.5.
+
+        Deliberately no question count and no "ask the next question" order: those
+        made the agent run through a checklist instead of listening. Once the
+        essentials are known the note says so, so there is a natural point to stop
+        asking and start explaining.
+        """
+        if routing.has_enough_information(self.data):
+            note = (
+                "(Private note, not to be said aloud) You know enough now. Respond "
+                "to what they just said, then move on to explaining by calling "
+                "finish_questions - don't start new questions."
             )
+        else:
+            note = (
+                "(Private note, not to be said aloud) Still worth knowing, if they "
+                "haven't already said: " + "; ".join(open_questions(self.data)) + ". "
+                "Respond to what they just said first, and ask at most one thing."
+            )
+        turn_ctx.add_message(role="assistant", content=note)
 
     @function_tool
     async def record_answer(
@@ -86,16 +99,21 @@ class TriageAgent(MedLinkAgent):
             answer: What the caller said, summarised in English.
         """
         data = context.userdata
+        # Count a question once. The model re-saves earlier answers on later turns,
+        # which used to inflate the count toward the limit.
+        if slot not in data.answers:
+            data.questions_asked += 1
         data.record_answer(slot, answer)
-        data.questions_asked += 1
 
         # Opportunistically parse duration into days for the safety filters.
         if slot == "duration":
             data.patient.symptom_duration_days = _parse_duration_days(answer)
 
+        # Neutral results: "Ask the next most useful question" used to push the
+        # model straight into another question after every single answer.
         if routing.has_enough_information(data):
-            return "Recorded. You now have enough to assess - call finish_questions."
-        return "Recorded. Ask the next most useful question."
+            return "Saved. You likely know enough now - wrap up when it feels natural."
+        return "Saved."
 
     @function_tool
     async def record_patient_context(
@@ -161,20 +179,51 @@ class TriageAgent(MedLinkAgent):
             gender: Only if explicitly stated, e.g. "male", "female".
         """
         data = context.userdata
-        if name and name.strip():
-            data.patient_name = name.strip()[:128]
-        if gender and gender.strip():
-            data.patient_gender = gender.strip()[:16]
+        # The model sometimes passes the string "null" for a detail it doesn't
+        # have; treat that as absent rather than saving it as the value.
+        name = (name or "").strip()
+        if name and name.casefold() not in _NO_NAME:
+            data.patient_name = name[:128]
+        gender = (gender or "").strip()
+        if gender and gender.casefold() not in _NO_NAME:
+            data.patient_gender = gender[:16]
         return "Recorded."
 
     @function_tool
-    async def finish_questions(self, context: RunContext[MedLinkUserData]):
+    async def finish_questions(
+        self,
+        context: RunContext[MedLinkUserData],
+        possible_causes: list[str] | None = None,
+        reasoning: str | None = None,
+    ):
         """Finish questioning and route the call based on how serious it is.
 
         Call this once you know roughly how long the problem has lasted and how
         severe it is - or sooner if the caller cannot answer more.
+
+        Args:
+            possible_causes: Up to 3 things this could be, in plain words, most
+                likely first. For the clinic's records only, not a diagnosis.
+            reasoning: One line on why, based on what the caller said.
         """
         data = context.userdata
+        # Optional on purpose: routing must still work if the model omits them.
+        data.possible_causes = clean_possible_causes(possible_causes)
+        reason = (reasoning or "").strip()
+        data.possible_causes_reasoning = (
+            reason[:300] if data.possible_causes and reason.casefold() not in _NO_NAME else None
+        )
+
+        # Safety gate, enforced in code rather than hoped for in the prompt: no
+        # explaining or medicine until the warning-sign check has happened. The
+        # model gets told what is missing and simply asks one more question.
+        if not routing.has_enough_information(data):
+            still = "; ".join(open_questions(data))
+            return (
+                "Not yet - you haven't checked this yet: " + still + ". "
+                "Acknowledge what they said, then ask the most important one "
+                "naturally. Call finish_questions again once you know."
+            )
         # Re-run the KB now that the answers are in, so presentation-specific
         # modifiers (fever over 5 days, blood in stool, ...) count toward severity.
         apply_to_session(data)
@@ -190,20 +239,77 @@ class TriageAgent(MedLinkAgent):
             },
         )
 
+        # Hand off without a scripted line - see IntakeAgent.record_complaint.
         if routing.should_escalate(data):
             from workflows.escalate import EscalateAgent
 
-            return (
-                EscalateAgent(chat_ctx=self.chat_ctx),
-                "This needs proper medical attention - let me help with that.",
-            )
+            return EscalateAgent(chat_ctx=self.chat_ctx)
 
         from workflows.recommend import RecommendAgent
 
-        return (
-            RecommendAgent(chat_ctx=self.chat_ctx),
-            "Thank you, that's enough for me to help.",
-        )
+        return RecommendAgent(chat_ctx=self.chat_ctx)
+
+
+# Phrases that mark a question as asking for an essential slot, so an already
+# answered slot isn't asked again under a different wording.
+_SLOT_PHRASES: dict[str, tuple[str, ...]] = {
+    "duration": ("how long", "since when", "how many days", "when did it start"),
+    "severity": ("how bad", "how severe", "how strong", "how much pain"),
+}
+
+
+def _asks_for(question: str, slot: str) -> bool:
+    q = question.casefold()
+    return any(phrase in q for phrase in _SLOT_PHRASES.get(slot, ()))
+
+
+def open_questions(data: MedLinkUserData) -> list[str]:
+    """What is still worth asking, most clinically useful first.
+
+    The triage KB's questions come first: they are written for this specific
+    problem (for a headache: sudden onset, fever with neck stiffness, weakness or
+    trouble seeing). Any that ask for something already answered are dropped -
+    `MedLinkUserData.next_questions` never removed them, so a known duration was
+    asked for again. Generic essential questions fill in only where the KB has no
+    question covering that slot.
+    """
+    answered = set(data.answers)
+    kb = [
+        q
+        for q in data.candidate_questions
+        if not any(_asks_for(q, slot) for slot in answered)
+    ]
+    generic = [
+        SLOT_QUESTIONS[slot]
+        for slot in routing.ESSENTIAL_SLOTS
+        if slot not in answered and not any(_asks_for(q, slot) for q in kb)
+    ]
+    return (kb + generic)[:3]
+
+
+MAX_POSSIBLE_CAUSES = 3
+
+
+def clean_possible_causes(causes: list[str] | None) -> list[str]:
+    """Trim the model's suggestions to a short, de-duplicated, sane list.
+
+    Drops placeholder strings ("null", "unknown") the model emits for "none",
+    keeps order (most likely first), and caps the count and each entry's length.
+    """
+    out: list[str] = []
+    seen: set[str] = set()
+    for cause in causes or []:
+        if not isinstance(cause, str):
+            continue
+        text = " ".join(cause.split())[:80]
+        key = text.casefold()
+        if not text or key in _NO_NAME or key in seen:
+            continue
+        seen.add(key)
+        out.append(text)
+        if len(out) == MAX_POSSIBLE_CAUSES:
+            break
+    return out
 
 
 def _parse_duration_days(text: str) -> int | None:

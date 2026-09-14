@@ -13,7 +13,7 @@ import logging
 from collections.abc import AsyncIterable
 
 from livekit import rtc
-from livekit.agents import Agent, ChatContext, ChatMessage, ModelSettings
+from livekit.agents import Agent, ChatContext, ChatMessage, ModelSettings, StopResponse
 
 from config import settings
 from db import repository as history
@@ -22,16 +22,42 @@ from session_state import MedLinkUserData
 
 logger = logging.getLogger("medlink.workflow")
 
+# A fragment this short can only be ignored when the STT was also unsure of it.
+MAX_NOISE_WORDS = 2
+
+
+def is_noise_turn(text: str, confidence: float | None) -> bool:
+    """True for a caller "turn" that is really echo or line noise.
+
+    Empty transcripts are always noise. Otherwise a turn must be BOTH short and
+    low-confidence: a clearly heard "no" or "haan" is a real answer and is kept,
+    and a long low-confidence sentence is still worth passing to the LLM.
+    """
+    words = text.split()
+    if not words:
+        return True
+    if confidence is None:
+        return False
+    return len(words) <= MAX_NOISE_WORDS and confidence < settings.min_turn_confidence
+
 # Spoken while the caller is still on the line, in every agent's voice.
 SHARED_STYLE = """\
 # How you speak
-- You are talking to someone on a phone call, often in rural India, who may not
-  have much schooling. Use short, plain sentences. No medical jargon.
-- Speak warmly and unhurriedly. Never rush or lecture.
-- Ask ONE question at a time, then stop and listen.
-- Reply in whatever language the caller uses, including mixed Hindi/Tamil/English.
+You are on a phone call with someone worried about their health, often in rural
+India. Talk like a caring, experienced health worker sitting beside them - a real
+conversation, never a form or a checklist.
+- Listen first. When they share pain or worry, acknowledge it in a few words
+  before anything else ("That sounds really uncomfortable", "I'm sorry you've
+  been dealing with this").
+- Respond to what they actually said. Use their name if they gave it.
+- Short, plain sentences. No medical jargon. Warm and unhurried.
+- One question at a time, and only questions you genuinely need.
+- Never say you are recording, noting, or filling anything in.
+- Reply in the caller's language, including mixed Hindi/Tamil/English.
+- Your voice is a woman's: in Hindi and other gendered languages use feminine
+  first-person forms (e.g. "मैं समझ सकती हूँ").
 - Say medicine names slowly and clearly.
-- Never claim to be a doctor and never state a confident diagnosis.
+- You are not a doctor and cannot examine them, so never claim certainty.
 """
 
 
@@ -46,6 +72,35 @@ class MedLinkAgent(Agent):
         self, turn_ctx: ChatContext, new_message: ChatMessage
     ) -> None:
         text = new_message.text_content or ""
+        confidence = new_message.transcript_confidence
+
+        # Phone lines carry echo and noise that the STT turns into tiny,
+        # low-confidence "utterances". Each one used to count as the caller's
+        # answer and make the agent start talking again, so the caller could
+        # never get a word in. Ignore them: no reply, nothing recorded.
+        if is_noise_turn(text, confidence):
+            logger.info(
+                "ignored noise fragment",
+                extra={
+                    "call_id": self.data.call_id,
+                    "agent": type(self).__name__,
+                    "chars": len(text.strip()),
+                    "confidence": confidence,
+                },
+            )
+            raise StopResponse()
+
+        # One line per caller turn, so a live call shows what reached the agent.
+        logger.info(
+            "caller turn",
+            extra={
+                "call_id": self.data.call_id,
+                "agent": type(self).__name__,
+                "language": self.data.language,
+                "chars": len(text),
+                "confidence": confidence,
+            },
+        )
 
         # Persist the turn in the background - the caller never waits on the DB.
         history.fire_and_forget(

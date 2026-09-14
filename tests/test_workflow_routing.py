@@ -100,10 +100,20 @@ def test_needs_more_questions_when_nothing_is_known():
     assert not routing.has_enough_information(_ud(chief_complaint="fever"))
 
 
-def test_duration_plus_severity_is_enough_to_stop_asking():
+def test_duration_and_severity_alone_are_not_enough():
+    """A simulated call proved this unsafe: a caller who gave both at once was
+    handed a paracetamol dose with no check for fever, vomiting or vision."""
+    ud = _ud(chief_complaint="headache")
+    ud.record_answer("duration", "since this morning")
+    ud.record_answer("severity", "moderate")
+    assert not routing.has_enough_information(ud)
+
+
+def test_warning_sign_check_completes_the_picture():
     ud = _ud(chief_complaint="fever")
     ud.record_answer("duration", "two days")
     ud.record_answer("severity", "moderate")
+    ud.record_answer("associated", "no vomiting, no rash")
     assert routing.has_enough_information(ud)
 
 
@@ -127,6 +137,7 @@ def test_stage_recommend_once_enough_is_known():
     ud = _ud(chief_complaint="loose motions")
     ud.record_answer("duration", "since this morning")
     ud.record_answer("severity", "mild")
+    ud.record_answer("associated", "no blood, no fever")
     assert routing.next_stage(ud) == "recommend"
 
 
