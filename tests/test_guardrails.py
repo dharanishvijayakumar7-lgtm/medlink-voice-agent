@@ -157,3 +157,59 @@ def test_genuine_clinical_questions_are_not_flagged(utterance):
 def test_empty_input_is_not_an_injection():
     assert detect_prompt_injection("") is None
     assert detect_prompt_injection("   ") is None
+
+
+# ------------------------------------------- unvetted OTC (audit finding) ---
+# The formulary allow-list was built by known_names(), unit-tested, and wired to
+# nothing. Prescription drugs were caught; a real OTC product the model
+# volunteered from its own training data was not.
+
+
+def test_an_unvetted_otc_medicine_is_blocked():
+    from safety.guardrails import scan_output
+
+    scan = scan_output("You could take Disprin for the fever.")
+    assert not scan.is_safe
+    assert scan.blocked_term == "disprin"
+    assert scan.reason == "unvetted"
+
+
+def test_the_unvetted_correction_does_not_claim_a_prescription_is_needed():
+    """Disprin is sold over the counter - saying otherwise would be wrong."""
+    from safety.guardrails import scan_output
+
+    spoken = scan_output("Take a Saridon.").text.lower()
+    assert "prescription" not in spoken
+    assert "doctor or pharmacist" in spoken
+
+
+def test_medicines_we_do_stock_are_never_blocked():
+    """The allow-list gate: known_names() subtracts the formulary from the list,
+    so a name in the formulary cannot be silenced even if it is listed."""
+    from safety.guardrails import scan_output
+
+    for text in (
+        "You can take a Crocin tablet.",
+        "Digene will help the acidity.",
+        "A Combiflam will settle it.",
+        "Take paracetamol 500 mg every six hours.",
+    ):
+        assert scan_output(text).is_safe, text
+
+
+def test_a_prescription_drug_still_wins_over_an_unvetted_one():
+    from safety.guardrails import scan_output
+
+    scan = scan_output("Take azithromycin and a Saridon.")
+    assert scan.reason == "prescription"
+
+
+def test_the_streaming_guard_catches_an_unvetted_name_split_across_chunks():
+    from safety.guardrails import OutputGuard
+
+    guard = OutputGuard()
+    guard.feed("You could take Nim")
+    out = guard.feed("ulid for the pain.")
+    assert guard.tripped
+    assert guard.reason == "unvetted"
+    assert "pharmacist" in out.lower()

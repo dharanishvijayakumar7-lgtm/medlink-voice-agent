@@ -31,11 +31,11 @@ entries:
     presentation: "Fever"
     aliases:
       en: [fever, temperature, high temperature, hot body, chills, shivering, feverish]
-      hi: [bukhar, taap, thand lag rahi, jvar]
-      ta: [kaaichal, juram, kaichal]
-      te: [jwaram, jwara, vedi]
-      kn: [jwara, sekhe]
-      ml: [pani, jvaram]
+      hi: [bukhar, taap, thand lag rahi, jvar, बुखार, ज्वर, ताप, तेज बुखार]
+      ta: [kaaichal, juram, kaichal, காய்ச்சல், ஜுரம், சுரம்]
+      te: [jwaram, jwara, vedi, జ్వరం, జొరం, వేడి]
+      kn: [jwara, sekhe, ಜ್ವರ, ಜ್ವರ ಬಂದಿದೆ]
+      ml: [pani, jvaram, പനി, ജ്വരം]
     red_flags:
       - fever with stiff neck or rash that does not fade
       - fever over 5 days
@@ -65,11 +65,11 @@ entries:
     presentation: "Cough and common cold"
     aliases:
       en: [cough, cold, running nose, runny nose, blocked nose, sneezing, phlegm, chest congestion, khansi]
-      hi: [khansi, sardi, zukam, naak behna, balgam, kaf]
-      ta: [irumal, jaladhosham, sali]
-      te: [dagg, jalubu, daggu]
-      kn: [kemmu, negadi, shita]
-      ml: [chuma, jaladosham]
+      hi: [khansi, sardi, zukam, naak behna, balgam, kaf, खांसी, सर्दी, जुकाम, नाक बह रही]
+      ta: [irumal, jaladhosham, sali, இருமல், சளி, ஜலதோஷம்]
+      te: [dagg, jalubu, daggu, దగ్గు, జలుబు, ముక్కు కారడం]
+      kn: [kemmu, negadi, shita, ಕೆಮ್ಮು, ಶೀತ, ನೆಗಡಿ]
+      ml: [chuma, jaladosham, ചുമ, ജലദോഷം, മൂക്കൊലിപ്പ്]
     red_flags:
       - coughing blood
       - breathlessness at rest
@@ -100,11 +100,11 @@ entries:
     presentation: "Sore throat"
     aliases:
       en: [sore throat, throat pain, throat infection, painful swallowing, gala kharab]
-      hi: [gale mein dard, gala kharab, nigalne mein dard]
-      ta: [thondai vali, thondai kaduppu]
-      te: [gontu noppi]
-      kn: [gantalu novu]
-      ml: [thonda vedana]
+      hi: [gale mein dard, gala kharab, nigalne mein dard, गले में दर्द, गला खराब, गले में खराश]
+      ta: [thondai vali, thondai kaduppu, தொண்டை வலி, தொண்டை கரகரப்பு]
+      te: [gontu noppi, గొంతు నొప్పి, గొంతు మంట]
+      kn: [gantalu novu, ಗಂಟಲು ನೋವು, ಗಂಟಲು ಕೆರೆತ]
+      ml: [thonda vedana, തൊണ്ടവേദന, തൊണ്ട വേദന]
     red_flags:
       - unable to swallow saliva or drooling
       - difficulty breathing
@@ -131,11 +131,11 @@ entries:
     presentation: "Diarrhoea / loose motions"
     aliases:
       en: [diarrhoea, diarrhea, loose motions, loose motion, watery stool, motions, stomach running, frequent stools]
-      hi: [dast, patla paikhana, loose motion, atisar]
-      ta: [vayitru pokku, bedhi]
-      te: [virechanalu, diarrhoea, bhedi]
-      kn: [bhedi, atisara]
-      ml: [vayaru ilakkam, vayattilakkam]
+      hi: [dast, patla paikhana, loose motion, atisar, दस्त, पतले दस्त, पेट खराब, लूज मोशन]
+      ta: [vayitru pokku, bedhi, வயிற்றுப்போக்கு, பேதி]
+      te: [virechanalu, diarrhoea, bhedi, విరేచనాలు, డయేరియా]
+      kn: [bhedi, atisara, ಭೇದಿ, ಅತಿಸಾರ]
+      ml: [vayaru ilakkam, vayattilakkam, വയറിളക്കം, അതിസാരം]
     red_flags:
       - blood or mucus in the stool
       - sunken eyes, no urine, extreme weakness
@@ -158,6 +158,10 @@ entries:
       ORS is the main treatment - one sachet in one full litre of clean water,
       sipped after every loose motion. Keep eating; keep breastfeeding a baby.
       Children need zinc for 14 days along with ORS. Wash hands with soap.
+      Do not stop food or fluids to rest the stomach, and do not stop
+      breastfeeding - that makes dehydration worse. Do not give a child any
+      medicine to stop the motions. Plain sugar water is not a substitute for
+      ORS.
     refer_when: >-
       Blood in the stool, no urine passed, sunken eyes, extreme weakness,
       vomiting everything, a baby under 6 months, or no improvement in 2 days.
@@ -167,11 +171,11 @@ entries:
     presentation: "Vomiting"
     aliases:
       en: [vomiting, throwing up, nausea, feeling sick, cannot keep food down]
-      hi: [ulti, jee michlana, matli]
-      ta: [vaandhi, kuma]
-      te: [vanthulu, vaanthi]
-      kn: [vaanti, valake]
-      ml: [chardi, omikkuka]
+      hi: [ulti, jee michlana, matli, उल्टी, वमन, जी मिचलाना, मतली]
+      ta: [vaandhi, kuma, வாந்தி, குமட்டல்]
+      te: [vanthulu, vaanthi, వాంతులు, వికారం]
+      kn: [vaanti, valake, ವಾಂತಿ, ವಾಕರಿಕೆ]
+      ml: [chardi, omikkuka, ഛർദി, ഓക്കാനം]
     red_flags:
       - vomiting blood
       - severe abdominal pain with vomiting
@@ -201,11 +205,11 @@ entries:
     presentation: "Abdominal / stomach pain"
     aliases:
       en: [stomach pain, stomach ache, abdominal pain, tummy pain, belly pain, cramps, pet dard]
-      hi: [pet dard, pet mein dard, marod]
-      ta: [vayiru vali, vayitru vali]
-      te: [kadupu noppi]
-      kn: [hotte novu]
-      ml: [vayaru vedana]
+      hi: [pet dard, pet mein dard, marod, पेट दर्द, पेट में दर्द, पेट में मरोड़]
+      ta: [vayiru vali, vayitru vali, வயிற்று வலி, வயிறு வலி]
+      te: [kadupu noppi, కడుపు నొప్పి, పొట్ట నొప్పి]
+      kn: [hotte novu, ಹೊಟ್ಟೆ ನೋವು]
+      ml: [vayaru vedana, വയറുവേദന, വയറു വേദന]
     red_flags:
       - severe or sudden very bad pain
       - hard rigid abdomen
@@ -236,11 +240,11 @@ entries:
     presentation: "Acidity / heartburn / indigestion"
     aliases:
       en: [acidity, heartburn, gas, indigestion, burning in chest after food, sour belching, bloating, gastric]
-      hi: [gas, acidity, jalan, khatti dakar, badhazmi]
-      ta: [aamilam, neruppu erichal, vaayu]
-      te: [amlatvam, gastric, gyas]
-      kn: [hulita, gyas, hotte uri]
-      ml: [nenjerichil, gyas]
+      hi: [gas, acidity, jalan, khatti dakar, badhazmi, एसिडिटी, सीने में जलन, गैस, खट्टी डकार]
+      ta: [aamilam, neruppu erichal, vaayu, நெஞ்செரிச்சல், வாயு தொல்லை]
+      te: [amlatvam, gastric, gyas, గుండెల్లో మంట, ఎసిడిటీ, గ్యాస్]
+      kn: [hulita, gyas, hotte uri, ಎದೆಯುರಿ, ಆಮ್ಲೀಯತೆ, ಗ್ಯಾಸ್]
+      ml: [nenjerichil, gyas, നെഞ്ചെരിച്ചിൽ, അസിഡിറ്റി, ഗ്യാസ്]
     red_flags:
       - burning that spreads to the arm or jaw, or comes on with exertion
       - black stools or vomiting blood
@@ -271,11 +275,11 @@ entries:
     presentation: "Headache"
     aliases:
       en: [headache, head pain, migraine, head is paining, sir dard]
-      hi: [sir dard, sar dard, adha sir dard]
-      ta: [thalai vali, ore thalai vali]
-      te: [thalanoppi, tala noppi]
-      kn: [tale novu]
-      ml: [thalavedana]
+      hi: [sir dard, sar dard, adha sir dard, सिर दर्द, सिरदर्द, सर में दर्द]
+      ta: [thalai vali, ore thalai vali, தலைவலி, தலை வலி]
+      te: [thalanoppi, tala noppi, తలనొప్పి, తల నొప్పి]
+      kn: [tale novu, ತಲೆನೋವು, ತಲೆ ನೋವು]
+      ml: [thalavedana, തലവേദന, തല വേദന]
     red_flags:
       - sudden worst-ever headache
       - headache with fever and neck stiffness
@@ -296,6 +300,9 @@ entries:
     self_care: >-
       Rest in a quiet, dim room. Drink water - headaches are often from not
       drinking enough or skipping meals. Regular sleep helps.
+      Do not take painkillers most days of the week - that causes headaches of
+      its own. Do not exceed the dose on the packet, and do not wait at home
+      with a headache that came on suddenly and severely.
     refer_when: >-
       A sudden very severe headache, headache with fever and a stiff neck,
       any weakness or speech or vision change, headache after a head injury, or
@@ -306,11 +313,11 @@ entries:
     presentation: "Chest pain or chest discomfort"
     aliases:
       en: [chest pain, chest discomfort, chest tightness, chest heaviness, pain in chest, chest pressure]
-      hi: [seene mein dard, chhati mein dard, seene mein bhaari]
-      ta: [nenju vali, maarbu vali]
-      te: [chaati noppi]
-      kn: [ede novu]
-      ml: [nenchu vedana]
+      hi: [seene mein dard, chhati mein dard, seene mein bhaari, सीने में दर्द, छाती में दर्द, सीना दर्द]
+      ta: [nenju vali, maarbu vali, மார்பு வலி, நெஞ்சு வலி]
+      te: [chaati noppi, ఛాతీ నొప్పి, గుండె నొప్పి]
+      kn: [ede novu, ಎದೆ ನೋವು, ಎದೆನೋವು]
+      ml: [nenchu vedana, നെഞ്ചുവേദന, നെഞ്ച് വേദന]
     red_flags:
       - any chest pain in an adult must be treated as possible heart trouble
       - pain spreading to arm, jaw or back
@@ -329,6 +336,9 @@ entries:
     self_care: >-
       There is no safe home treatment for chest pain. Sit upright, stay calm,
       loosen tight clothing, and get medical help immediately.
+      Do not drive yourself. Do not walk about or exert yourself, and do not
+      take a painkiller to push through it - that hides the problem without
+      treating it. Do not wait to see whether it passes.
     refer_when: >-
       Always. All chest pain needs to be seen urgently - do not wait to see if
       it settles.
@@ -338,11 +348,11 @@ entries:
     presentation: "Breathing difficulty"
     aliases:
       en: [breathlessness, cannot breathe, difficulty breathing, short of breath, wheezing, asthma attack, breathing problem]
-      hi: [saans phoolna, saans lene mein takleef, dama]
-      ta: [moochu thinaral, moochu vaanga mudiyala]
-      te: [oopiri aadatam ledu, shwasa ibbandi]
-      kn: [usiratada kashta]
-      ml: [swasam mudakkam]
+      hi: [saans phoolna, saans lene mein takleef, dama, सांस लेने में तकलीफ, सांस फूलना, दम घुटना]
+      ta: [moochu thinaral, moochu vaanga mudiyala, மூச்சு திணறல், மூச்சு விட முடியவில்லை]
+      te: [oopiri aadatam ledu, shwasa ibbandi, ఊపిరి ఆడటం లేదు, శ్వాస తీసుకోవడం కష్టం]
+      kn: [usiratada kashta, ಉಸಿರಾಟದ ತೊಂದರೆ, ಉಸಿರು ಕಟ್ಟುವುದು]
+      ml: [swasam mudakkam, ശ്വാസതടസ്സം, ശ്വാസം മുട്ടൽ]
     red_flags:
       - breathless at rest or while speaking
       - blue lips or fingertips
@@ -360,6 +370,9 @@ entries:
     self_care: >-
       Sit upright and lean slightly forward. Loosen tight clothes. Use a
       prescribed inhaler if one is available. Get help immediately.
+      Do not lie flat, and do not walk around or climb stairs to test it. Do
+      not take a cough syrup or sleeping medicine to settle the breathing. Do
+      not wait at home hoping it eases.
     refer_when: >-
       Always and immediately. Breathing difficulty is an emergency.
     source: "WHO STG; NICE CKS breathlessness"
@@ -368,11 +381,11 @@ entries:
     presentation: "Body ache / muscle and joint pain"
     aliases:
       en: [body pain, body ache, muscle pain, joint pain, aches, sprain, pulled muscle, back strain]
-      hi: [badan dard, jodo mein dard, mocha, kamar dard]
-      ta: [udal vali, mootu vali, sundhu vali]
-      te: [ottu noppulu, kandarala noppi]
-      kn: [maimuri, kilu novu]
-      ml: [ശരീരവേദന, sandhi vedana]
+      hi: [badan dard, jodo mein dard, mocha, kamar dard, बदन दर्द, शरीर में दर्द, जोड़ों में दर्द]
+      ta: [udal vali, mootu vali, sundhu vali, உடல் வலி, மூட்டு வலி]
+      te: [ottu noppulu, kandarala noppi, ఒళ్ళు నొప్పులు, కీళ్ల నొప్పులు]
+      kn: [maimuri, kilu novu, ಮೈ ಕೈ ನೋವು, ಕೀಲು ನೋವು]
+      ml: [ശരീരവേദന, sandhi vedana, സന്ധി വേദന]
     red_flags:
       - joint that is hot, red and very swollen
       - inability to bear weight after an injury
@@ -400,11 +413,11 @@ entries:
     presentation: "Itchy skin or rash"
     aliases:
       en: [rash, itching, itchy skin, skin allergy, hives, prickly heat, insect bite, skin irritation]
-      hi: [khujli, daane, chakatte, ghamouri, chubhan]
-      ta: [arippu, thadippu, kurukku]
-      te: [durada, dadduru]
-      kn: [tuttu, kajji]
-      ml: [chorachil, thadippu]
+      hi: [khujli, daane, chakatte, ghamouri, chubhan, खुजली, चकत्ते, दाने, त्वचा पर लाल चकत्ते]
+      ta: [arippu, thadippu, kurukku, அரிப்பு, தோல் அரிப்பு, தடிப்பு]
+      te: [durada, dadduru, దురద, దద్దుర్లు]
+      kn: [tuttu, kajji, ತುರಿಕೆ, ಚರ್ಮದ ದದ್ದು]
+      ml: [chorachil, thadippu, ചൊറിച്ചിൽ, തടിപ്പ്]
     red_flags:
       - rash with fever and feeling very unwell
       - rash that does not fade when pressed
@@ -434,11 +447,11 @@ entries:
     presentation: "Fungal skin infection / ringworm"
     aliases:
       en: [ringworm, fungal infection, round itchy patch, athlete foot, jock itch, daad]
-      hi: [daad, dad khaj, khujli wala chakatta]
-      ta: [padarthamarai, saruma noi]
-      te: [thamara, fungal]
-      kn: [hulli kajji]
-      ml: [pulli, fungal]
+      hi: [daad, dad khaj, khujli wala chakatta, दाद, खाज, फंगल संक्रमण]
+      ta: [padarthamarai, saruma noi, படர்தாமரை, சொறி]
+      te: [thamara, fungal, తామర, ఫంగల్ ఇన్ఫెక్షన్]
+      kn: [hulli kajji, ಹುಳುಕಡ್ಡಿ, ಶಿಲೀಂಧ್ರ ಸೋಂಕು]
+      ml: [pulli, fungal, വട്ടച്ചൊറി, ഫംഗസ് ബാധ]
     red_flags:
       - infection of the scalp or nails
       - spreading redness with pus or fever
@@ -467,11 +480,11 @@ entries:
     presentation: "Cut, wound or minor injury"
     aliases:
       en: [cut, wound, injury, bleeding, scrape, graze, gash, hurt myself]
-      hi: [chot, kat gaya, ghaav, zakhm]
-      ta: [kaayam, vettu]
-      te: [gaayam, dhebba]
-      kn: [gaya, kade]
-      ml: [murivu, muriv]
+      hi: [chot, kat gaya, ghaav, zakhm, चोट, घाव, कट गया, खून निकल रहा]
+      ta: [kaayam, vettu, காயம், வெட்டு, ரத்தம் வருகிறது]
+      te: [gaayam, dhebba, గాయం, కోత, రక్తం కారుతోంది]
+      kn: [gaya, kade, ಗಾಯ, ಕತ್ತರಿಸಿದೆ, ರಕ್ತ ಬರುತ್ತಿದೆ]
+      ml: [murivu, muriv, മുറിവ്, ചോര വരുന്നു]
     red_flags:
       - bleeding that will not stop with pressure
       - deep or gaping wound
@@ -492,6 +505,9 @@ entries:
       Wash your hands, then rinse the wound under clean running water. Press
       firmly with a clean cloth to stop bleeding. Apply antiseptic and cover
       with a clean dressing. Change the dressing daily and keep it dry.
+      Do not put turmeric, ash, cow dung, mud, oil or toothpaste on a wound -
+      these cause serious infection including tetanus. Do not try to stitch it
+      at home, and do not pull out anything stuck deep in the wound.
     refer_when: >-
       Bleeding will not stop after 10 minutes of firm pressure, the wound is
       deep or gaping, it is an animal or human bite, it was caused by a dirty or
@@ -503,11 +519,11 @@ entries:
     presentation: "Burn or scald"
     aliases:
       en: [burn, burnt, scald, hot water burn, fire burn, blister from heat]
-      hi: [jal gaya, jalan, garam pani se jal gaya]
-      ta: [thee kaayam, sudu]
-      te: [kaalina gaayam]
-      kn: [suttu gaya]
-      ml: [pollal]
+      hi: [jal gaya, jalan, garam pani se jal gaya, जल गया, आग से जला, जलने का घाव]
+      ta: [thee kaayam, sudu, தீக்காயம், சுட்டுவிட்டது]
+      te: [kaalina gaayam, కాలిన గాయం, కాలింది]
+      kn: [suttu gaya, ಸುಟ್ಟಗಾಯ, ಸುಟ್ಟಿದೆ]
+      ml: [pollal, പൊള്ളൽ, പൊള്ളി]
     red_flags:
       - burn larger than the person's palm
       - burn on the face, hands, feet, joints or genitals
@@ -539,11 +555,11 @@ entries:
     presentation: "Ear pain / ear discharge"
     aliases:
       en: [ear pain, earache, ear discharge, pus from ear, ear infection, ear blocked]
-      hi: [kaan mein dard, kaan bahna, kaan band]
-      ta: [kaadhu vali, kaadhil sathai]
-      te: [chevi noppi]
-      kn: [kivi novu]
-      ml: [chevi vedana]
+      hi: [kaan mein dard, kaan bahna, kaan band, कान में दर्द, कान दर्द, कान बह रहा]
+      ta: [kaadhu vali, kaadhil sathai, காது வலி, காது வடிதல்]
+      te: [chevi noppi, చెవి నొప్పి, చెవి కారడం]
+      kn: [kivi novu, ಕಿವಿ ನೋವು, ಕಿವಿ ಸೋರುವಿಕೆ]
+      ml: [chevi vedana, ചെവി വേദന, ചെവിയിൽ പഴുപ്പ്]
     red_flags:
       - swelling or redness of the bone behind the ear
       - ear pain with high fever and a very unwell child
@@ -573,11 +589,11 @@ entries:
     presentation: "Burning urine / urinary symptoms"
     aliases:
       en: [burning urine, painful urination, frequent urination, urine infection, uti, cannot pass urine]
-      hi: [peshaab mein jalan, baar baar peshaab, peshaab nahi aa raha]
-      ta: [siruneer ericcal, siruneer kaduppu]
-      te: [mutram manta, moothra vishayam]
-      kn: [mootra uri]
-      ml: [moothram erichil]
+      hi: [peshaab mein jalan, baar baar peshaab, peshaab nahi aa raha, पेशाब में जलन, पेशाब करते समय दर्द, बार बार पेशाब]
+      ta: [siruneer ericcal, siruneer kaduppu, சிறுநீர் எரிச்சல், சிறுநீர் கழிக்கும்போது வலி]
+      te: [mutram manta, moothra vishayam, మూత్రంలో మంట, మూత్ర విసర్జనలో నొప్పి]
+      kn: [mootra uri, ಮೂತ್ರದಲ್ಲಿ ಉರಿ, ಮೂತ್ರ ಮಾಡುವಾಗ ನೋವು]
+      ml: [moothram erichil, മൂത്രത്തിൽ കത്തൽ, മൂത്രമൊഴിക്കുമ്പോൾ വേദന]
     red_flags:
       - fever with back or flank pain
       - not passing urine at all
@@ -609,11 +625,11 @@ entries:
     presentation: "Intestinal worms"
     aliases:
       en: [worms, worm in stool, itching around anus, deworming, stomach worms]
-      hi: [pet ke keede, keeda, gudda mein khujli]
-      ta: [kudal puzhu, vayitril puzhu]
-      te: [purugulu, kadupulo purugulu]
-      kn: [hotteyalli hulu]
-      ml: [vayattil vira]
+      hi: [pet ke keede, keeda, gudda mein khujli, पेट में कीड़े, कीड़े]
+      ta: [kudal puzhu, vayitril puzhu, வயிற்றுப் புழு, குடல் புழு]
+      te: [purugulu, kadupulo purugulu, పేగు పురుగులు, కడుపులో పురుగులు]
+      kn: [hotteyalli hulu, ಹೊಟ್ಟೆಯಲ್ಲಿ ಹುಳು, ಕರುಳಿನ ಹುಳು]
+      ml: [vayattil vira, വയറ്റിൽ വിര, കുടൽ വിര]
     red_flags:
       - severe abdominal pain or swelling
       - vomiting worms
@@ -631,6 +647,10 @@ entries:
       Wash hands with soap before eating and after using the toilet. Cut nails
       short. Wash and sun-dry bedding and underclothes. Wear footwear outdoors.
       Treat everyone in the household at the same time.
+      Do not take deworming tablets that were prescribed for someone else, and
+      do not give them to a child under one year or in early pregnancy without
+      asking a health worker first. Do not let children walk barefoot
+      outdoors.
     refer_when: >-
       A child under 1 year, pregnancy, severe stomach pain or swelling, or
       symptoms continuing after treatment.
@@ -640,11 +660,11 @@ entries:
     presentation: "Allergic rhinitis / sneezing and itchy eyes"
     aliases:
       en: [allergy, sneezing, itchy eyes, watery eyes, dust allergy, seasonal allergy, itchy nose]
-      hi: [allergy, chheenk, aankh mein khujli, dhool se allergy]
-      ta: [thummal, kann arippu]
-      te: [tummulu, kallu durada]
-      kn: [sincu, kannu tuttu]
-      ml: [thummal, kannu chorachil]
+      hi: [allergy, chheenk, aankh mein khujli, dhool se allergy, छींक, छींक आना, एलर्जी, आंखों में खुजली]
+      ta: [thummal, kann arippu, தும்மல், ஒவ்வாமை, கண் அரிப்பு]
+      te: [tummulu, kallu durada, తుమ్ములు, అలర్జీ, కళ్ళ దురద]
+      kn: [sincu, kannu tuttu, ಸೀನು, ಅಲರ್ಜಿ, ಕಣ್ಣು ತುರಿಕೆ]
+      ml: [thummal, kannu chorachil, തുമ്മൽ, അലർജി, കണ്ണ് ചൊറിച്ചിൽ]
     red_flags:
       - wheezing or breathlessness
       - swelling of face or throat
@@ -670,11 +690,11 @@ entries:
     presentation: "Weakness / tiredness"
     aliases:
       en: [weakness, tiredness, fatigue, feeling weak, no energy, giddiness, dizzy, anaemia]
-      hi: [kamzori, thakan, chakkar, khoon ki kami]
-      ta: [sorvu, thalai suttral, ratha soku]
-      te: [balaheenata, nirsatthuva]
-      kn: [balaheenate, sustu]
-      ml: [thalarcha, ksheenam]
+      hi: [kamzori, thakan, chakkar, khoon ki kami, कमजोरी, थकान, कमज़ोरी]
+      ta: [sorvu, thalai suttral, ratha soku, சோர்வு, பலவீனம், தளர்ச்சி]
+      te: [balaheenata, nirsatthuva, నీరసం, అలసట, బలహీనత]
+      kn: [balaheenate, sustu, ಸುಸ್ತು, ಆಯಾಸ, ದೌರ್ಬಲ್ಯ]
+      ml: [thalarcha, ksheenam, ക്ഷീണം, തളർച്ച]
     red_flags:
       - fainting or near-fainting
       - chest pain or breathlessness with the weakness
@@ -697,6 +717,10 @@ entries:
       Eat regular meals with green leafy vegetables, dal, jaggery and seasonal
       fruit. Drink enough water. Rest properly at night. Iron-folic acid tablets
       from the local health centre help if you are anaemic.
+      Do not take iron tablets with tea, coffee or milk - they block the iron
+      from being absorbed. Do not buy tonics or ask for an injection for
+      weakness. Do not ignore weakness that has gone on for weeks without
+      getting it checked.
     refer_when: >-
       Fainting, weakness on one side of the body, breathlessness or chest
       discomfort, black stools, weakness during pregnancy, or tiredness that
@@ -707,11 +731,11 @@ entries:
     presentation: "Constipation"
     aliases:
       en: [constipation, hard stool, cannot pass motion, no motion for days, straining]
-      hi: [kabz, paikhana nahi ho raha, sakht paikhana]
-      ta: [malachikkal]
-      te: [malabaddhakam]
-      kn: [malabaddhate]
-      ml: [malabandham]
+      hi: [kabz, paikhana nahi ho raha, sakht paikhana, कब्ज, पेट साफ नहीं, शौच नहीं हो रहा]
+      ta: [malachikkal, மலச்சிக்கல், மலம் கழியவில்லை]
+      te: [malabaddhakam, మలబద్ధకం, మలబద్దకం]
+      kn: [malabaddhate, ಮಲಬದ್ಧತೆ, ಶೌಚ ಆಗುತ್ತಿಲ್ಲ]
+      ml: [malabandham, മലബന്ധം]
     red_flags:
       - no stool and no gas with a swollen painful abdomen
       - blood in the stool
@@ -740,11 +764,11 @@ entries:
     presentation: "Pregnancy-related concern"
     aliases:
       en: [pregnant, pregnancy, expecting, missed period, morning sickness in pregnancy, baby not moving]
-      hi: [garbhvati, pregnancy, mahwari band, pet mein bacha]
-      ta: [karpam, karuvutru]
-      te: [garbham, garbhavati]
-      kn: [garbhini, garbha]
-      ml: [garbhini, garbham]
+      hi: [garbhvati, pregnancy, mahwari band, pet mein bacha, गर्भावस्था, गर्भवती, प्रेगनेंसी, पेट से हूं]
+      ta: [karpam, karuvutru, கர்ப்பம், கர்ப்பிணி]
+      te: [garbham, garbhavati, గర్భం, గర్భవతి, ప్రెగ్నెన్సీ]
+      kn: [garbhini, garbha, ಗರ್ಭಧಾರಣೆ, ಗರ್ಭಿಣಿ]
+      ml: [garbhini, garbham, ഗർഭം, ഗർഭിണി]
     red_flags:
       - bleeding in pregnancy
       - severe abdominal pain

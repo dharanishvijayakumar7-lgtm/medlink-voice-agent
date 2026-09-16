@@ -134,3 +134,73 @@ drugs:
   - acyclovir
   - oseltamivir
   - tamiflu
+
+# Medicines a caller can genuinely buy over the counter in India, but which
+# MedLink has NOT safety-checked. The formulary is the only list the agent is
+# allowed to advise from; anything here is a real product the model might
+# volunteer from its training data instead ("just take a Combiflam").
+#
+# Blocked for a different reason than the drugs above - these do not need a
+# prescription, they simply are not ours to advise on - so the guard says so
+# differently.
+#
+# Names in the formulary are filtered out of this list at load time by
+# Formulary.known_names(), so adding one here by mistake cannot silence a
+# medicine we do stock. That allow-list gate is why Combiflam, Digene, Brufen
+# and Crocin stay speakable.
+#
+# Weighted toward the ones that actually cause harm when self-prescribed:
+# nimesulide (liver injury, banned under 12 in India), aspirin in children
+# (Reye's syndrome), ranitidine (withdrawn over NDMA), and codeine syrups.
+unvetted_otc:
+  - disprin
+  - aspirin
+  - saridon
+  - anacin
+  - metacin
+  - nimesulide
+  - nimulid
+  - nise
+  - sumo tablet
+  - meftal
+  - meftal spas
+  - mefenamic acid
+  - ranitidine
+  - zintac
+  - rantac
+  - aciloc
+  - omez
+  - omeprazole
+  - pantoprazole
+  - pan 40
+  - cyclopam
+  - drotaverine
+  - vicks action 500
+  - d cold
+  - d cold total
+  - sinarest
+  - cheston cold
+  - coldarin
+  - corex
+  - phensedyl
+  - honitus
+  - ascoril
+  - avil
+  - pheniramine
+  - dulcolax
+  - bisacodyl
+  - cremaffin
+  - softovac
+  - isabgol
+  - liv 52
+  - becosules
+  - unienzyme
+  - hajmola
+  - pudin hara
+  - eno
+  - iodex
+  - moov
+  - volini
+  - zandu balm
+  - amrutanjan
+  - dart tablet

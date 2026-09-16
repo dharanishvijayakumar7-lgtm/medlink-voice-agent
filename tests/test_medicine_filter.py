@@ -239,3 +239,101 @@ def test_never_recommends_two_products_with_the_same_ingredient(fm):
     assert len(ingredients) == len(set(ingredients)), (
         f"same active ingredient offered twice: {ingredients}"
     )
+
+
+# ----------------------------------------------------- audit regressions ---
+# Found by the end-to-end audit. Each of these returned the wrong thing before.
+
+
+def test_a_urinary_complaint_does_not_return_an_antacid(fm):
+    """"burning urine" matched this antacid through the single word "burning",
+    which reaches it via the lay term "burning in chest after food"."""
+    hits = fm.search("burning urine")
+    assert [e.id for e, _ in hits] == []
+
+
+def test_a_bare_fever_query_returns_the_adult_tablet(fm):
+    """The paediatric syrup used to win: its indications repeat "children fever",
+    which scores higher on BM25 than the tablet's single "fever"."""
+    hits = fm.search("fever", limit=1)
+    assert hits and hits[0][0].id == "paracetamol_tab_500"
+
+
+def test_a_child_fever_query_returns_the_syrup(fm):
+    hits = fm.search("my child has fever", limit=1)
+    assert hits and hits[0][0].id == "paracetamol_syrup_250"
+
+
+def test_a_medicine_asked_for_by_name_resolves(fm):
+    """Callers ask by name. BM25 scored "paracetamol" 1.89 and "crocin" 2.35,
+    both under the old 2.5 threshold, so neither resolved at all."""
+    for query in ("paracetamol", "crocin", "dolo 650"):
+        hits = fm.search(query, limit=1)
+        assert hits and hits[0][0].id == "paracetamol_tab_500", query
+
+
+def test_ors_resolves_to_rehydration_salts_not_zinc(fm):
+    hits = fm.search("ORS", limit=1)
+    assert hits and hits[0][0].id == "ors_who"
+
+
+def test_an_unrelated_complaint_still_matches_nothing(fm):
+    """The phrase gate must not have loosened anything."""
+    for query in ("hair falling", "my hair is greying", "I cannot sleep"):
+        assert fm.search(query) == [], query
+
+
+def test_a_child_with_diarrhoea_is_offered_zinc_with_ors(fm):
+    """WHO guidance, and the KB's own self-care text, pair zinc with ORS. Zinc
+    was unreachable: its indication read "diarrhoea in children (given alongside
+    ORS)", a clinical note rather than an indication, so relevance demanded the
+    words "given" and "alongside" in the caller's complaint.
+    """
+    from knowledge.triage_kb import apply_to_session
+    from medicine.filter import recommend
+    from session_state import MedLinkUserData
+
+    ud = MedLinkUserData(call_id="t", caller_phone=None, channel="web")
+    ud.patient.age_years = 6
+    ud.patient.is_for_child = True
+    apply_to_session(ud, "loose motions")
+    got = {
+        r.entry_id
+        for r in recommend(
+            "my child has loose motions",
+            ud.patient,
+            allowed_classes=ud.allowed_otc_classes,
+        ).recommendations
+    }
+    assert {"zinc_dispersible_20", "ors_who"} <= got
+
+
+def test_a_plural_complaint_matches_a_singular_indication(fm):
+    """"loose motions" must reach an entry listing "loose motion"."""
+    assert fm.search("loose motion", limit=1)
+    assert fm.search("loose motions", limit=1)
+
+
+def test_a_dose_limit_that_is_a_sentence_is_not_prefixed():
+    """Eight of twenty entries hold a sentence in max_daily_dose, and the caller
+    heard "Do not exceed As much as needed to replace losses"."""
+    from medicine.filter import _build_recommendation
+    from medicine.formulary import get_formulary
+    from session_state import PatientContext
+
+    spoken = _build_recommendation(
+        get_formulary().by_id["ors_who"], PatientContext(), []
+    ).spoken_text
+    assert "Do not exceed As much as needed" not in spoken
+    assert "As much as needed to replace losses" in spoken
+
+
+def test_a_dose_limit_that_is_a_quantity_still_says_do_not_exceed():
+    from medicine.filter import _build_recommendation
+    from medicine.formulary import get_formulary
+    from session_state import PatientContext
+
+    spoken = _build_recommendation(
+        get_formulary().by_id["paracetamol_tab_500"], PatientContext(), []
+    ).spoken_text
+    assert "Do not exceed 4000 mg/day" in spoken

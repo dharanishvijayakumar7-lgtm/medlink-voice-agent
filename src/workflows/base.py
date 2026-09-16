@@ -152,6 +152,13 @@ class MedLinkAgent(Agent):
                 ),
             )
 
+        # Keep what they actually said, so triage can tell which questions they
+        # have already answered in passing. Bounded: a long call must not grow
+        # this without limit.
+        if text.strip():
+            self.data.heard.append(text.strip()[:400])
+            del self.data.heard[:-40]
+
         # One line per caller turn, so a live call shows what reached the agent.
         logger.info(
             "caller turn",
@@ -275,8 +282,11 @@ class MedLinkAgent(Agent):
             )
         if self.data.is_returning_caller and self.data.previous_summary:
             lines.append(
-                f"\n# This caller has spoken to us before\n{self.data.previous_summary}\n"
-                "Acknowledge it briefly and ask if that issue is better."
+                f"\n# Someone on this number has called before\n"
+                f"{self.data.previous_summary}\n"
+                "Phones are shared, so this may not be the same person. Bring it "
+                "up only if it bears on what they are describing now, and ask "
+                "rather than assert. Never state a date."
             )
         lines.append(
             f"\n# Disclaimer you must convey before ending\n{settings.disclaimer}"

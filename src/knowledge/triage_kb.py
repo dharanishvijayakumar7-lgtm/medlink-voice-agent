@@ -12,13 +12,18 @@ Matching order: longest alias hit wins (most specific), then BM25 over the
 entry text as a fallback, then nothing. Returning `None` is a valid, safe
 outcome - the caller then falls back to the core follow-up slots.
 
-Note: aliases currently cover English plus romanized Indic. Native-script
-aliases can be added freely; the primary path normalizes the complaint to
-English before lookup (see `IntakeAgent.record_complaint`).
+Aliases cover English, romanized Indic and native script. The native-script
+entries matter more than they look: `IntakeAgent.record_complaint` asks the
+model for the complaint in English, but that is a prompt instruction, not a
+guarantee. When it was the only defence, a Hindi complaint matched nothing, and
+a miss used to leave `allowed_otc_classes` unset - which means *unrestricted*,
+not *none*. An antacid was recommended for a urinary infection that way. A miss
+now fails closed and says so in the log.
 """
 
 from __future__ import annotations
 
+import logging
 import re
 from functools import lru_cache
 from pathlib import Path
@@ -30,7 +35,14 @@ from rank_bm25 import BM25Okapi
 from config import settings
 from safety.redflags import CLAUSE_SENTINEL, _is_negated, _normalize_clauses, normalize
 
-_TOKEN_RE = re.compile(r"[^\w]+", re.UNICODE)
+logger = logging.getLogger("medlink.kb")
+
+# `\w` does not match Indic combining vowel signs (category Mn/Mc), so splitting
+# on `[^\w]+` alone tore every Indic word apart at its matras: "मुझे बुखार है"
+# tokenised to ['म','झ','ब','ख','र','ह'] and matched nothing. U+0900-U+0D7F
+# covers Devanagari through Malayalam, so keeping that range as word characters
+# holds each word together.
+_TOKEN_RE = re.compile(r"[^\w\u0900-\u0D7F]+", re.UNICODE)
 # BM25 fallback needs a clear signal before it overrides "no match".
 _BM25_MIN_SCORE = 3.0
 
@@ -154,13 +166,26 @@ def score_modifiers(entry: TriageEntry, ud) -> int:
     return total
 
 
-def _affirmed(words: list[str], flat: str, clauses: str) -> bool:
-    """True if the words occur, as a phrase, at least once without a negator.
+# How many unrelated words may sit between the words of a modifier phrase.
+# Enough for "blood in THE stool", nowhere near enough to join words from
+# opposite ends of a sentence.
+_MODIFIER_GAP_WORDS = 2
+
+
+def _affirmed(words: list[str], flat: str, clauses: str, *, gap: int = 0) -> bool:
+    """True if the words occur close together, at least once, without a negator.
 
     Reuses the red-flag module's negation scope (clause breaks, punctuation,
     3-token lookback), which was tested against real negated phrasings.
+
+    ``gap`` allows filler words between them. It must stay small. The fallback
+    this replaced asked only whether each word appeared *somewhere* in the whole
+    transcript, which let "no_urine" fire on a child who was passing urine
+    normally: it took the "no" from "no blood" and the "urine" from "still
+    passing urine", scored +6, and escalated a mild case toward an ambulance.
     """
-    pattern = r"\b" + r"\s+".join(re.escape(w) for w in words) + r"\b"
+    filler = rf"(?:\s+\w+){{0,{gap}}}\s+" if gap else r"\s+"
+    pattern = r"\b" + filler.join(re.escape(w) for w in words) + r"\b"
     return any(not _is_negated(clauses, m.start()) for m in re.finditer(pattern, flat))
 
 
@@ -193,7 +218,9 @@ def _modifier_matches(key: str, ud, flat: str, clauses: str) -> bool:
         return False
     if _affirmed(words, flat, clauses):
         return True
-    return all(_affirmed([w], flat, clauses) for w in words)
+    # Same phrase, allowing a couple of filler words inside it. NOT "each word
+    # somewhere in the transcript" - see _affirmed.
+    return _affirmed(words, flat, clauses, gap=_MODIFIER_GAP_WORDS)
 
 
 def apply_to_session(ud, complaint: str | None = None) -> TriageEntry | None:
@@ -208,7 +235,21 @@ def apply_to_session(ud, complaint: str | None = None) -> TriageEntry | None:
     entry = kb.match(complaint or ud.chief_complaint or "")
 
     if entry is None:
+        # Fail closed. Leaving allowed_otc_classes as None means "no class
+        # restriction", so every medicine in the formulary becomes eligible for
+        # a complaint nothing was understood about. An empty set means "none",
+        # and the medicine filter then declines and advises a doctor.
         ud.kb_severity_bonus = 0
+        ud.allowed_otc_classes = set()
+        ud.self_care_advice = None
+        ud.refer_when = None
+        logger.warning(
+            "complaint matched no KB entry - no medicine will be offered",
+            extra={
+                "call_id": getattr(ud, "call_id", None),
+                "complaint": (complaint or ud.chief_complaint or "")[:120],
+            },
+        )
         return None
 
     ud.triage_entry_id = entry.id

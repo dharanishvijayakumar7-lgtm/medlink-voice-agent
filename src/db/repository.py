@@ -155,8 +155,10 @@ async def _previous_summary(session, user_id: UUID) -> str | None:
     ).scalar_one_or_none()
     if previous is None:
         return None
-    when = previous.started_at.strftime("%d %B")
-    return f"On {when} they called about: {previous.summary_en}"
+    # Deliberately no date. The agent used to announce "you called us on 16
+    # September", which is both an odd thing to say on a health line and wrong
+    # on a shared village phone, where the last caller may not be this one.
+    return f"Last time they called about: {previous.summary_en}"
 
 
 # -------------------------------------------------------------- during call ---

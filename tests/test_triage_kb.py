@@ -221,3 +221,157 @@ def test_kb_bonus_feeds_the_severity_score():
     assert ud.kb_severity_bonus > 0
     assert severity >= ud.kb_severity_bonus
     assert urgency in (routing.URGENT, routing.EMERGENCY, routing.CLINIC)
+
+
+# ------------------------------------------- native script (audit finding) ---
+# A Hindi caller matched no KB entry at all, which silently removed the curated
+# questions, self-care text, referral advice and severity scoring - and left
+# allowed_otc_classes as None, meaning *unrestricted*. An antacid was recommended
+# for a urinary infection that way. Two causes: no native-script aliases, and a
+# tokenizer that split Indic words at their vowel marks.
+
+
+@pytest.mark.parametrize(
+    "complaint,expected",
+    [
+        ("मुझे बुखार है", "fever"),
+        ("मुझे सिर दर्द है", "headache"),
+        ("मुझे पेशाब में जलन है", "urinary_symptoms"),
+        ("सीने में दर्द", "chest_pain"),
+        ("सांस लेने में तकलीफ", "breathlessness"),
+        ("எனக்கு காய்ச்சல்", "fever"),
+        ("வயிற்றுப்போக்கு", "diarrhoea"),
+        ("மார்பு வலி", "chest_pain"),
+        ("నాకు జ్వరం", "fever"),
+        ("కడుపు నొప్పి", "abdominal_pain"),
+        ("ನನಗೆ ಜ್ವರ", "fever"),
+        ("ಹೊಟ್ಟೆ ನೋವು", "abdominal_pain"),
+        ("എനിക്ക് പനി", "fever"),
+        ("വയറിളക്കം", "diarrhoea"),
+    ],
+)
+def test_a_native_script_complaint_matches_its_entry(complaint, expected):
+    from knowledge.triage_kb import get_triage_kb
+
+    match = get_triage_kb().match(complaint)
+    assert match is not None, f"{complaint} matched nothing"
+    assert match.id == expected
+
+
+def test_indic_words_survive_tokenisation():
+    r"""`\w` does not cover Indic vowel signs, so the old pattern split words at
+    every matra: "मुझे बुखार है" became ['म','झ','ब','ख','र','ह']."""
+    from knowledge.triage_kb import _tokenize
+
+    assert _tokenize("मुझे बुखार है") == ["मुझे", "बुखार", "है"]
+    assert _tokenize("எனக்கு காய்ச்சல்") == ["எனக்கு", "காய்ச்சல்"]
+
+
+def test_a_complaint_that_matches_nothing_forbids_every_medicine():
+    """Fail closed. A miss used to leave allowed_otc_classes as None, which the
+    formulary reads as "no restriction" - every medicine became eligible for a
+    complaint nothing was understood about."""
+    from knowledge.triage_kb import apply_to_session
+    from session_state import MedLinkUserData
+
+    ud = MedLinkUserData(call_id="t", caller_phone=None, channel="web")
+    assert apply_to_session(ud, "my hair is greying and I feel unlucky") is None
+    assert ud.allowed_otc_classes == set()
+
+
+def test_the_urinary_complaint_that_returned_an_antacid():
+    """The exact regression, end to end, in the language that broke it."""
+    from knowledge.triage_kb import apply_to_session
+    from medicine.filter import recommend
+    from session_state import MedLinkUserData
+
+    ud = MedLinkUserData(call_id="t", caller_phone=None, channel="web")
+    entry = apply_to_session(ud, "मुझे पेशाब में जलन है")
+    assert entry is not None and entry.id == "urinary_symptoms"
+    result = recommend("burning urine", ud.patient, allowed_classes=ud.allowed_otc_classes)
+    assert result.recommendations == []
+
+
+def test_every_entry_says_what_not_to_do():
+    """Callers act on the don'ts as much as the dos - putting ash on a wound,
+    stopping food during loose motions, walking off chest pain. Seven entries
+    carried no "do not" at all, so the agent had nothing to warn them with.
+    """
+    import re
+
+    from knowledge.triage_kb import get_triage_kb
+
+    negative = re.compile(r"\b(do not|don't|avoid|never)\b", re.IGNORECASE)
+    missing = [
+        e.id for e in get_triage_kb().entries if not negative.search(e.self_care or "")
+    ]
+    assert not missing, f"no what-not-to-do for: {missing}"
+
+
+# ------------------------------- severity modifiers (audit finding) ---------
+# `_modifier_matches` fell back to "does every word of the key appear ANYWHERE
+# in the transcript". That made `no_urine` fire on a child who was passing urine
+# normally - it took "no" from "no blood" and "urine" from "still passing urine"
+# - scoring +6 and pushing a mild case toward an ambulance.
+
+
+def _assess(complaint: str, age: int, answers: dict[str, str]):
+    from knowledge.triage_kb import apply_to_session
+    from session_state import MedLinkUserData
+    from workflows import routing
+
+    ud = MedLinkUserData(call_id="t", caller_phone=None, channel="web")
+    ud.chief_complaint = complaint
+    ud.patient.age_years = age
+    ud.patient.is_for_child = age < 12
+    apply_to_session(ud, complaint)
+    for slot, text in answers.items():
+        ud.record_answer(slot, text)
+    apply_to_session(ud)
+    severity, _ = routing.assess(ud)
+    return severity, routing.should_escalate(ud)
+
+
+def test_a_well_hydrated_child_with_mild_diarrhoea_is_not_escalated():
+    severity, escalate = _assess(
+        "my daughter has loose motions",
+        6,
+        {
+            "duration": "Since this morning.",
+            "severity": "About five times today.",
+            "associated": "No blood, no vomiting, she is drinking water "
+            "and still passing urine.",
+        },
+    )
+    assert not escalate, f"escalated at severity {severity}"
+
+
+@pytest.mark.parametrize(
+    "associated",
+    [
+        "There is blood in the stool and she cannot keep water down.",
+        "She has passed no urine since yesterday.",
+    ],
+)
+def test_a_child_with_a_real_danger_sign_is_still_escalated(associated):
+    """The fix must not have blunted the modifiers it was meant to keep."""
+    severity, escalate = _assess(
+        "my daughter has loose motions",
+        6,
+        {"duration": "Two days.", "severity": "Many times.", "associated": associated},
+    )
+    assert escalate, f"not escalated, severity {severity}"
+
+
+def test_a_modifier_phrase_still_matches_with_a_filler_word():
+    """"blood in stool" has to match "blood in THE stool"."""
+    severity, _ = _assess(
+        "loose motions",
+        30,
+        {
+            "duration": "Two days.",
+            "severity": "Many times.",
+            "associated": "I saw blood in the stool this morning.",
+        },
+    )
+    assert severity >= 5, "blood in the stool did not score"

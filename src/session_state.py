@@ -65,6 +65,12 @@ class MedLinkUserData:
     patient: PatientContext = field(default_factory=PatientContext)
     answers: dict[str, str] = field(default_factory=dict)
     questions_asked: int = 0
+    # Everything the caller has actually said, so a question they already
+    # answered is not put to them again. `answers` only holds what the model
+    # chose to record under a slot, which misses detail volunteered in passing -
+    # a mother said her child was still passing urine in her opening sentence
+    # and was asked about it anyway, using up the one turn she stayed for.
+    heard: list[str] = field(default_factory=list)
     # Background the caller volunteered: {"kind": condition|allergy|past_issue,
     # "detail": "..."}. Persisted to the medical_history table at call end.
     medical_history: list[dict[str, str]] = field(default_factory=list)

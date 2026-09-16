@@ -33,7 +33,14 @@ from config import DATA_DIR
 # \x01 specifically, not one of \x1c-\x1f: Python's str.split() treats those as
 # whitespace, which silently ate the sentinel and let negation cross the comma.
 CLAUSE_SENTINEL = "\x01"
-_CLAUSE_PUNCT_RE = re.compile(r"[.,;:!?]+")
+# A comma is a softer break than a full stop, and negation carries across it:
+# "no vomiting blood, black stools, or chest pain" denies all three. Treating a
+# comma as a hard clause end scored every item after the first as PRESENT, which
+# turned an ordinary acidity call into "urgent" on the strength of the caller
+# saying they had NOT had black stools.
+LIST_SENTINEL = "\x02"
+_CLAUSE_PUNCT_RE = re.compile(r"[.;:!?]+")
+_LIST_PUNCT_RE = re.compile(r",+")
 _PUNCT_RE = re.compile(r"['\"`()\[\]{}/\\|~*_<>@#%^&+=‘’“”-]+")  # noqa: RUF001
 _WS_RE = re.compile(r"\s+")
 
@@ -76,6 +83,22 @@ _CLAUSE_BREAKS = {
 # to an earlier clause ("I have no doubt this is chest pain"), and a missed
 # emergency costs far more than an extra "please get checked".
 _NEG_LOOKBACK_TOKENS = 3
+# A negated list can run longer than a plain negation, so the scan across list
+# items is allowed further - but only through list-like tokens (see _is_negated).
+_NEG_LIST_LOOKBACK_TOKENS = 20
+# Separators that keep a list going rather than starting a new statement.
+_LIST_JOINERS = {"or", "and", "nor"}
+# A verb here means a new assertion has begun, so an earlier negator no longer
+# applies: "no fever, I HAVE chest pain".
+_ASSERTIONS = {
+    "have", "has", "had", "having", "is", "are", "was", "were", "am",
+    "got", "getting", "get", "feel", "feeling", "felt", "started", "starting",
+}
+
+
+def flatten(clauses: str) -> str:
+    """Drop the clause markers, keeping every offset where it was."""
+    return clauses.replace(CLAUSE_SENTINEL, " ").replace(LIST_SENTINEL, " ")
 
 
 def _normalize_clauses(text: str) -> str:
@@ -88,6 +111,7 @@ def _normalize_clauses(text: str) -> str:
     """
     text = unicodedata.normalize("NFKC", text).casefold()
     text = _CLAUSE_PUNCT_RE.sub(f" {CLAUSE_SENTINEL} ", text)
+    text = _LIST_PUNCT_RE.sub(f" {LIST_SENTINEL} ", text)
     text = _PUNCT_RE.sub(" ", text)
     return _WS_RE.sub(" ", text).strip()
 
@@ -98,7 +122,7 @@ def normalize(text: str) -> str:
     Indic combining marks are preserved (they carry meaning); only latin
     punctuation is removed.
     """
-    flat = _normalize_clauses(text).replace(CLAUSE_SENTINEL, " ")
+    flat = flatten(_normalize_clauses(text))
     return _WS_RE.sub(" ", flat).strip()
 
 
@@ -152,18 +176,64 @@ def _load_categories(path: str) -> tuple[_CompiledCategory, ...]:
 
 
 def _is_negated(haystack: str, start: int) -> bool:
-    """True if a negator token appears just before ``start`` in the same clause.
+    """True if a negator applies to the match at ``start``.
 
-    Scans the last few tokens before the match. A negator counts only if no
-    clause-break word ("and", "but", ...) sits between it and the match.
+    Two ways that happens:
+
+    1. A negator sits within the last few tokens, in the same clause. Kept
+       short on purpose - a real negation sits close to what it negates, and
+       treating a distant one as binding would suppress a real emergency.
+    2. The match is an item in a negated list: "no vomiting blood, black
+       stools, or chest pain". The negator sits next to the first item only, but
+       it denies all of them. Scanning back across the commas is allowed only
+       while every token in between is list-like - no full stop, no contrastive
+       conjunction, and no verb that would start a fresh assertion. That keeps
+       "no fever, I have chest pain" un-negated.
+
+       It also requires a real list joiner ("or", "and", "nor") somewhere in the
+       sentence. Without one, two comma-separated phrases are more likely to be
+       a contrast than a list: "no fever, chest pain" almost certainly means the
+       caller HAS chest pain, and treating that as denied would swallow an
+       emergency. A missed emergency costs far more than an over-triage.
     """
-    tokens = haystack[max(0, start - 80) : start].split()
+    tokens = haystack[max(0, start - 400) : start].split()
+
     for tok in reversed(tokens[-_NEG_LOOKBACK_TOKENS:]):
-        if tok in _CLAUSE_BREAKS:
-            return False
+        # A comma ends this tight scan too. Carrying a negation past one is the
+        # list case below, and only with a joiner to prove it is a list.
+        if tok in _CLAUSE_BREAKS or tok == LIST_SENTINEL:
+            break
         if tok in _NEGATORS:
             return True
+
+    if not _sentence_has_joiner(haystack, start):
+        return False
+
+    crossed_list_break = False
+    for tok in reversed(tokens[-_NEG_LIST_LOOKBACK_TOKENS:]):
+        if tok == LIST_SENTINEL:
+            crossed_list_break = True
+            continue
+        if tok in _NEGATORS:
+            # Only ever extend the scope through an actual list.
+            return crossed_list_break
+        if tok in _LIST_JOINERS:
+            continue
+        if tok == CLAUSE_SENTINEL or tok in _CLAUSE_BREAKS or tok in _ASSERTIONS:
+            return False
+        # An ordinary word: another item of the list if we are in one, and
+        # otherwise a sign we have wandered out of the negator's reach.
+        if not crossed_list_break:
+            return False
     return False
+
+
+def _sentence_has_joiner(haystack: str, start: int) -> bool:
+    """Is the match inside a sentence that actually coordinates a list?"""
+    left = haystack.rfind(CLAUSE_SENTINEL, 0, start)
+    right = haystack.find(CLAUSE_SENTINEL, start)
+    sentence = haystack[left + 1 if left >= 0 else 0 : right if right >= 0 else None]
+    return any(tok in _LIST_JOINERS for tok in sentence.split())
 
 
 def detect_redflag(
@@ -181,7 +251,7 @@ def detect_redflag(
     # ("chest, pain"); negation is judged against `clauses`, where that comma is
     # a hard stop. The two are the same length, so offsets carry between them.
     clauses = _normalize_clauses(text)
-    flat = clauses.replace(CLAUSE_SENTINEL, " ")
+    flat = flatten(clauses)
 
     for category in _load_categories(path):
         for pattern, original in category.ascii_patterns:
