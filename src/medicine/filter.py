@@ -169,7 +169,14 @@ def _build_recommendation(
         bits.append(f"It is used for {entry.indications[0]}.")
     bits.append(_dose_line(entry, patient))
     if entry.max_daily_dose:
-        bits.append(f"Do not exceed {entry.max_daily_dose}")
+        # Only a few entries hold a bare quantity ("4000 mg/day"); the rest hold
+        # a whole sentence, and prefixing those produced spoken nonsense - the
+        # caller heard "Do not exceed As much as needed to replace losses".
+        # A quantity starts with a digit; anything else already reads as advice.
+        limit = entry.max_daily_dose.strip()
+        bits.append(
+            f"Do not exceed {limit}" if limit[:1].isdigit() else limit
+        )
     if entry.duration_limit_days:
         bits.append(
             f"Use it for at most {entry.duration_limit_days} day(s) for self-care."

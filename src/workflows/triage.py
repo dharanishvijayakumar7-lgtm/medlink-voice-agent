@@ -9,6 +9,7 @@ and picks the most informative unanswered one. Severity scoring is computed in
 from __future__ import annotations
 
 import logging
+import re
 
 from livekit.agents import ChatContext, ChatMessage, RunContext, function_tool
 
@@ -38,6 +39,8 @@ wrong. Now understand their situation the way a good doctor would on the phone.
   matters here, in one gentle question - then `record_patient_context`.
 - If they share their name or gender themselves, save it with
   `record_caller_identity`. Never ask for or guess these.
+- Never say a warning sign is absent unless you asked and they answered. If you
+  did not ask, you do not know.
 - Like a good doctor, stop asking once you know how long, how bad, and whether
   anything worrying is present. Then call `finish_questions` with up to 3
   `possible_causes` (most likely first) and a one-line `reasoning`.
@@ -99,6 +102,7 @@ class TriageAgent(MedLinkAgent):
             answer: What the caller said, summarised in English.
         """
         data = context.userdata
+        slot = canonical_slot(slot)
         # Count a question once. The model re-saves earlier answers on later turns,
         # which used to inflate the count toward the limit.
         if slot not in data.answers:
@@ -257,10 +261,101 @@ _SLOT_PHRASES: dict[str, tuple[str, ...]] = {
     "severity": ("how bad", "how severe", "how strong", "how much pain"),
 }
 
+# The model picks its own slot labels, and `finish_questions` gates on the three
+# in routing.ESSENTIAL_SLOTS by exact name. When it saved the warning-sign
+# answer as "associated_symptoms" or "other_symptoms", the gate never opened:
+# finish_questions kept replying "Not yet", the call never reached the advice
+# stage, and a child with diarrhoea was given no ORS, no zinc and no danger
+# signs. Names are folded onto the canonical three here.
+#
+# "symptoms" on its own is deliberately NOT a marker for `associated` - the
+# model uses it for the chief complaint too, and letting that satisfy the gate
+# would skip the warning-sign check this gate exists to enforce.
+_SLOT_CANON: dict[str, tuple[str, ...]] = {
+    "duration": ("duration", "how_long", "howlong", "since_when", "time_since"),
+    "severity": ("severity", "severe", "how_bad", "howbad", "intensity", "pain_level"),
+    "associated": (
+        "associated",
+        "accompany",
+        "accompanying",
+        "other_symptom",
+        "othersymptom",
+        "related_symptom",
+        "warning",
+        "red_flag",
+        "redflag",
+    ),
+}
+
+
+def canonical_slot(slot: str) -> str:
+    """Fold a slot label the model invented onto the name the gate checks."""
+    cleaned = re.sub(r"[^a-z0-9]+", "_", slot.casefold()).strip("_")
+    for canonical, markers in _SLOT_CANON.items():
+        if any(marker in cleaned for marker in markers):
+            return canonical
+    return cleaned or slot
+
 
 def _asks_for(question: str, slot: str) -> bool:
     q = question.casefold()
     return any(phrase in q for phrase in _SLOT_PHRASES.get(slot, ()))
+
+
+# Words that carry no meaning when deciding whether a question was answered.
+_QUESTION_STOP = frozenset(
+    ["is", "are", "was", "were", "does", "did", "do", "has", "have", "had", "any", "some", "the", "a", "an", "you", "your", "yours", "she", "he", "it", "they", "them", "there", "here", "been", "being", "with", "and", "or", "of", "to", "in", "on", "at", "for", "from", "that", "this", "these", "those", "how", "what", "when", "where", "which", "who", "why", "since", "also", "able", "about", "along", "still", "very", "much", "more", "than", "been", "get", "got", "go", "going"]
+)
+# How much of a question's meaning must already appear in what the caller said
+# before it counts as answered. Two words minimum, so a single incidental match
+# ("fever" in an unrelated sentence) cannot silence a real question.
+_COVERED_RATIO = 0.6
+_COVERED_MIN_WORDS = 2
+# How callers describe severity without being asked. Stemmed, like everything
+# else compared against what they said.
+_SEVERITY_WORDS = frozenset(
+    {"mild", "moder", "sever", "bad", "wors", "slight", "terribl", "unbear",
+     "manag", "bearabl", "strong", "intens"}
+)
+
+
+def _stem(word: str) -> str:
+    """Crude suffix trim, so word forms match across a question and an answer.
+
+    Both sides go through it, so it only has to be consistent, not linguistically
+    correct. Without it "loose motions" did not answer "how many times have you
+    passed motion", and "she is drinking water" did not answer "are you able to
+    drink".
+    """
+    for suffix in ("ing", "ed", "es", "s"):
+        if word.endswith(suffix) and len(word) - len(suffix) >= 3:
+            return word[: -len(suffix)]
+    return word
+
+
+def _meaningful(text: str) -> set[str]:
+    return {
+        _stem(w)
+        for w in re.findall(r"[a-z]+", text.casefold())
+        if len(w) > 3 and w not in _QUESTION_STOP
+    }
+
+
+def _already_answered(question: str, said: set[str]) -> bool:
+    """True when the caller has already covered what this question asks.
+
+    `answers` only holds what the model chose to record under a slot. Callers
+    volunteer far more than that in one breath, and being asked it again reads
+    as not listening - which is exactly what cost a real call its advice.
+    """
+    asked = _meaningful(question)
+    if len(asked) < _COVERED_MIN_WORDS:
+        return False
+    overlap = asked & said
+    return (
+        len(overlap) >= _COVERED_MIN_WORDS
+        and len(overlap) >= round(len(asked) * _COVERED_RATIO)
+    )
 
 
 def open_questions(data: MedLinkUserData) -> list[str]:
@@ -273,11 +368,25 @@ def open_questions(data: MedLinkUserData) -> list[str]:
     asked for again. Generic essential questions fill in only where the KB has no
     question covering that slot.
     """
+    # Everything the caller has said: the complaint, what was recorded, and
+    # their own words. A question they already covered is dropped.
+    spoken = " ".join([data.chief_complaint or "", *data.answers.values(), *data.heard])
+    said = _meaningful(spoken)
+
     answered = set(data.answers)
+    # A slot counts as covered the moment the caller says it, not when the model
+    # gets round to recording it. Someone who opens with "a headache for two
+    # days, quite bad" was still asked how long it had been going on, because
+    # nothing had been written to `answers` yet.
+    if _parse_duration_days(spoken) is not None:
+        answered.add("duration")
+    if _SEVERITY_WORDS & said:
+        answered.add("severity")
     kb = [
         q
         for q in data.candidate_questions
         if not any(_asks_for(q, slot) for slot in answered)
+        and not _already_answered(q, said)
     ]
     generic = [
         SLOT_QUESTIONS[slot]

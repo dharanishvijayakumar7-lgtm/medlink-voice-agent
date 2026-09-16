@@ -186,9 +186,14 @@ class Settings(BaseSettings):
     ambulance_number: str = Field(default="108", alias="MEDLINK_AMBULANCE_NUMBER")
 
     # --- Safety / conversation thresholds ---
-    # BM25 score below this => "no confident medicine match" (avoids the current
-    # always-return-3 behavior).
-    medicine_min_score: float = Field(default=2.5, alias="MEDLINK_MEDICINE_MIN_SCORE")
+    # BM25 floor, used only to order and to drop noise. Relevance is decided by
+    # the phrase gate in `Formulary.search` - a medicine is only offered when the
+    # query contains every word of something it is actually for. This was 2.5 and
+    # doing the relevance job badly: BM25 scores rise with query length, so a
+    # one-word complaint could not reach it. "fever" scored 1.74 against
+    # paracetamol and returned nothing, while the paediatric syrup scored 2.65
+    # on "children fever" and won an adult query.
+    medicine_min_score: float = Field(default=0.5, alias="MEDLINK_MEDICINE_MIN_SCORE")
     medicine_max_results: int = Field(default=2, alias="MEDLINK_MEDICINE_MAX_RESULTS")
     max_followup_questions: int = Field(default=5, alias="MEDLINK_MAX_FOLLOWUPS")
     # Severity score (0-10 scale from triage KB modifiers) routing thresholds.

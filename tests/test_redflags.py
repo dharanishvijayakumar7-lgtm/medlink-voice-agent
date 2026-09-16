@@ -207,3 +207,78 @@ def test_english_loanwords_in_indic_script_fire(text, label):
 def test_indic_non_emergency_still_quiet():
     """The loanword terms must not make every Indic utterance an emergency."""
     assert detect_redflag("எனக்கு தலை வலி") is None
+
+
+# ------------------------------------------ negated lists (audit finding) ---
+# A comma was treated as a hard clause end, so in "no vomiting blood, black
+# stools, or chest pain" the denial applied only to the first item and every
+# later one scored as PRESENT. A simulated call of ordinary week-old acidity was
+# assessed "urgent (score 7)" purely because the caller said they had NOT had
+# black stools.
+
+
+def _negated(text: str, phrase: str) -> bool:
+    import re
+
+    from safety.redflags import _is_negated, _normalize_clauses, flatten
+
+    clauses = _normalize_clauses(text)
+    pattern = r"\b" + r"\s+".join(re.escape(w) for w in phrase.split()) + r"\b"
+    match = re.search(pattern, flatten(clauses))
+    assert match, f"{phrase!r} not found in {text!r}"
+    return _is_negated(clauses, match.start())
+
+
+@pytest.mark.parametrize(
+    "text,phrase",
+    [
+        ("no vomiting blood, black stools, or chest pain", "black stools"),
+        ("no vomiting blood, black stools, or chest pain", "chest pain"),
+        ("no fever, cough, or rash", "rash"),
+        ("no cough, no rash, and no neck stiffness", "neck stiffness"),
+    ],
+)
+def test_a_denial_carries_across_every_item_of_the_list(text, phrase):
+    assert _negated(text, phrase)
+
+
+@pytest.mark.parametrize(
+    "text,phrase",
+    [
+        # No joiner, so these two phrases are a contrast, not a list. Reading it
+        # as a denial would swallow a real emergency.
+        ("no fever, chest pain", "chest pain"),
+        ("no fever, chest pain since morning", "chest pain"),
+        # A fresh assertion ends the denial.
+        ("no fever, I have chest pain", "chest pain"),
+        # So does a full stop, a contrastive conjunction, and a new sentence
+        # after a genuine list.
+        ("no fever. chest pain since morning", "chest pain"),
+        ("no cough, but chest pain is there", "chest pain"),
+        ("no fever, cough, or rash. chest pain started today", "chest pain"),
+    ],
+)
+def test_a_denial_does_not_reach_a_symptom_the_caller_actually_reports(text, phrase):
+    assert not _negated(text, phrase)
+
+
+def test_ordinary_acidity_is_not_scored_urgent():
+    """The whole chain, as the simulated call ran it."""
+    from knowledge.triage_kb import apply_to_session
+    from session_state import MedLinkUserData
+    from workflows import routing
+
+    ud = MedLinkUserData(call_id="t", caller_phone=None, channel="web")
+    ud.chief_complaint = "acidity and burning in my chest after meals"
+    apply_to_session(ud, ud.chief_complaint)
+    ud.record_answer("duration", "About a week, still about the same.")
+    ud.record_answer(
+        "severity",
+        "Worse after spicy food, but no vomiting blood, black stools, "
+        "or chest pain on walking.",
+    )
+    ud.record_answer("associated", "Burning in chest after meals.")
+    apply_to_session(ud, ud.chief_complaint)
+
+    severity, urgency = routing.assess(ud)
+    assert urgency == "self_care", f"scored {severity}"

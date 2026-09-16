@@ -12,6 +12,12 @@ Two guards:
   the prescription denylist replaces the rest of the utterance with a safe
   correction. Text is checked with a carry-over buffer so a drug name split
   across streaming chunks is still caught.
+* The same scan also catches medicines that are sold over the counter but are
+  not in our formulary, and so have had none of the age, pregnancy and
+  interaction checks run against them. `Formulary.known_names()` is the
+  allow-list: any name we do stock is filtered out of that list at load time, so
+  Crocin, Digene, Brufen and Combiflam stay speakable. That gate existed and was
+  never called - the list was built, tested, and wired to nothing.
 * :func:`detect_prompt_injection` runs on the caller's turn. It is deliberately
   narrow: a sick person asking "can I take an antibiotic?" is a legitimate
   question that deserves a real answer, not a refusal. Only genuine attempts to
@@ -20,6 +26,7 @@ Two guards:
 
 from __future__ import annotations
 
+import logging
 import re
 from dataclasses import dataclass
 from functools import lru_cache
@@ -29,12 +36,21 @@ import yaml
 
 from config import DATA_DIR
 
+logger = logging.getLogger("medlink.safety")
+
 # Longest denylist term is ~30 chars; keep enough tail to catch a split name.
 _CARRY_OVER_CHARS = 40
 
 _SAFE_CORRECTION = (
     "Actually, I should not suggest that medicine - it needs a doctor's "
     "prescription. Please see a doctor or pharmacist for it."
+)
+# Not a prescription problem: these are buyable, we just have not checked them
+# against this caller's age, pregnancy, other medicines and conditions.
+_UNVETTED_CORRECTION = (
+    "Actually, I should not advise that particular medicine - I can only guide "
+    "you on the ones I have checked properly. Please ask a doctor or pharmacist "
+    "about it."
 )
 
 # Only phrases that try to change what the agent *is*. Clinical questions about
@@ -60,16 +76,14 @@ _INJECTION_RE = re.compile("|".join(_INJECTION_PATTERNS), re.IGNORECASE)
 class OutputScan:
     text: str
     blocked_term: str | None = None
+    reason: str | None = None  # "prescription" | "unvetted"
 
     @property
     def is_safe(self) -> bool:
         return self.blocked_term is None
 
 
-@lru_cache(maxsize=2)
-def _denylist(path: str) -> tuple[re.Pattern[str], ...]:
-    data = yaml.safe_load(Path(path).read_text(encoding="utf-8")) or {}
-    terms = [*data.get("drugs", []), *data.get("classes", [])]
+def _compile(terms: list[str]) -> tuple[re.Pattern[str], ...]:
     patterns = []
     for term in terms:
         cleaned = str(term).strip().casefold()
@@ -82,26 +96,81 @@ def _denylist(path: str) -> tuple[re.Pattern[str], ...]:
     return tuple(sorted(patterns, key=lambda p: -len(p.pattern)))
 
 
-def find_denied_drug(
-    text: str, *, denylist_path: str | Path | None = None
-) -> str | None:
-    """Return the first prescription-only drug or class named in ``text``."""
-    if not text:
-        return None
-    path = str(denylist_path or (DATA_DIR / "prescription_denylist.yaml"))
-    for pattern in _denylist(path):
+def _load(path: str) -> dict:
+    return yaml.safe_load(Path(path).read_text(encoding="utf-8")) or {}
+
+
+@lru_cache(maxsize=2)
+def _denylist(path: str) -> tuple[re.Pattern[str], ...]:
+    data = _load(path)
+    return _compile([*data.get("drugs", []), *data.get("classes", [])])
+
+
+@lru_cache(maxsize=2)
+def _unvetted(path: str) -> tuple[re.Pattern[str], ...]:
+    """OTC medicines we do not stock, minus anything the formulary does stock.
+
+    The subtraction is the point: it makes a mistake in the data list harmless,
+    because a medicine the agent is allowed to recommend can never be silenced.
+    """
+    from medicine.formulary import get_formulary
+
+    try:
+        allowed = get_formulary().known_names()
+    except Exception:  # a broken formulary must not disable the guard
+        logger.exception("could not load the formulary allow-list")
+        allowed = set()
+    terms = [
+        t
+        for t in _load(path).get("unvetted_otc", [])
+        if str(t).strip().casefold() not in allowed
+    ]
+    return _compile(terms)
+
+
+def _first_match(patterns, text: str) -> str | None:
+    for pattern in patterns:
         match = pattern.search(text)
         if match:
             return match.group(0).casefold()
     return None
 
 
+def find_denied_drug(
+    text: str, *, denylist_path: str | Path | None = None
+) -> str | None:
+    """Return the first prescription-only drug or class named in ``text``."""
+    if not text:
+        return None
+    return _first_match(_denylist(_path(denylist_path)), text)
+
+
+def find_unvetted_medicine(
+    text: str, *, denylist_path: str | Path | None = None
+) -> str | None:
+    """Return the first buyable-but-unchecked medicine named in ``text``."""
+    if not text:
+        return None
+    return _first_match(_unvetted(_path(denylist_path)), text)
+
+
+def _path(given: str | Path | None) -> str:
+    return str(given or (DATA_DIR / "prescription_denylist.yaml"))
+
+
 def scan_output(text: str, *, denylist_path: str | Path | None = None) -> OutputScan:
     """Check one piece of generated speech before the caller hears it."""
     hit = find_denied_drug(text, denylist_path=denylist_path)
-    if hit is None:
-        return OutputScan(text=text)
-    return OutputScan(text=_SAFE_CORRECTION, blocked_term=hit)
+    if hit is not None:
+        return OutputScan(
+            text=_SAFE_CORRECTION, blocked_term=hit, reason="prescription"
+        )
+    hit = find_unvetted_medicine(text, denylist_path=denylist_path)
+    if hit is not None:
+        return OutputScan(
+            text=_UNVETTED_CORRECTION, blocked_term=hit, reason="unvetted"
+        )
+    return OutputScan(text=text)
 
 
 class OutputGuard:
@@ -117,6 +186,7 @@ class OutputGuard:
         self._carry = ""
         self._path = denylist_path
         self.blocked_term: str | None = None
+        self.reason: str | None = None
 
     @property
     def tripped(self) -> bool:
@@ -127,11 +197,12 @@ class OutputGuard:
         if self.tripped:
             return ""
         window = self._carry + chunk
-        hit = find_denied_drug(window, denylist_path=self._path)
-        if hit is not None:
-            self.blocked_term = hit
+        scan = scan_output(window, denylist_path=self._path)
+        if not scan.is_safe:
+            self.blocked_term = scan.blocked_term
+            self.reason = scan.reason
             self._carry = ""
-            return _SAFE_CORRECTION
+            return scan.text
         self._carry = window[-_CARRY_OVER_CHARS:]
         return chunk
 
