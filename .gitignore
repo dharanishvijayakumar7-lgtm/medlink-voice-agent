@@ -41,3 +41,6 @@ MEDLINK_FIREBASE_CREDENTIALS.json
 *firebase-adminsdk*.json
 firebase-service-account*.json
 service-account*.json
+
+# Audio written by scripts/tts_probe.py for listening to, never committed.
+tts_probe_out/

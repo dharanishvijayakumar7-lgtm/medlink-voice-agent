@@ -6,6 +6,8 @@ worth pinning without a live session or an LLM - above all, which tools each
 agent is allowed to reach.
 """
 
+import inspect
+
 import pytest
 
 from config import settings
@@ -196,3 +198,53 @@ async def test_mocked_non_string_phone_attribute_is_ignored(monkeypatch):
     monkeypatch.setattr(settings, "dev_caller_phone", "")
     odd = _Participant(rtc.ParticipantKind.PARTICIPANT_KIND_SIP, {"sip.phoneNumber": object()})
     assert await agent._caller_phone(_Ctx(participant=odd)) is None
+
+
+# --------------------------------------------------------- language on request ---
+# A real call opened in Hindi because the caller had spoken Hindi on an earlier
+# call. It must always open in English and change only when actually asked.
+
+
+@pytest.mark.parametrize(
+    "said,expected",
+    [
+        ("Please speak in Tamil", "ta-IN"),
+        ("can you talk in malayalam", "ml-IN"),
+        ("switch to hindi", "hi-IN"),
+        ("hindi mein baat karo", "hi-IN"),
+        ("tamil la pesunga", "ta-IN"),
+        ("kannada alli heli", "kn-IN"),
+        ("telugu please", "te-IN"),
+        ("could you please reply in English", "en-IN"),
+    ],
+)
+def test_an_explicit_request_switches_the_language(said, expected):
+    from workflows.base import detect_language_request
+
+    assert detect_language_request(said) == expected
+
+
+@pytest.mark.parametrize(
+    "said",
+    [
+        "My mother speaks Tamil but I don't",
+        "I have a headache since morning",
+        "my son studies in a Kannada medium school",
+        "",
+    ],
+)
+def test_merely_mentioning_a_language_does_not_switch(said):
+    from workflows.base import detect_language_request
+
+    assert detect_language_request(said) is None
+
+
+def test_the_greeting_is_always_english():
+    """Whatever language was stored from a previous call, the call opens in English."""
+    from config import DEFAULT_LANGUAGE_CODE
+    from workflows.intake import GREETINGS
+
+    assert GREETINGS[DEFAULT_LANGUAGE_CODE].startswith("Hello, this is MedLink")
+    source = inspect.getsource(IntakeAgent.on_enter)
+    assert "GREETINGS[DEFAULT_LANGUAGE_CODE]" in source
+    assert "self.data.language" not in source.split("greeting =")[1].split("\n")[0]

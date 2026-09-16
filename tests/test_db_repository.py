@@ -8,7 +8,7 @@ import pytest
 from cryptography.fernet import Fernet
 from sqlalchemy import select
 
-from config import settings
+from config import DEFAULT_LANGUAGE_CODE, settings
 from db import repository as repo
 from db import session as db_session
 from db.crypto import hash_phone, normalise_phone
@@ -385,14 +385,22 @@ async def test_writes_are_skipped_when_the_call_row_is_missing(db):
     assert await _rows(Call) == []
 
 
-async def test_preferred_language_is_remembered(db):
+async def test_preferred_language_is_recorded_but_does_not_steer_the_next_call(db):
+    """One Hindi turn used to make every later call open in Hindi.
+
+    The agent now always greets in English and only changes language when the
+    caller asks, so the stored preference is a record, not an instruction.
+    """
     first = _ud(language="ta-IN")
     await repo.start_call(first)
     await repo.finish_call(first)
 
     second = _ud()
     await repo.start_call(second)
-    assert second.language == "ta-IN"
+    assert second.language == DEFAULT_LANGUAGE_CODE
+
+    users = await _rows(User)
+    assert users[0].preferred_language == "ta-IN"
 
 
 # ---------------------------------------------------------------- privacy ---

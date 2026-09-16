@@ -125,6 +125,29 @@ class Settings(BaseSettings):
         default=SARVAM_TTS_SPEAKER, alias="MEDLINK_SARVAM_TTS_SPEAKER"
     )
 
+    # --- How the agent's voice sounds on the phone ---
+    # Synthesise at 16 kHz and let LiveKit downsample for the 8 kHz phone line,
+    # rather than generating at 8 kHz where detail is lost at the source.
+    tts_sample_rate: int = Field(default=16000, alias="MEDLINK_TTS_SAMPLE_RATE")
+    # linear16 = raw PCM. The default mp3 was decoded and then re-encoded to the
+    # phone's G.711, so the audio was compressed twice on a narrowband line.
+    tts_codec: str = Field(default="linear16", alias="MEDLINK_TTS_CODEC")
+    # Sarvam's own `loudness` is ignored on bulbul:v3 (the plugin only sends it
+    # for v2), so loudness is applied here instead, on the frames we emit.
+    # `tts_makeup_gain` does the lifting and is the knob to turn if the agent is
+    # hard to hear in a noisy room. `tts_target_rms` only corrects the level
+    # drift between the chunks Sarvam synthesises a reply in. `tts_gain_max` is
+    # the hard cap, so a near-silent chunk is not amplified into hiss.
+    # Measured on real Sarvam output (scripts/tts_probe.py): raw speech sits at
+    # -21.9 dBFS with an 18.5 dB peak-to-RMS ratio, and these settle the gain
+    # between 1.4x and 2.0x for about -18.5 dBFS out. Going much louder is not
+    # free - the peaks reach the ceiling and soften audibly, so raise
+    # MEDLINK_TTS_MAKEUP_GAIN if it is still too quiet, but listen to
+    # scripts/tts_probe.py afterwards rather than going straight to a call.
+    tts_makeup_gain: float = Field(default=2.0, alias="MEDLINK_TTS_MAKEUP_GAIN")
+    tts_target_rms: float = Field(default=0.12, alias="MEDLINK_TTS_TARGET_RMS")
+    tts_gain_max: float = Field(default=6.0, alias="MEDLINK_TTS_GAIN")
+
     # --- Persistence ---
     database_url: str = Field(default="", alias="DATABASE_URL")
     # HMAC key for phone-number lookup hashing; Fernet key for at-rest PII fields.

@@ -113,8 +113,9 @@ async def _start_call(ud: MedLinkUserData) -> None:
             else:
                 ud.is_returning_caller = True
                 user.last_seen_at = datetime.now(timezone.utc)
-                if user.preferred_language:
-                    ud.language = user.preferred_language
+                # `preferred_language` is still recorded at call end, but it no
+                # longer steers this call: one Hindi turn on an earlier call was
+                # making every later call open in Hindi.
                 # Only recall what they previously agreed we could keep.
                 if user.consent_store or not settings.require_consent:
                     ud.previous_summary = await _previous_summary(session, user.id)
