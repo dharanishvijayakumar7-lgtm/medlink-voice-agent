@@ -28,7 +28,7 @@ from livekit.agents import (
 from livekit.plugins import ai_coustics, sarvam  # noqa: F401
 
 import firestore_export
-from config import SUPPORTED_LANGUAGES, settings
+from config import settings
 from db import repository as history
 from llm_factory import build_llm
 from session_state import MedLinkUserData
@@ -154,40 +154,49 @@ async def medlink_session(ctx: JobContext):
     )
 
     @session.on("user_input_transcribed")
-    def _follow_caller_language(ev) -> None:
-        """Point the TTS at whatever language the caller actually spoke.
+    def _log_stt_final(ev) -> None:
+        """Diagnostic only: shows whether the STT is producing words at all.
 
-        Sarvam's STT identifies the language per utterance (`language="auto"`),
-        but the TTS was constructed with a fixed `target_language_code`, so every
-        reply was synthesised as if it were English no matter what the LLM wrote.
-        A Tamil answer read with an English voice is what made the agent sound
-        like it only spoke Hindi and English.
-
-        Only final transcripts carry a settled language - the interim ones
-        default to en-IN and would otherwise flip the voice mid-sentence.
+        This used to also switch the TTS to whatever language was detected. That
+        made the agent flip language on a single mixed-in word, so the voice now
+        only changes when the caller actually asks (workflows.base).
         """
         if not getattr(ev, "is_final", False):
             return
-        code = getattr(ev, "language", None)
-        # Diagnostic: shows whether the STT is producing words at all on a
-        # phone line. A run of empty finals means the caller's audio isn't
-        # reaching Sarvam intact (narrowband phone audio, noise suppression).
         transcript = getattr(ev, "transcript", "") or ""
         logger.info(
             "stt final",
-            extra={"call_id": userdata.call_id, "language": code, "chars": len(transcript.strip())},
+            extra={
+                "call_id": userdata.call_id,
+                "language": getattr(ev, "language", None),
+                "chars": len(transcript.strip()),
+            },
         )
-        if not code or code not in SUPPORTED_LANGUAGES.values():
-            return  # unknown, or outside the six MedLink supports
-        if code == userdata.language:
-            return
 
-        userdata.language = code
-        try:
-            session.tts.update_options(target_language_code=code)
-            logger.info("caller language detected, TTS switched to %s", code)
-        except Exception:
-            logger.exception("could not switch TTS to %s", code)
+    # The agent's own voice comes back into the mic on speakerphone, and a call
+    # from a room full of people carries other voices too. Either can cut the
+    # agent off mid-sentence. LiveKit resumes the speech after
+    # `false_interruption_timeout` (2.0s by default), so this shows up as a gap
+    # rather than as mangled words - these two lines are here so the logs say
+    # whether it is happening at all, instead of it being guessed at again.
+    @session.on("agent_false_interruption")
+    def _log_false_interruption(ev) -> None:
+        logger.warning(
+            "agent was cut off by something that was not speech",
+            extra={"call_id": userdata.call_id, "resumed": ev.resumed},
+        )
+
+    @session.on("overlapping_speech")
+    def _log_overlapping_speech(ev) -> None:
+        logger.info(
+            "caller and agent spoke at once",
+            extra={
+                "call_id": userdata.call_id,
+                # False means it was judged a backchannel, not a real barge-in.
+                "interruption": ev.is_interruption,
+                "seconds": ev.total_duration,
+            },
+        )
 
     async def _log_outcome():
         await history.finish_call(userdata)

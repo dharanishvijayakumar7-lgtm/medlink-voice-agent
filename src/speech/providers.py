@@ -77,12 +77,23 @@ def build_tts() -> tts.TTS:
     from livekit.plugins import sarvam
 
     logger.info(
-        "TTS: Sarvam %s / %s", settings.sarvam_tts_model, settings.sarvam_tts_speaker
+        "TTS: Sarvam %s / %s (%s, %s Hz)",
+        settings.sarvam_tts_model,
+        settings.sarvam_tts_speaker,
+        settings.tts_codec,
+        settings.tts_sample_rate,
     )
     return sarvam.TTS(
+        # Always English to begin with; the caller can ask for another language
+        # mid-call and workflows.base retargets this instance.
         target_language_code=DEFAULT_LANGUAGE_CODE,
         model=settings.sarvam_tts_model,
         speaker=settings.sarvam_tts_speaker,
-        speech_sample_rate=settings.audio_sample_rate,
+        # Synthesise above the 8 kHz line rate and let LiveKit downsample,
+        # rather than losing detail at the source.
+        speech_sample_rate=settings.tts_sample_rate,
+        # Raw PCM: the mp3 default was decoded and then re-encoded to G.711 for
+        # the phone, compressing the same audio twice.
+        output_audio_codec=settings.tts_codec,
         api_key=settings.sarvam_api_key,
     )

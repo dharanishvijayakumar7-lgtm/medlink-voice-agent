@@ -83,19 +83,16 @@ class IntakeAgent(MedLinkAgent):
         super().__init__(instructions=INSTRUCTIONS, **kwargs)
 
     async def on_enter(self) -> None:
-        data: MedLinkUserData = self.data
-        greeting = GREETINGS.get(data.language) or GREETINGS[DEFAULT_LANGUAGE_CODE]
-        # A returning caller's stored language means the greeting is not English,
-        # so the voice has to be retargeted before it speaks - otherwise Bulbul
-        # reads Tamil script with English phonetics. New callers stay on the
-        # default until their first utterance is transcribed, at which point
-        # agent.py's `user_input_transcribed` hook takes over.
-        tts = self.session.tts
-        if data.language != DEFAULT_LANGUAGE_CODE and hasattr(tts, "update_options"):
-            try:
-                tts.update_options(target_language_code=data.language)
-            except Exception:
-                logger.exception("could not set greeting language %s", data.language)
+        # Always English, whatever the caller spoke last time. They can ask for
+        # another language at any point and workflows.base switches instantly.
+        greeting = GREETINGS[DEFAULT_LANGUAGE_CODE]
+        self.data.language = DEFAULT_LANGUAGE_CODE
+        try:
+            self.session.tts.update_options(
+                target_language_code=DEFAULT_LANGUAGE_CODE
+            )
+        except Exception:
+            logger.exception("could not set the greeting language")
         # say() not generate_reply(): deterministic wording, no LLM round trip.
         await self.session.say(greeting)
 

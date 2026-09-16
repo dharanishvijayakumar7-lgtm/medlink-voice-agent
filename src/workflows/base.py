@@ -10,12 +10,15 @@ request; emergency handling is the model's judgement now.
 from __future__ import annotations
 
 import logging
+import re
 from collections.abc import AsyncIterable
 
+import numpy as np
 from livekit import rtc
 from livekit.agents import Agent, ChatContext, ChatMessage, ModelSettings, StopResponse
 
-from config import settings
+from audio_gain import Leveller
+from config import SUPPORTED_LANGUAGES, settings
 from db import repository as history
 from safety.guardrails import OutputGuard, detect_prompt_injection
 from session_state import MedLinkUserData
@@ -24,6 +27,43 @@ logger = logging.getLogger("medlink.workflow")
 
 # A fragment this short can only be ignored when the STT was also unsure of it.
 MAX_NOISE_WORDS = 2
+
+# How a caller might name each language, including how the STT tends to spell it.
+_LANGUAGE_WORDS: dict[str, tuple[str, ...]] = {
+    "en-IN": ("english", "angrezi", "angreji"),
+    "hi-IN": ("hindi", "hindhi"),
+    "ta-IN": ("tamil", "thamizh", "tamizh"),
+    "te-IN": ("telugu", "telegu"),
+    "kn-IN": ("kannada", "kanada"),
+    "ml-IN": ("malayalam", "malyalam"),
+}
+_LANGUAGE_NAMES = {code: name.capitalize() for name, code in SUPPORTED_LANGUAGES.items()}
+
+# Only an actual request aimed at the agent. "My mother speaks Tamil" must not
+# switch the call, so a bare "speaks <language>" is deliberately not enough.
+_REQUEST_PATTERNS: tuple[str, ...] = (
+    r"\b(?:can|could|will|would)\s+you\s+(?:please\s+)?(?:speak|talk|reply|answer|say|continue|explain)\b[^.?!]*\b{lang}\b",
+    r"\b(?:please\s+)?(?:speak|talk|reply|answer|continue|explain|say\s+it)\s+(?:to\s+me\s+)?(?:in|into)\s+{lang}\b",
+    r"\b(?:switch|change|shift)\s+(?:over\s+)?(?:to\s+)?{lang}\b",
+    # "tamil la pesunga", "hindi mein baat karo", "kannada alli heli"
+    r"\b{lang}\s*(?:mein|me|maa|la|il|lo|alli|ulla)?\s*(?:baat|bol|bolo|bolen|pesu|pesunga|pesungal|maatad|matad|heli|parayu|paraya|cheppu|cheppandi|speak|talk)\w*\b",
+    r"\b{lang}\s+(?:please|plz)\b",
+)
+
+
+def detect_language_request(text: str) -> str | None:
+    """The language the caller asked the agent to switch to, or None.
+
+    Runs before the LLM sees the turn, so the reply to "speak in Tamil" is
+    already in Tamil - no extra round trip, nothing for the caller to wait for.
+    """
+    lowered = " ".join(text.split()).casefold()
+    for code, words in _LANGUAGE_WORDS.items():
+        alternatives = "|".join(re.escape(w) for w in words)
+        for pattern in _REQUEST_PATTERNS:
+            if re.search(pattern.format(lang=f"(?:{alternatives})"), lowered):
+                return code
+    return None
 
 
 def is_noise_turn(text: str, confidence: float | None) -> bool:
@@ -89,6 +129,28 @@ class MedLinkAgent(Agent):
                 },
             )
             raise StopResponse()
+
+        # The caller can ask for another language at any point. Handled here,
+        # before the LLM runs, so the reply to the request is already in the new
+        # language rather than one turn behind.
+        if (code := detect_language_request(text)) and code != self.data.language:
+            name = _LANGUAGE_NAMES.get(code, code)
+            self.data.language = code
+            try:
+                self.session.tts.update_options(target_language_code=code)
+                logger.info(
+                    "caller asked for a language change",
+                    extra={"call_id": self.data.call_id, "language": code},
+                )
+            except Exception:
+                logger.exception("could not switch the voice to %s", code)
+            turn_ctx.add_message(
+                role="assistant",
+                content=(
+                    f"(Private note, not to be said aloud) The caller asked you to "
+                    f"speak {name}. Reply only in {name} from now on."
+                ),
+            )
 
         # One line per caller turn, so a live call shows what reached the agent.
         logger.info(
@@ -159,7 +221,40 @@ class MedLinkAgent(Agent):
                     },
                 )
 
-        return Agent.default.tts_node(self, guarded(), model_settings)
+        frames = Agent.default.tts_node(self, guarded(), model_settings)
+        return self._levelled(frames)
+
+    async def _levelled(
+        self, frames: AsyncIterable[rtc.AudioFrame]
+    ) -> AsyncIterable[rtc.AudioFrame]:
+        """Lift and even out the voice before it goes down the phone line.
+
+        A real call was too quiet to hear in a room, and faded partway through a
+        reply. Sarvam can't fix either: its `loudness` is ignored on bulbul:v3,
+        and the fade comes from each chunk of a reply being synthesised
+        separately. One Leveller per reply carries the gain across those chunks,
+        ramped so the level never steps between frames - the first attempt at
+        this recomputed a gain per frame and made words crackle.
+        """
+        leveller = Leveller(
+            target_rms=settings.tts_target_rms,
+            max_gain=settings.tts_gain_max,
+            makeup=settings.tts_makeup_gain,
+            sample_rate=settings.tts_sample_rate,
+        )
+        async for frame in frames:
+            try:
+                samples = np.frombuffer(frame.data, dtype=np.int16)
+                louder = leveller.process(samples)
+                yield rtc.AudioFrame(
+                    data=louder.tobytes(),
+                    sample_rate=frame.sample_rate,
+                    num_channels=frame.num_channels,
+                    samples_per_channel=frame.samples_per_channel,
+                )
+            except Exception:  # never drop audio over a levelling error
+                logger.exception("could not level a frame; passing it through")
+                yield frame
 
     async def on_turn(self, turn_ctx: ChatContext, new_message: ChatMessage) -> None:
         """Subclass hook for per-turn work (e.g. KB retrieval). Default: nothing."""
