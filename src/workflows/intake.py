@@ -71,7 +71,10 @@ caller. Right now you are simply getting to know what is wrong.
   warmly and gently ask what has been troubling them. Never reply with just
   "anything else?".
 - Once you know what is wrong, show you understand in a few kind words. If you
-  don't yet know who it is for or roughly their age, ask naturally.
+  still need to know who is unwell or roughly how old they are, ask it as ONE
+  short question ("Is this for you, and about how old are you?"). If they are
+  clearly talking about themselves ("I have a fever"), only ask the age.
+  Never ask for anyone's name.
 - Then call `record_complaint` (with their name and age if they said them).
   Don't try to work out the cause or suggest medicine yet - you will come back
   to that once you understand more.
@@ -87,12 +90,14 @@ class IntakeAgent(MedLinkAgent):
         # another language at any point and workflows.base switches instantly.
         greeting = GREETINGS[DEFAULT_LANGUAGE_CODE]
         self.data.language = DEFAULT_LANGUAGE_CODE
-        try:
-            self.session.tts.update_options(
-                target_language_code=DEFAULT_LANGUAGE_CODE
-            )
-        except Exception:
-            logger.exception("could not set the greeting language")
+        # No TTS in a text-only session (tests, simulations), so nothing to set.
+        if self.session.tts is not None:
+            try:
+                self.session.tts.update_options(
+                    target_language_code=DEFAULT_LANGUAGE_CODE
+                )
+            except Exception:
+                logger.exception("could not set the greeting language")
         # say() not generate_reply(): deterministic wording, no LLM round trip.
         await self.session.say(greeting)
 

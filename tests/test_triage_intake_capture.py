@@ -114,3 +114,81 @@ def test_real_answers_are_kept(text, confidence):
     from workflows.base import is_noise_turn
 
     assert not is_noise_turn(text, confidence)
+
+
+# ------------------------------------- the finish_questions gate (test calls) ---
+# Local test conversations showed the gate refusing again and again when the
+# caller had volunteered answers the model never recorded. The model then gave
+# up and advised from the questioning stage - no medicine safety checks, no
+# structured advice - or asked something the caller had already said.
+
+
+def _triage_data(complaint, *heard):
+    from knowledge.triage_kb import apply_to_session
+    from session_state import MedLinkUserData
+
+    ud = MedLinkUserData(call_id="t", caller_phone=None, channel="web")
+    ud.chief_complaint = complaint
+    ud.heard.extend(heard)
+    apply_to_session(ud, complaint)
+    return ud
+
+
+def test_a_mother_who_said_everything_up_front_is_credited_for_it():
+    from workflows.triage import credit_volunteered_answers
+
+    ud = _triage_data(
+        "loose motions in a six year old",
+        "My six-year-old has had loose motions about five times since this "
+        "morning, but there's no blood, no vomiting, no fever, she is drinking "
+        "water and passing urine normally.",
+    )
+    credit_volunteered_answers(ud)
+    assert {"duration", "severity", "associated"} <= set(ud.answers)
+
+
+def test_a_plain_no_to_an_unrelated_question_is_not_a_warning_sign_answer():
+    """The warning-sign slot is the safety check; "No, it is for me" is not it."""
+    from workflows.triage import credit_volunteered_answers
+
+    ud = _triage_data("fever", "I got fever yesterday evening.", "No, it is for me.")
+    credit_volunteered_answers(ud)
+    assert "associated" not in ud.answers
+
+
+async def test_the_gate_sends_the_agent_back_once_then_lets_the_call_move_on(monkeypatch):
+    from types import SimpleNamespace
+
+    from config import settings
+    from workflows.recommend import RecommendAgent
+    from workflows.triage import TriageAgent
+
+    monkeypatch.setattr(settings, "enable_db", False)
+    ud = _triage_data("fever", "I got fever yesterday evening.")
+    agent, context = TriageAgent(), SimpleNamespace(userdata=ud)
+
+    first = await TriageAgent.finish_questions(agent, context)
+    assert isinstance(first, str) and first.startswith("Not yet")
+
+    second = await TriageAgent.finish_questions(agent, context)
+    assert isinstance(second, RecommendAgent)
+
+
+async def test_the_gate_does_not_refuse_when_the_caller_already_covered_it(monkeypatch):
+    from types import SimpleNamespace
+
+    from config import settings
+    from workflows.recommend import RecommendAgent
+    from workflows.triage import TriageAgent
+
+    monkeypatch.setattr(settings, "enable_db", False)
+    ud = _triage_data(
+        "fever",
+        "I got fever yesterday evening.",
+        "It is mild.",
+        "No vomiting, no cough, no rash.",
+    )
+    result = await TriageAgent.finish_questions(
+        TriageAgent(), SimpleNamespace(userdata=ud)
+    )
+    assert isinstance(result, RecommendAgent)

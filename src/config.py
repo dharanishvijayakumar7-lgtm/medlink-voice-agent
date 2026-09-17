@@ -108,6 +108,19 @@ class Settings(BaseSettings):
     min_turn_confidence: float = Field(
         default=0.6, alias="MEDLINK_MIN_TURN_CONFIDENCE"
     )
+    # When something the agent hears pauses it mid-sentence but turns out not to
+    # be the caller, it resumes after this many seconds. LiveKit's default is 2.0,
+    # which on speakerphone left a two-second hole in the middle of a word. Echo
+    # of the agent's own voice no longer pauses it at all (see echo_guard); this
+    # keeps any remaining false pause - a bystander in the room - short.
+    false_interruption_timeout: float = Field(
+        default=0.8, alias="MEDLINK_FALSE_INTERRUPTION_TIMEOUT"
+    )
+    # Whether the caller can cut the agent off mid-sentence. Leave on. If a
+    # speakerphone call in a crowded room is still choppy, set it to false: the
+    # agent will always finish what it is saying, and anything heard while it
+    # talks - echo, bystanders, the caller - is ignored until it stops.
+    allow_barge_in: bool = Field(default=True, alias="MEDLINK_ALLOW_BARGE_IN")
     llm_model: str = Field(default=SARVAM_LLM_MODEL, alias="MEDLINK_LLM_MODEL")
 
     # --- Sarvam: the whole pipeline, one key ---

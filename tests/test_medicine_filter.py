@@ -337,3 +337,50 @@ def test_a_dose_limit_that_is_a_quantity_still_says_do_not_exceed():
         get_formulary().by_id["paracetamol_tab_500"], PatientContext(), []
     ).spoken_text
     assert "Do not exceed 4000 mg/day" in spoken
+
+
+def test_a_cut_is_offered_the_antiseptic(fm):
+    """Its indication was a whole sentence, so a caller's "cut" never reached it."""
+    from medicine.filter import recommend
+    from session_state import PatientContext
+
+    patient = PatientContext()
+    patient.age_years = 30
+    got = recommend(
+        "Cut, wound or minor injury I have a deep cut on my leg",
+        patient,
+        allowed_classes={"antiseptic_topical", "analgesic_antipyretic"},
+    )
+    assert "povidone_iodine_soln" in [r.entry_id for r in got.recommendations]
+
+
+# ---------------------------------------- denied symptoms (test calls) ---
+
+
+def _child_with_loose_motions(said):
+    from medicine.filter import recommend
+    from session_state import PatientContext
+
+    patient = PatientContext()
+    patient.age_years = 6
+    patient.is_for_child = True
+    patient.reported_symptoms = ["loose motions five times since morning", said]
+    result = recommend(
+        "Diarrhoea / loose motions",
+        patient,
+        allowed_classes={"oral_rehydration", "diarrhoea_adjunct", "antidiarrheal"},
+    )
+    return [r.entry_id for r in result.recommendations]
+
+
+def test_ors_is_not_withheld_because_the_child_has_no_vomiting():
+    """ORS's rule mentions "persistent vomiting"; the mother said "no vomiting"."""
+    assert "ors_who" in _child_with_loose_motions(
+        "no blood, no vomiting, no fever, she is drinking water"
+    )
+
+
+def test_ors_is_still_withheld_for_a_child_who_is_vomiting():
+    assert "ors_who" not in _child_with_loose_motions(
+        "she has persistent vomiting and cannot keep anything down"
+    )

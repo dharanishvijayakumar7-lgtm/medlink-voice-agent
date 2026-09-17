@@ -41,6 +41,7 @@ CLAUSE_SENTINEL = "\x01"
 LIST_SENTINEL = "\x02"
 _CLAUSE_PUNCT_RE = re.compile(r"[.;:!?]+")
 _LIST_PUNCT_RE = re.compile(r",+")
+_CONTRACTION_RE = re.compile(r"(?<=\w)['’](?=\w)")  # noqa: RUF001
 _PUNCT_RE = re.compile(r"['\"`()\[\]{}/\\|~*_<>@#%^&+=‘’“”-]+")  # noqa: RUF001
 _WS_RE = re.compile(r"\s+")
 
@@ -49,12 +50,23 @@ _WS_RE = re.compile(r"\s+")
 # "mujhe na chest pain ho raha hai") and "ondu" (Kannada for "one") were removed:
 # both are ordinary speech, and treating them as negators silently suppressed
 # real emergencies.
+#
+# Contractions arrive joined ("don't" -> "dont", see _normalize_clauses). "can't"
+# and "cannot" are deliberately absent: "I can't breathe" is the symptom itself,
+# not a denial of one.
 _NEGATORS = {
     "no",
     "not",
     "dont",
     "doesnt",
     "didnt",
+    "isnt",
+    "arent",
+    "wasnt",
+    "werent",
+    "havent",
+    "hasnt",
+    "hadnt",
     "without",
     "never",
     "nil",
@@ -110,6 +122,10 @@ def _normalize_clauses(text: str) -> str:
     lets terms be matched on the flat text while negation is judged on this one.
     """
     text = unicodedata.normalize("NFKC", text).casefold()
+    # Join contractions before punctuation is stripped. Otherwise "don't"
+    # became "don t", matched no negator, and "I don't have fever" counted as
+    # a fever.
+    text = _CONTRACTION_RE.sub("", text)
     text = _CLAUSE_PUNCT_RE.sub(f" {CLAUSE_SENTINEL} ", text)
     text = _LIST_PUNCT_RE.sub(f" {LIST_SENTINEL} ", text)
     text = _PUNCT_RE.sub(" ", text)

@@ -15,10 +15,17 @@ from collections.abc import AsyncIterable
 
 import numpy as np
 from livekit import rtc
-from livekit.agents import Agent, ChatContext, ChatMessage, ModelSettings, StopResponse
+from livekit.agents import (
+    Agent,
+    ChatContext,
+    ChatMessage,
+    ModelSettings,
+    StopResponse,
+    stt,
+)
 
 from audio_gain import Leveller
-from config import SUPPORTED_LANGUAGES, settings
+from config import DEFAULT_LANGUAGE_CODE, SUPPORTED_LANGUAGES, settings
 from db import repository as history
 from safety.guardrails import OutputGuard, detect_prompt_injection
 from session_state import MedLinkUserData
@@ -64,6 +71,77 @@ def detect_language_request(text: str) -> str | None:
             if re.search(pattern.format(lang=f"(?:{alternatives})"), lowered):
                 return code
     return None
+
+
+# Only transcripts can trigger LiveKit's pause - the STT's own start/end of
+# speech markers are ignored unless turn detection runs on the STT, which it
+# does not here. Those are passed through untouched.
+_TRANSCRIPT_EVENTS = frozenset(
+    {
+        stt.SpeechEventType.INTERIM_TRANSCRIPT,
+        stt.SpeechEventType.PREFLIGHT_TRANSCRIPT,
+        stt.SpeechEventType.FINAL_TRANSCRIPT,
+    }
+)
+
+
+def _transcript_text(event: stt.SpeechEvent | str) -> str:
+    """The words in a transcript event, or "" for anything else."""
+    if isinstance(event, str):
+        return event
+    if event.type in _TRANSCRIPT_EVENTS and event.alternatives:
+        return event.alternatives[0].text or ""
+    return ""
+
+
+# Unicode blocks of the Indic scripts MedLink supports.
+_SCRIPTS: tuple[tuple[str, int, int], ...] = (
+    ("hi-IN", 0x0900, 0x097F),
+    ("ta-IN", 0x0B80, 0x0BFF),
+    ("te-IN", 0x0C00, 0x0C7F),
+    ("kn-IN", 0x0C80, 0x0CFF),
+    ("ml-IN", 0x0D00, 0x0D7F),
+)
+
+
+def _script_language(text: str) -> str | None:
+    """The Indic language a piece of text is written in, or None for Latin."""
+    counts = dict.fromkeys((code for code, _, _ in _SCRIPTS), 0)
+    latin = 0
+    for ch in text:
+        point = ord(ch)
+        if ch.isascii() and ch.isalpha():
+            latin += 1
+            continue
+        for code, low, high in _SCRIPTS:
+            if low <= point <= high:
+                counts[code] += 1
+                break
+    code, most = max(counts.items(), key=lambda item: item[1])
+    return code if most > latin else None
+
+
+def reply_language_note(data: MedLinkUserData) -> str:
+    """Say plainly which language to reply in.
+
+    "Speak to them in their language" left it to the model, and this model -
+    tuned for Indian languages, on a rural helpline - answered English callers
+    in Hindi. The caller's language is decided here: what they asked for, else
+    the script they are actually speaking in.
+    """
+    if data.language != DEFAULT_LANGUAGE_CODE:
+        name = _LANGUAGE_NAMES.get(data.language, data.language)
+        return f"Reply in {name} - the caller asked for it."
+    recent = " ".join(data.heard[-3:])
+    if code := _script_language(recent):
+        name = _LANGUAGE_NAMES.get(code, code)
+        return f"The caller is speaking {name}. Reply in {name}."
+    last = data.heard[-1][:120] if data.heard else ""
+    return (
+        "Reply in the same language and style the caller is using"
+        + (f' (their last words: "{last}")' if last else "")
+        + ". Do not switch to Hindi or any other language on your own."
+    )
 
 
 def is_noise_turn(text: str, confidence: float | None) -> bool:
@@ -137,7 +215,8 @@ class MedLinkAgent(Agent):
             name = _LANGUAGE_NAMES.get(code, code)
             self.data.language = code
             try:
-                self.session.tts.update_options(target_language_code=code)
+                if self.session.tts is not None:
+                    self.session.tts.update_options(target_language_code=code)
                 logger.info(
                     "caller asked for a language change",
                     extra={"call_id": self.data.call_id, "language": code},
@@ -203,6 +282,38 @@ class MedLinkAgent(Agent):
 
         await self.on_turn(turn_ctx, new_message)
 
+    async def stt_node(
+        self, audio: AsyncIterable[rtc.AudioFrame], model_settings: ModelSettings
+    ) -> AsyncIterable[stt.SpeechEvent | str]:
+        """What the agent hears, minus its own voice.
+
+        On speakerphone the agent's voice comes back up the line and is
+        transcribed like any caller. The session has no local VAD, so LiveKit
+        runs its interruption check on every interim transcript, and a
+        two-word echo was enough to pause the agent mid-word - over and over,
+        which is the "half a word, then nothing" a caller heard on speaker and
+        never at the earpiece. Transcripts that are the agent's own words are
+        dropped here, before LiveKit sees them.
+
+        Overriding this node means LiveKit no longer carries the STT stream
+        across agent handoffs, so there is a brief reconnect at each one. That
+        happens while the agent is talking, not while the caller is.
+        """
+        spoken = self.data.agent_speech
+        async for event in Agent.default.stt_node(self, audio, model_settings):
+            text = _transcript_text(event)
+            if text and spoken.is_echo(text):
+                logger.info(
+                    "dropped echo of the agent's own voice",
+                    extra={
+                        "call_id": self.data.call_id,
+                        "agent_speaking": spoken.speaking,
+                        "words": len(text.split()),
+                    },
+                )
+                continue
+            yield event
+
     async def tts_node(
         self, text: AsyncIterable[str], model_settings: ModelSettings
     ) -> AsyncIterable[rtc.AudioFrame]:
@@ -213,12 +324,19 @@ class MedLinkAgent(Agent):
         catches it and speaks a correction instead.
         """
         guard = OutputGuard()
+        spoken = self.data.agent_speech
 
         async def guarded() -> AsyncIterable[str]:
-            async for chunk in text:
-                safe = guard.feed(chunk)
-                if safe:
-                    yield safe
+            try:
+                async for chunk in text:
+                    safe = guard.feed(chunk)
+                    if safe:
+                        # Remember it, so the same words coming back through a
+                        # speakerphone are recognised as ours - see stt_node.
+                        spoken.feed(safe)
+                        yield safe
+            finally:
+                spoken.flush()
             if guard.tripped:
                 logger.error(
                     "blocked prescription-only drug from spoken output",

@@ -21,8 +21,10 @@ from config import settings
 # on `[^\w]+` alone tore every Indic word apart at its matras: "मुझे बुखार है"
 # tokenised to ['म','झ','ब','ख','र','ह'] and matched nothing. U+0900-U+0D7F
 # covers Devanagari through Malayalam, so keeping that range as word characters
-# holds each word together.
-_TOKEN_RE = re.compile(r"[^\w\u0900-\u0D7F]+", re.UNICODE)
+# holds each word together - except U+0964/U+0965, the danda full stops, which
+# sit inside that range and would otherwise glue themselves to the last word of
+# every Hindi sentence ("दें।" never equals "दें").
+_TOKEN_RE = re.compile(r"[^\w\u0900-\u0963\u0966-\u0D7F]+", re.UNICODE)
 
 # Filler words that must not, on their own, make a symptom query "match" a drug.
 _MATCH_STOP = {

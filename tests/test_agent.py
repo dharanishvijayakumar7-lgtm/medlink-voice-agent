@@ -248,3 +248,36 @@ def test_the_greeting_is_always_english():
     source = inspect.getsource(IntakeAgent.on_enter)
     assert "GREETINGS[DEFAULT_LANGUAGE_CODE]" in source
     assert "self.data.language" not in source.split("greeting =")[1].split("\n")[0]
+
+
+# ------------------------------------------------ reply language (test calls) ---
+# "Speak to them in their language" let an Indic-tuned model answer English
+# callers in Hindi. The language is now stated outright.
+
+
+def _language_note(language="en-IN", heard=()):
+    from session_state import MedLinkUserData
+    from workflows.base import reply_language_note
+
+    data = MedLinkUserData(call_id="t", caller_phone=None, channel="web")
+    data.language = language
+    data.heard.extend(heard)
+    return reply_language_note(data)
+
+
+def test_an_english_caller_is_not_answered_in_hindi():
+    note = _language_note(heard=["I have had burning in my chest for a week."])
+    assert "Do not switch to Hindi" in note
+
+
+def test_a_caller_speaking_hindi_is_answered_in_hindi():
+    assert "Reply in Hindi" in _language_note(heard=["मुझे दो दिन से सिर में दर्द है।"])
+
+
+def test_a_caller_speaking_tamil_is_answered_in_tamil():
+    assert "Reply in Tamil" in _language_note(heard=["எனக்கு காய்ச்சல்"])
+
+
+def test_a_language_the_caller_asked_for_wins():
+    note = _language_note(language="ml-IN", heard=["I have a fever"])
+    assert "Reply in Malayalam" in note
