@@ -375,3 +375,131 @@ def test_a_modifier_phrase_still_matches_with_a_filler_word():
         },
     )
     assert severity >= 5, "blood in the stool did not score"
+
+
+def test_a_modifier_phrase_cannot_reach_across_a_comma():
+    """"no vomiting, urine is fine" must not read as "no urine"."""
+    severity, escalate = _assess(
+        "my daughter has loose motions",
+        6,
+        {
+            "duration": "Since this morning.",
+            "severity": "Three times.",
+            "associated": "No vomiting, urine is fine.",
+        },
+    )
+    assert not escalate, f"escalated at severity {severity}"
+
+
+def test_the_hindi_full_stop_does_not_stick_to_the_last_word():
+    """The danda sits inside the Indic range kept as word characters."""
+    from knowledge.triage_kb import _tokenize
+    from medicine.formulary import _tokenize as formulary_tokenize
+
+    assert _tokenize("मुझे बुखार है।")[-1] == "है"
+    assert formulary_tokenize("मुझे बुखार है।")[-1] == "है"
+
+
+# ----------------------------------------------- matching (test calls) ---
+
+
+@pytest.mark.parametrize(
+    "complaint,expected",
+    [
+        # "burn" used to match inside "burning" and "burns".
+        ("burning in my chest after meals", "acidity"),
+        ("it usually burns after I eat", "acidity"),
+        ("I burnt my hand on the stove", "burn"),
+        ("hot water burn on my arm", "burn"),
+        ("burning urine", "urinary_symptoms"),
+        # An emergency mentioned second still decides the presentation.
+        ("acidity and chest pain", "chest_pain"),
+        ("fever and chest pain", "chest_pain"),
+        ("burning chest and pain spreading to left arm", "chest_pain"),
+        ("I have gas and cannot breathe properly", "breathlessness"),
+        ("बुखार और सीने में दर्द", "chest_pain"),
+        # ...but ordinary pairs still go to the first complaint.
+        ("fever and body pain", "fever"),
+    ],
+)
+def test_complaints_reach_the_right_presentation(complaint, expected):
+    from knowledge.triage_kb import get_triage_kb
+
+    match = get_triage_kb().match(complaint)
+    assert match is not None and match.id == expected, getattr(match, "id", None)
+
+
+def test_filler_words_do_not_make_a_match():
+    """Acidity's aliases say "burning in my chest"; "my" must not match acidity."""
+    from knowledge.triage_kb import get_triage_kb
+
+    assert get_triage_kb().match("my hair is greying and I feel unlucky") is None
+
+
+@pytest.mark.parametrize(
+    "complaint,expected",
+    [
+        # A denied symptom must not decide the presentation.
+        ("मुझे दो दिन से सिर में दर्द है, पर बुखार या उल्टी जैसी कोई दिक्कत नहीं है।", "headache"),
+        ("सिर में दर्द है, बुखार नहीं", "headache"),
+        ("bukhar nahi hai, sir dard hai", "headache"),
+        ("காய்ச்சல் இல்லை, தலைவலி இருக்கிறது", "headache"),
+        ("no fever but I have a headache", "headache"),
+        ("I don't have fever, just a headache", "headache"),
+        ("fever, no chest pain", "fever"),
+        ("I can't breathe properly", "breathlessness"),
+    ],
+)
+def test_denied_symptoms_do_not_decide_the_presentation(complaint, expected):
+    from knowledge.triage_kb import get_triage_kb
+
+    match = get_triage_kb().match(complaint)
+    assert match is not None and match.id == expected, getattr(match, "id", None)
+
+
+def test_a_complaint_made_only_of_denials_matches_nothing():
+    from knowledge.triage_kb import get_triage_kb
+
+    assert get_triage_kb().match("no chest pain, no fever") is None
+
+
+@pytest.mark.parametrize(
+    "complaint,expected",
+    [
+        # A word in the middle of a phrase no longer breaks it.
+        ("दो दिनों से सिर में हल्का दर्द है", "headache"),
+        ("pain in my chest", "chest_pain"),
+        ("I cannot properly breathe", "breathlessness"),
+    ],
+)
+def test_a_phrase_still_matches_with_a_word_inside_it(complaint, expected):
+    from knowledge.triage_kb import get_triage_kb
+
+    match = get_triage_kb().match(complaint)
+    assert match is not None and match.id == expected
+
+
+def test_a_phrase_is_never_assembled_across_a_comma():
+    from knowledge.triage_kb import _alias_pattern
+    from safety.redflags import _normalize_clauses
+
+    assert not _alias_pattern("chest pain").search(_normalize_clauses("chest, pain"))
+    assert not _alias_pattern("सिर में दर्द").search(_normalize_clauses("सिर में, दर्द"))
+
+
+def test_the_problem_is_found_in_what_the_caller_said_later():
+    """The complaint the model recorded never named the symptom; the caller did,
+    two answers later."""
+    from knowledge.triage_kb import apply_to_session
+    from session_state import MedLinkUserData
+
+    ud = MedLinkUserData(call_id="t", caller_phone=None, channel="web")
+    ud.chief_complaint = "symptoms for about a week, worse with spicy food"
+    ud.heard += [
+        "It started about a week ago and gets worse when I eat spicy food.",
+        "Yes, it's for me. I'm 40.",
+        "It's moderate, just a burning feeling in my chest after meals.",
+    ]
+    entry = apply_to_session(ud)
+    assert entry is not None and entry.id == "acidity"
+    assert ud.allowed_otc_classes == {"antacid"}

@@ -40,8 +40,8 @@ from pathlib import Path
 
 import numpy as np
 from livekit import rtc
+from livekit.agents import APIStatusError, utils
 from livekit.agents import stt as stt_api
-from livekit.agents import utils
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
 
@@ -134,7 +134,7 @@ class Result:
 
 
 def words(text: str) -> list[str]:
-    return [w for w in re.split(r"[^\w\u0900-\u0D7F]+", text.casefold()) if w]
+    return [w for w in re.split(r"[^\w\u0900-\u0963\u0966-\u0D7F]+", text.casefold()) if w]
 
 
 def char_difference(reference: str, hypothesis: str) -> float:
@@ -346,13 +346,114 @@ def report(results: list[Result]) -> int:
     return flagged
 
 
+# --------------------------------------------------------- speakerphone echo ---
+# How strongly the agent's own voice comes back up the line when the caller's
+# phone is on speaker. It depends entirely on the handset's echo cancellation,
+# which we cannot see, so a range is tried: -10 dB is a poor phone in a small
+# room, -26 dB a good one.
+ECHO_LEVELS_DB = (-10, -18, -26)
+ECHO_DELAY_MS = 120
+# A phone loudspeaker and microphone pass roughly the telephony band.
+ECHO_BAND_HZ = (300, 3400)
+
+
+def speakerphone_echo(audio: np.ndarray, rate: int, level_db: float) -> np.ndarray:
+    """The agent's voice as it would come back through a speakerphone."""
+    signal = audio.astype(np.float64)
+    spectrum = np.fft.rfft(signal)
+    freqs = np.fft.rfftfreq(signal.size, 1 / rate)
+    spectrum[(freqs < ECHO_BAND_HZ[0]) | (freqs > ECHO_BAND_HZ[1])] = 0
+    banded = np.fft.irfft(spectrum, n=signal.size)
+    delay = int(rate * ECHO_DELAY_MS / 1000)
+    echo = np.concatenate([np.zeros(delay), banded]) * 10 ** (level_db / 20)
+    rng = np.random.default_rng(0)
+    echo += rng.normal(0, 30, echo.size)  # a little room and line noise
+    return np.clip(echo, -32767, 32767).astype(np.int16)
+
+
+async def audit_echo(language: str) -> int:
+    """Show whether echo would pause the agent, and whether the guard stops it."""
+    from echo_guard import AgentSpeech
+
+    tts, stt = build_tts(), build_stt()
+    tts.update_options(target_language_code=language)
+    problems = 0
+    print(
+        f"\n{'level':>7}  {'words':>5}  {'would pause':>11}  {'guard drops':>11}  heard"
+    )
+    try:
+        for text in SENTENCES[language]:
+            frames, rate = await speak(tts, text)
+            if not frames:
+                continue
+            leveller = Leveller(
+                target_rms=settings.tts_target_rms,
+                max_gain=settings.tts_gain_max,
+                makeup=settings.tts_makeup_gain,
+                sample_rate=rate,
+            )
+            played = np.concatenate(
+                [leveller.process(np.frombuffer(f.data, dtype=np.int16)) for f in frames]
+            )
+            speech = AgentSpeech()
+            speech.feed(text + " ")
+            speech.started()
+
+            print(f"  {text[:60]}")
+            for level in ECHO_LEVELS_DB:
+                echo = to_phone(speakerphone_echo(played, rate, level), rate)
+                try:
+                    heard = await transcribe(stt, echo)
+                except APIStatusError as err:
+                    # Each echo level is a fresh STT session, and a full run is
+                    # dozens of them. Sarvam rate-limits that; stop cleanly.
+                    print(f"\n  stopped: Sarvam refused the request ({err.status_code}).")
+                    return problems
+                n = len(words(heard))
+                # LiveKit's gate in this session: min_words=2 on any transcript.
+                would_pause = n >= 2
+                dropped = speech.is_echo(heard)
+                leak = would_pause and not dropped
+                problems += leak
+                print(
+                    f"{level:>5} dB  {n:>5}  {'yes' if would_pause else 'no':>11}  "
+                    f"{'yes' if dropped else 'no':>11}  {heard[:44]!r}"
+                    + ("  <-- WOULD STILL PAUSE" if leak else "")
+                )
+    finally:
+        await tts.aclose()
+        await stt.aclose()
+    return problems
+
+
 async def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--all-languages", action="store_true")
     parser.add_argument("--language", default="en-IN", choices=sorted(SENTENCES))
     parser.add_argument("--keep-wavs", action="store_true")
     parser.add_argument("--out", type=Path, default=OUT_DIR)
+    parser.add_argument(
+        "--echo",
+        action="store_true",
+        help="simulate a speakerphone: does the agent's own voice pause it?",
+    )
     args = parser.parse_args()
+
+    if args.echo:
+        logging.basicConfig(level=logging.WARNING, format="%(message)s")
+        languages = sorted(SENTENCES) if args.all_languages else [args.language]
+        async with utils.http_context.open():
+            leaks = 0
+            for language in languages:
+                print(f"\n--- {language}: speakerphone echo")
+                leaks += await audit_echo(language)
+        print(
+            "\nwould pause  = the echo transcribes to 2+ words, which is all LiveKit"
+            "\n               needs in this session to pause the agent mid-word."
+            "\nguard drops  = the echo guard recognises it as the agent's own voice."
+            f"\n\n{leaks} echo transcript(s) would still pause the agent."
+        )
+        return 0
 
     logging.basicConfig(level=logging.WARNING, format="%(message)s")
     languages = sorted(SENTENCES) if args.all_languages else [args.language]

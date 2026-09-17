@@ -16,7 +16,7 @@ from livekit.agents import ChatContext, ChatMessage, RunContext, function_tool
 from knowledge.triage_kb import apply_to_session
 from session_state import SLOT_QUESTIONS, MedLinkUserData
 from workflows import routing
-from workflows.base import SHARED_STYLE, MedLinkAgent
+from workflows.base import SHARED_STYLE, MedLinkAgent, reply_language_note
 from workflows.intake import _NO_NAME
 
 logger = logging.getLogger("medlink.workflow")
@@ -64,7 +64,8 @@ class TriageAgent(MedLinkAgent):
                 f"{hint}\n\n"
                 "Continue the conversation naturally - don't greet again. If you "
                 "haven't yet shown you understand how they feel, do that first in "
-                "a few words. Then ask the one thing you most need to know."
+                "a few words. Then ask the one thing you most need to know. "
+                f"{reply_language_note(self.data)}"
             )
         )
 
@@ -221,7 +222,9 @@ class TriageAgent(MedLinkAgent):
         # Safety gate, enforced in code rather than hoped for in the prompt: no
         # explaining or medicine until the warning-sign check has happened. The
         # model gets told what is missing and simply asks one more question.
-        if not routing.has_enough_information(data):
+        credit_volunteered_answers(data)
+        if not routing.has_enough_information(data) and data.finish_refusals < MAX_REFUSALS:
+            data.finish_refusals += 1
             still = "; ".join(open_questions(data))
             return (
                 "Not yet - you haven't checked this yet: " + still + ". "
@@ -394,6 +397,69 @@ def open_questions(data: MedLinkUserData) -> list[str]:
         if slot not in answered and not any(_asks_for(q, slot) for q in kb)
     ]
     return (kb + generic)[:3]
+
+
+# The gate sends the agent back for more at most this often. It exists to make
+# sure the warning-sign question gets asked; once it has been, the call moves on.
+MAX_REFUSALS = 1
+
+# Words that show a caller is telling us whether something else is going on:
+# "no blood, no vomiting", "नहीं, कोई बुखार नहीं".
+_ANSWER_NEGATORS = frozenset(
+    {"no", "not", "none", "nothing", "never", "without",
+     "नहीं", "नही", "ना", "இல்லை", "లేదు", "ಇಲ್ಲ", "ഇല്ല"}
+)
+
+
+def credit_volunteered_answers(data: MedLinkUserData) -> None:
+    """Fill the essential slots from what the caller has already said.
+
+    The gate checks `answers`, which only holds what the model chose to record.
+    A mother who opened with "since this morning, five times, no blood, no
+    vomiting" had given duration and the warning-sign answer, but nothing was
+    recorded - so the gate made the agent ask how long it had been going on.
+
+    Duration and severity are credited from anything the caller said. The
+    warning-sign slot needs more, because it is the safety check: the caller
+    must have addressed at least two of the symptoms this presentation's own
+    questions ask about, with a negation or confirmation ("no blood, no
+    vomiting").
+    """
+    said = " ".join([data.chief_complaint or "", *data.heard])
+    if "duration" not in data.answers and _parse_duration_days(said) is not None:
+        data.record_answer("duration", _caller_said(data, _parse_duration_days))
+        data.patient.symptom_duration_days = _parse_duration_days(said)
+    words = _meaningful(said)
+    if "severity" not in data.answers and _describes_severity(said):
+        data.record_answer("severity", _caller_said(data, _describes_severity))
+    if "associated" not in data.answers:
+        asked_about = _meaningful(" ".join(data.candidate_questions))
+        raw = {w.casefold() for w in re.findall(r"\w+", said)}
+        if len(asked_about & words) >= 2 and raw & _ANSWER_NEGATORS:
+            data.record_answer(
+                "associated",
+                _caller_said(data, lambda t: _meaningful(t) & asked_about),
+            )
+
+
+# "Five times since morning" is how people say how bad loose motions or
+# vomiting are, and it is the measure a clinician would ask for anyway.
+_HOW_OFTEN = re.compile(
+    r"\b(\d+|two|three|four|five|six|seven|eight|nine|ten|many|several)\s+times\b",
+    re.IGNORECASE,
+)
+
+
+def _describes_severity(text: str) -> bool:
+    return bool(_SEVERITY_WORDS & _meaningful(text) or _HOW_OFTEN.search(text))
+
+
+def _caller_said(data: MedLinkUserData, relevant) -> str:
+    """The caller's own words that carry the answer, for the record."""
+    for text in data.heard:
+        if relevant(text):
+            return f"(caller) {text[:200]}"
+    return f"(caller) {(data.chief_complaint or '')[:200]}"
 
 
 MAX_POSSIBLE_CAUSES = 3

@@ -1121,14 +1121,23 @@
       "therapeutic_class": "antiseptic_topical",
       "indications": [
         "cleaning minor cuts, grazes and small wounds",
-        "minor skin infection prevention"
+        "minor skin infection prevention",
+        "minor cut",
+        "cut",
+        "wound",
+        "graze",
+        "scrape"
       ],
       "lay_terms": {
         "en": [
           "wound cleaning",
           "antiseptic",
           "cut on skin",
-          "chot"
+          "chot",
+          "cut",
+          "wound",
+          "small cut",
+          "scratch"
         ],
         "hi": [
           "चोट",

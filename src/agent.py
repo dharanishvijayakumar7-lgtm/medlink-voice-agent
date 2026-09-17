@@ -98,6 +98,27 @@ async def _caller_phone(ctx: JobContext) -> str | None:
     return None
 
 
+def _interruption_options() -> dict:
+    """How the caller may cut in while the agent is talking."""
+    if not settings.allow_barge_in:
+        # The agent always finishes its sentence. Whatever is heard meanwhile -
+        # its own echo, bystanders, the caller - is dropped, so nothing can
+        # chop its speech. The escape hatch for a speakerphone in a crowded room.
+        return {"enabled": False}
+    return {
+        "mode": "adaptive",
+        # Phone lines carry echo and noise. On a real call, 1- and 3-character
+        # "utterances" at ~0.46 confidence kept interrupting the agent and
+        # restarting its reply. A real barge-in is at least two words and most
+        # of a second of speech.
+        "min_words": 2,
+        "min_duration": 0.8,
+        # A pause that turns out not to be the caller resumes after this. The
+        # default 2.0 s left a hole in the middle of a word on speakerphone.
+        "false_interruption_timeout": settings.false_interruption_timeout,
+    }
+
+
 @server.rtc_session(agent_name=settings.agent_name)
 async def medlink_session(ctx: JobContext):
     ctx.log_context_fields = {"room": ctx.room.name}
@@ -130,15 +151,7 @@ async def medlink_session(ctx: JobContext):
             # cut in on a natural ~1s pause mid-sentence and answer half a thought.
             # Being talked over is worse than a slightly slower reply.
             turn_detection=inference.TurnDetector(),
-            interruption={
-                "mode": "adaptive",
-                # Phone lines carry echo and noise. On a real call, 1- and
-                # 3-character "utterances" at ~0.46 confidence kept interrupting
-                # the agent and restarting its reply. A real barge-in is at least
-                # two words and most of a second of speech.
-                "min_words": 2,
-                "min_duration": 0.8,
-            },
+            interruption=_interruption_options(),
             # Wait after the caller stops talking. The turn detector moves this
             # toward min_delay when it is confident they finished, and toward
             # max_delay when they sound mid-thought.
@@ -179,6 +192,18 @@ async def medlink_session(ctx: JobContext):
     # `false_interruption_timeout` (2.0s by default), so this shows up as a gap
     # rather than as mangled words - these two lines are here so the logs say
     # whether it is happening at all, instead of it being guessed at again.
+    @session.on("agent_state_changed")
+    def _track_agent_speech(ev) -> None:
+        """Tell the echo guard when the agent's voice is going down the line.
+
+        Only while it is speaking - and for a moment after - can a transcript
+        be its own voice coming back through a speakerphone.
+        """
+        if ev.new_state == "speaking":
+            userdata.agent_speech.started()
+        elif ev.old_state == "speaking":
+            userdata.agent_speech.stopped()
+
     @session.on("agent_false_interruption")
     def _log_false_interruption(ev) -> None:
         logger.warning(

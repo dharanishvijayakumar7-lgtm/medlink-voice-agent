@@ -239,7 +239,7 @@ entries:
   - id: acidity
     presentation: "Acidity / heartburn / indigestion"
     aliases:
-      en: [acidity, heartburn, gas, indigestion, burning in chest after food, sour belching, bloating, gastric]
+      en: [acidity, heartburn, gas, indigestion, burning in chest after food, sour belching, bloating, gastric, burning in my chest, chest burning, burning after eating, burning after meals, burning after food, burns after eating, burns after i eat, acid reflux, reflux, sour burps]
       hi: [gas, acidity, jalan, khatti dakar, badhazmi, एसिडिटी, सीने में जलन, गैस, खट्टी डकार]
       ta: [aamilam, neruppu erichal, vaayu, நெஞ்செரிச்சல், வாயு தொல்லை]
       te: [amlatvam, gastric, gyas, గుండెల్లో మంట, ఎసిడిటీ, గ్యాస్]
@@ -275,7 +275,7 @@ entries:
     presentation: "Headache"
     aliases:
       en: [headache, head pain, migraine, head is paining, sir dard]
-      hi: [sir dard, sar dard, adha sir dard, सिर दर्द, सिरदर्द, सर में दर्द]
+      hi: [sir dard, sar dard, adha sir dard, सिर दर्द, सिरदर्द, सर में दर्द, सिर में दर्द, सिर में बहुत दर्द, सर दर्द, sir mein dard]
       ta: [thalai vali, ore thalai vali, தலைவலி, தலை வலி]
       te: [thalanoppi, tala noppi, తలనొప్పి, తల నొప్పి]
       kn: [tale novu, ತಲೆನೋವು, ತಲೆ ನೋವು]
@@ -311,8 +311,11 @@ entries:
 
   - id: chest_pain
     presentation: "Chest pain or chest discomfort"
+    # Wins over any other presentation mentioned in the same complaint, even an
+    # earlier one: "acidity and chest pain" is a chest-pain call.
+    priority: emergency
     aliases:
-      en: [chest pain, chest discomfort, chest tightness, chest heaviness, pain in chest, chest pressure]
+      en: [chest pain, chest discomfort, chest tightness, chest heaviness, pain in chest, chest pressure, pain in my chest, chest ache, heart pain, pain spreading to arm, left arm pain]
       hi: [seene mein dard, chhati mein dard, seene mein bhaari, सीने में दर्द, छाती में दर्द, सीना दर्द]
       ta: [nenju vali, maarbu vali, மார்பு வலி, நெஞ்சு வலி]
       te: [chaati noppi, ఛాతీ నొప్పి, గుండె నొప్పి]
@@ -330,6 +333,9 @@ entries:
     severity_modifiers:
       age_over_40: 3
       radiating: 4
+      spreading: 4
+      left_arm: 4
+      jaw: 3
       with_sweating: 4
       with_breathlessness: 4
     otc_categories_allowed: []
@@ -346,8 +352,9 @@ entries:
 
   - id: breathlessness
     presentation: "Breathing difficulty"
+    priority: emergency
     aliases:
-      en: [breathlessness, cannot breathe, difficulty breathing, short of breath, wheezing, asthma attack, breathing problem]
+      en: [breathlessness, cannot breathe, difficulty breathing, short of breath, wheezing, asthma attack, breathing problem, breathing difficulty, difficulty in breathing, trouble breathing, hard to breathe, shortness of breath, breathless, can not breathe, unable to breathe, can't breathe, cant breathe]
       hi: [saans phoolna, saans lene mein takleef, dama, सांस लेने में तकलीफ, सांस फूलना, दम घुटना]
       ta: [moochu thinaral, moochu vaanga mudiyala, மூச்சு திணறல், மூச்சு விட முடியவில்லை]
       te: [oopiri aadatam ledu, shwasa ibbandi, ఊపిరి ఆడటం లేదు, శ్వాస తీసుకోవడం కష్టం]

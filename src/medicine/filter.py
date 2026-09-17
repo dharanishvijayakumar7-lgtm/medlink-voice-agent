@@ -21,6 +21,7 @@ from dataclasses import dataclass, field
 
 from config import settings
 from medicine.formulary import Formulary, FormularyEntry, get_formulary
+from safety.redflags import _is_negated, _normalize_clauses, flatten
 
 _STOPWORDS = {
     "known",
@@ -71,11 +72,31 @@ def _keywords(text: str) -> set[str]:
     }
 
 
+def _affirmed_keywords(text: str) -> set[str]:
+    """Keywords the caller said they HAVE, leaving out the ones they denied.
+
+    A mother said her child had "no blood, no vomiting" and ORS - the main
+    treatment for loose motions - was withheld, because "vomiting" also appears
+    in its rule "cannot drink at all or persistent vomiting". Reuses the
+    red-flag negation scope, which already handles lists ("no A, B or C").
+    """
+    clauses = _normalize_clauses(text)
+    flat = flatten(clauses)
+    return {
+        match.group(0)
+        for match in _WORD_RE.finditer(flat)
+        if len(match.group(0)) > 3
+        and match.group(0) not in _STOPWORDS
+        and not _is_negated(clauses, match.start())
+    }
+
+
 def _phrase_matches(rule_text: str, patient_items: list[str]) -> str | None:
     """Return the offending patient item if it plausibly matches a rule phrase.
 
     Conservative on the side of rejecting a medicine: a single shared meaningful
-    keyword (e.g. "kidney", "ulcer", "asthma", "warfarin") is enough.
+    keyword (e.g. "kidney", "ulcer", "asthma", "warfarin") is enough - as long
+    as the caller said they have it, not that they don't.
     """
     rule_kw = _keywords(rule_text)
     if not rule_kw:
@@ -84,7 +105,7 @@ def _phrase_matches(rule_text: str, patient_items: list[str]) -> str | None:
         item = item.strip()
         if not item:
             continue
-        if _keywords(item) & rule_kw:
+        if _affirmed_keywords(item) & rule_kw:
             return item
     return None
 

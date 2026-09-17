@@ -282,3 +282,19 @@ def test_ordinary_acidity_is_not_scored_urgent():
 
     severity, urgency = routing.assess(ud)
     assert urgency == "self_care", f"scored {severity}"
+
+
+@pytest.mark.parametrize(
+    "text",
+    ["I don't have chest pain", "I haven't had chest pain", "there isn't any chest pain"],
+)
+def test_contracted_negations_are_recognised(text):
+    """"don't" used to normalise to "don t" and match no negator."""
+    assert _negated(text, "chest pain")
+
+
+def test_cannot_is_not_a_denial():
+    """"I can't breathe" is the symptom itself."""
+    from safety.redflags import normalize
+
+    assert normalize("I can't breathe") == "i cant breathe"

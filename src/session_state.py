@@ -14,6 +14,7 @@ from typing import Any
 from uuid import uuid4
 
 from config import DEFAULT_LANGUAGE_CODE
+from echo_guard import AgentSpeech
 from medicine.filter import PatientContext
 from safety.redflags import RedFlagHit
 
@@ -65,12 +66,19 @@ class MedLinkUserData:
     patient: PatientContext = field(default_factory=PatientContext)
     answers: dict[str, str] = field(default_factory=dict)
     questions_asked: int = 0
+    # How many times finish_questions has sent the agent back for more. Capped:
+    # an endlessly refusing gate made the model give up and advise from the
+    # questioning stage, skipping the medicine safety checks entirely.
+    finish_refusals: int = 0
     # Everything the caller has actually said, so a question they already
     # answered is not put to them again. `answers` only holds what the model
     # chose to record under a slot, which misses detail volunteered in passing -
     # a mother said her child was still passing urine in her opening sentence
     # and was asked about it anyway, using up the one turn she stayed for.
     heard: list[str] = field(default_factory=list)
+    # What the agent itself has just said, so its own voice coming back through a
+    # speakerphone is not mistaken for the caller. See echo_guard.
+    agent_speech: AgentSpeech = field(default_factory=AgentSpeech)
     # Background the caller volunteered: {"kind": condition|allergy|past_issue,
     # "detail": "..."}. Persisted to the medical_history table at call end.
     medical_history: list[dict[str, str]] = field(default_factory=list)

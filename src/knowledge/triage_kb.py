@@ -33,7 +33,13 @@ from pydantic import BaseModel, Field
 from rank_bm25 import BM25Okapi
 
 from config import settings
-from safety.redflags import CLAUSE_SENTINEL, _is_negated, _normalize_clauses, normalize
+from safety.redflags import (
+    CLAUSE_SENTINEL,
+    LIST_SENTINEL,
+    _is_negated,
+    _normalize_clauses,
+    normalize,
+)
 
 logger = logging.getLogger("medlink.kb")
 
@@ -41,14 +47,105 @@ logger = logging.getLogger("medlink.kb")
 # on `[^\w]+` alone tore every Indic word apart at its matras: "मुझे बुखार है"
 # tokenised to ['म','झ','ब','ख','र','ह'] and matched nothing. U+0900-U+0D7F
 # covers Devanagari through Malayalam, so keeping that range as word characters
-# holds each word together.
-_TOKEN_RE = re.compile(r"[^\w\u0900-\u0D7F]+", re.UNICODE)
+# holds each word together - except U+0964/U+0965, the danda full stops, which
+# sit inside that range and would otherwise glue themselves to the last word of
+# every Hindi sentence ("दें।" never equals "दें").
+_TOKEN_RE = re.compile(r"[^\w\u0900-\u0963\u0966-\u0D7F]+", re.UNICODE)
 # BM25 fallback needs a clear signal before it overrides "no match".
 _BM25_MIN_SCORE = 3.0
 
 
+# Function words carry no symptom meaning, but in a small corpus the few entries
+# that happen to contain them score them as rare and important. Once acidity's
+# aliases included "burning in my chest", "my hair is greying" matched acidity.
+_BM25_STOP = frozenset(
+    "a an the i me my we our you your he she it its they them their is am are "  # noqa: SIM905
+    "was were be been being have has had do does did and or but so if of to in "
+    "on at by for with from after before since this that these those there here "
+    "not no very too also just feel feeling felt get got".split()
+)
+
+
 def _tokenize(text: str) -> list[str]:
     return [t for t in _TOKEN_RE.split(normalize(text)) if t]
+
+
+def _content(tokens: list[str]) -> list[str]:
+    return [t for t in tokens if t not in _BM25_STOP]
+
+
+# Negation that comes AFTER the word it denies, as in Hindi and the Dravidian
+# languages: "बुखार नहीं है", "காய்ச்சல் இல்லை", "bukhar nahi hai". English
+# negation comes before and is handled by `_is_negated`. "ना" is left out on
+# purpose: it is also the Hindi tag "है ना?", and the red-flag module dropped it
+# for suppressing real emergencies.
+_POSTPOSED_NEGATORS = frozenset(
+    {
+        "नहीं", "नही", "nahi", "nahin", "nahee",
+        "இல்லை", "இல்ல", "illai", "illa",
+        "లేదు", "ledu",
+        "ಇಲ್ಲ", "ಇಲ್ಲಾ",
+        "ഇല്ല", "ഇല്ലാ",
+    }
+)
+# "Headache, but no fever": a contrast ends the reach of a later negation.
+_CONTRAST = frozenset(
+    {"but", "par", "lekin", "पर", "लेकिन", "मगर", "ஆனால்", "కానీ", "ಆದರೆ", "പക്ഷേ"}
+)
+# How far after a symptom its postposed negation can sit: "बुखार या उल्टी जैसी
+# कोई दिक्कत नहीं" puts "नहीं" six words after "बुखार".
+_POSTPOSED_REACH = 6
+
+
+def _denied(clauses: str, start: int, end: int) -> bool:
+    """Did the caller say they do NOT have the symptom matched at start:end?
+
+    The forward scan stops at a comma as well as a full stop: in "सिर में दर्द
+    है, बुखार नहीं" the headache is present and only the fever is denied.
+    """
+    if _is_negated(clauses, start):
+        return True
+    for token in clauses[end : end + 200].split()[:_POSTPOSED_REACH]:
+        if token in (CLAUSE_SENTINEL, LIST_SENTINEL) or token in _CONTRAST:
+            return False
+        if token in _POSTPOSED_NEGATORS:
+            return True
+    return False
+
+
+# Between the words of a multi-word alias, allow up to two others: "सिर में
+# हल्का दर्द" (a mild headache) is still "सिर में दर्द", and "pain in my chest"
+# is still "pain in chest". A gap word can never be a clause marker, so a phrase
+# cannot be assembled across a comma or full stop. Patterns run on the clause
+# text, where those markers are still present.
+_GAP = (
+    "(?:[ ]+[^\\s"
+    + re.escape(CLAUSE_SENTINEL)
+    + re.escape(LIST_SENTINEL)
+    + "]+){0,2}[ ]+"
+)
+
+
+def _alias_pattern(alias: str) -> re.Pattern[str] | None:
+    """Pattern for an alias, or None to use a plain substring search.
+
+    A plain substring search matched "burn" inside "burning" and "burns", so a
+    caller with burning in the chest after meals was routed to the burn-injury
+    entry and asked whether the burnt area was bigger than their palm. Latin
+    aliases now match whole words only.
+
+    Indic-script words take suffixes directly and the aliases are written to be
+    found inside them, so a single Indic word stays a substring search. A
+    multi-word Indic alias gets the same gap allowance as a Latin one, without
+    the word boundaries.
+    """
+    words = alias.split()
+    joined = _GAP.join(re.escape(w) for w in words)
+    if alias.isascii():
+        return re.compile(r"\b" + joined + r"\b")
+    if len(words) == 1:
+        return None
+    return re.compile(joined)
 
 
 class TriageEntry(BaseModel):
@@ -62,6 +159,8 @@ class TriageEntry(BaseModel):
     otc_categories_allowed: list[str] = Field(default_factory=list)
     self_care: str = ""
     refer_when: str = ""
+    # "emergency" presentations win over anything else mentioned alongside them.
+    priority: str = "routine"
     source: str = ""
 
     @property
@@ -79,18 +178,19 @@ class TriageKB:
     def __init__(self, entries: list[TriageEntry]):
         self.entries = entries
         self.by_id: dict[str, TriageEntry] = {e.id: e for e in entries}
-        # (normalized alias, entry) sorted longest-first so "chest pain" beats "pain".
-        self._aliases: list[tuple[str, TriageEntry]] = sorted(
+        # (normalized alias, entry, pattern) sorted longest-first so "chest pain"
+        # beats "pain".
+        self._aliases: list[tuple[str, TriageEntry, re.Pattern[str] | None]] = sorted(
             (
-                (normalize(alias), entry)
+                (norm, entry, _alias_pattern(norm))
                 for entry in entries
                 for alias in entry.all_aliases()
-                if normalize(alias)
+                if (norm := normalize(alias))
             ),
-            key=lambda pair: len(pair[0]),
+            key=lambda item: len(item[0]),
             reverse=True,
         )
-        docs = [_tokenize(e.search_text()) for e in entries]
+        docs = [_content(_tokenize(e.search_text())) for e in entries]
         self._bm25 = BM25Okapi(docs) if docs else None
 
     @classmethod
@@ -107,25 +207,51 @@ class TriageKB:
         """Best entry for a free-text complaint, or None if nothing is confident."""
         if not complaint or not complaint.strip():
             return None
-        text = normalize(complaint)
+        # Matching runs on the clause text, which keeps the comma and full-stop
+        # markers, so a match position can also be checked for negation.
+        clauses = _normalize_clauses(complaint)
 
         # 1. Alias match. Callers lead with their main concern, so the alias
         #    appearing EARLIEST wins ("fever and body pain" -> fever, not
         #    body_ache); ties break toward the longer, more specific alias.
-        best: tuple[int, int, TriageEntry] | None = None
-        for alias, entry in self._aliases:
-            position = text.find(alias)
-            if position == -1:
+        #
+        #    Except for emergencies. "Earliest wins" sent "acidity and chest
+        #    pain", "fever and chest pain" and "I have gas and cannot breathe" to
+        #    the harmless entry - which permits medicine and asks the wrong
+        #    questions. A chest-pain or breathing complaint anywhere in the
+        #    sentence decides the presentation.
+        #
+        #    And a symptom the caller denied decides nothing. "Headache for two
+        #    days, but no fever" in Hindi matched fever, so a headache caller
+        #    was asked about her temperature and given fever advice.
+        best: tuple[int, int, int, TriageEntry] | None = None
+        saw_denied = False
+        for alias, entry, pattern in self._aliases:
+            if pattern is not None:
+                found = pattern.search(clauses)
+                start, end = (found.start(), found.end()) if found else (-1, -1)
+            else:
+                start = clauses.find(alias)
+                end = start + len(alias)
+            if start == -1:
                 continue
-            candidate = (position, -len(alias), entry)
-            if best is None or candidate[:2] < best[:2]:
+            if _denied(clauses, start, end):
+                saw_denied = True
+                continue
+            routine = 0 if entry.priority == "emergency" else 1
+            candidate = (routine, start, -len(alias), entry)
+            if best is None or candidate[:3] < best[:3]:
                 best = candidate
         if best is not None:
-            return best[2]
+            return best[3]
+        if saw_denied:
+            # Everything recognised was something they do NOT have. Guessing a
+            # presentation from that is worse than admitting there isn't one.
+            return None
 
         # 2. BM25 fallback for phrasings the aliases missed.
         if self._bm25 is not None:
-            tokens = _tokenize(complaint)
+            tokens = _content(_tokenize(complaint))
             if tokens:
                 scores = self._bm25.get_scores(tokens)
                 best = max(range(len(scores)), key=lambda i: scores[i])
@@ -157,6 +283,10 @@ def score_modifiers(entry: TriageEntry, ud) -> int:
     # Each answer is its own clause, so "no" in one answer can't negate the next.
     parts = [*ud.answers.values(), ud.chief_complaint or ""]
     clauses = _normalize_clauses(" . ".join(p for p in parts if p))
+    # Only the full-stop marker becomes a space. The comma marker is left in on
+    # purpose: it is neither a word nor whitespace, so a modifier phrase cannot
+    # match across it. Flattening it too would let "no_urine" match "no
+    # vomiting, urine is fine" through the filler-word allowance in _affirmed.
     flat = clauses.replace(CLAUSE_SENTINEL, " ")
 
     total = 0
@@ -233,6 +363,14 @@ def apply_to_session(ud, complaint: str | None = None) -> TriageEntry | None:
     """
     kb = get_triage_kb()
     entry = kb.match(complaint or ud.chief_complaint or "")
+    if entry is None and (heard := getattr(ud, "heard", None)):
+        # Callers often describe the problem over several turns. One opened with
+        # "it started a week ago and gets worse with spicy food" and only said
+        # "burning in my chest after meals" two answers later, so the complaint
+        # alone matched nothing and a plain acidity call got no advice. Their
+        # own words are tried next, one clause per turn so a denial in one turn
+        # cannot reach into another.
+        entry = kb.match(" . ".join(heard))
 
     if entry is None:
         # Fail closed. Leaving allowed_otc_classes as None means "no class
