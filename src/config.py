@@ -33,6 +33,10 @@ SUPPORTED_LANGUAGES: dict[str, str] = {
 }
 DEFAULT_LANGUAGE_CODE = "en-IN"
 
+# Follow-up questions allowed in demo mode (MEDLINK_DEMO_MODE). Defined once and
+# read through `Settings.followup_limit`; nothing else should hard-code it.
+DEMO_MAX_FOLLOWUPS = 3
+
 
 # --- Sarvam AI model IDs ------------------------------------------------------
 # STT, TTS and the LLM all run on Sarvam under one SARVAM_API_KEY. Gemini, Groq
@@ -209,6 +213,11 @@ class Settings(BaseSettings):
     medicine_min_score: float = Field(default=0.5, alias="MEDLINK_MEDICINE_MIN_SCORE")
     medicine_max_results: int = Field(default=2, alias="MEDLINK_MEDICINE_MAX_RESULTS")
     max_followup_questions: int = Field(default=5, alias="MEDLINK_MAX_FOLLOWUPS")
+    # Short-call mode for demos: at most DEMO_MAX_FOLLOWUPS questions, then the
+    # assessment, in a fixed four-part script. Clinical behaviour is otherwise
+    # untouched - severity, urgency and the escalation path are the same, and an
+    # emergency still goes to EscalateAgent in full.
+    demo_mode: bool = Field(default=False, alias="MEDLINK_DEMO_MODE")
     # Severity score (0-10 scale from triage KB modifiers) routing thresholds.
     severity_urgent: int = Field(default=5, alias="MEDLINK_SEVERITY_URGENT")
     severity_emergency: int = Field(default=8, alias="MEDLINK_SEVERITY_EMERGENCY")
@@ -231,6 +240,17 @@ class Settings(BaseSettings):
     formulary_path: Path = Field(default=DATA_DIR / "formulary.json")
     triage_kb_path: Path = Field(default=DATA_DIR / "triage_kb.yaml")
     providers_path: Path = Field(default=DATA_DIR / "providers.json")
+
+    @property
+    def followup_limit(self) -> int:
+        """How many follow-up questions this call may ask before advising.
+
+        The one place the cap is decided. Demo mode only ever lowers it, so a
+        smaller MEDLINK_MAX_FOLLOWUPS still wins.
+        """
+        if self.demo_mode:
+            return min(self.max_followup_questions, DEMO_MAX_FOLLOWUPS)
+        return self.max_followup_questions
 
     @property
     def disclaimer(self) -> str:

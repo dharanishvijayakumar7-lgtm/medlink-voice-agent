@@ -50,9 +50,42 @@ would - a conversation, not a list read out.
 """
 
 
+# Demo mode: one short answer in a fixed shape, then the call ends. Everything
+# the caller must hear is still here - what to do, what not to do, when to see a
+# doctor, and the disclaimer - just said once and briefly. The safety rules are
+# the same, because the medicine guidance still comes from the filtered pipeline.
+DEMO_INSTRUCTIONS = f"""\
+You are MedLink, on a health helpline call. You understand the caller's problem
+now. Give your answer once, briefly, and then end the call.
+
+{SHARED_STYLE}
+
+# Your answer: about 60-80 words, four parts, in this order
+1. What it looks like - ONE sentence, the likely cause in everyday words.
+   Say "this looks like" or "this is most likely", never claim to be certain.
+2. What to do - two short actions. The medicine guidance you were given is
+   part of this: never change a name, dose or warning, and never add one.
+3. What not to do - one short line.
+4. When to see a doctor - one short line, then: {settings.disclaimer}
+
+# How to say it
+- Plain, everyday words, short sentences, warm but brief.
+- Do NOT list possibilities, do not repeat their answers back to them, and do
+  not ask whether they need anything else.
+- Straight after this answer, call `end_call`. If they do ask something, answer
+  it in one short sentence, then close.
+
+# Absolute rules
+- If the guidance says no medicine is appropriate, do NOT suggest one anyway -
+  say so kindly and point them to a doctor or pharmacist.
+- Never mention antibiotics, injections, or anything needing a prescription.
+"""
+
+
 class RecommendAgent(MedLinkAgent):
     def __init__(self, **kwargs) -> None:
-        super().__init__(instructions=INSTRUCTIONS, **kwargs)
+        instructions = DEMO_INSTRUCTIONS if settings.demo_mode else INSTRUCTIONS
+        super().__init__(instructions=instructions, **kwargs)
 
     async def on_enter(self) -> None:
         # The medicine guidance is fetched here, before the agent says anything,
@@ -62,13 +95,32 @@ class RecommendAgent(MedLinkAgent):
         # problem probably was. With everything in hand up front, one reply can
         # follow the order a caring doctor would use.
         guidance = await self._guidance(self._main_symptom())
+        shared = (
+            f"{self._context_block()}{self._likely_causes()}\n\n"
+            "# Medicine guidance - already safety-checked for this caller\n"
+            f"{guidance}\n\n"
+            f"{reply_language_note(self.data)}\n"
+        )
+        if settings.demo_mode:
+            # Short mode. Some of what a caller normally gets asked was never
+            # asked, so where something is unknown, say what you can and lean on
+            # "see a doctor if it does not settle" rather than filling the gap
+            # with a guess.
+            await self.session.generate_reply(
+                instructions=(
+                    shared + "Give the four-part answer now, about 60-80 words: "
+                    "what it looks like, what to do (with the guidance above), "
+                    "what not to do, when to see a doctor, then the disclaimer. "
+                    "Don't greet again and don't read it as a numbered list. "
+                    "Where you were not able to ask about something, do not "
+                    "guess - say to see a doctor if it does not settle. Then "
+                    "call end_call."
+                )
+            )
+            return
         await self.session.generate_reply(
             instructions=(
-                f"{self._context_block()}{self._likely_causes()}\n\n"
-                "# Medicine guidance - already safety-checked for this caller\n"
-                f"{guidance}\n\n"
-                f"{reply_language_note(self.data)}\n"
-                "Now speak to them warmly, in this order:\n"
+                shared + "Now speak to them warmly, in this order:\n"
                 "1. What this most likely is, and WHY - tied to what they told "
                 "you. Say honestly that you cannot examine them.\n"
                 "2. What to do: the home care, then the medicine guidance above "
@@ -166,7 +218,20 @@ class RecommendAgent(MedLinkAgent):
             disposition: One of self_care, clinic.
         """
         data = context.userdata
+        if data.disposition:
+            # Called twice. Saying goodbye again just makes the agent ramble -
+            # a demo call ended with three goodbyes in a row.
+            # Safe to say out loud, because the model sometimes reads a tool
+            # result verbatim - one demo call ended on "the call has already
+            # been closed", spoken to the caller.
+            return "Take care."
         data.disposition = disposition
+        if settings.demo_mode:
+            # The advice already carried the doctor line and the disclaimer.
+            return (
+                "(Private note, not to be said aloud) Say one short goodbye "
+                "line, nothing else."
+            )
         return (
             "Reassure them briefly, remind them to see a doctor if it gets worse, "
             "thank them for calling, and say goodbye."

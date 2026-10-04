@@ -27,8 +27,14 @@ def test_every_agent_constructs_with_instructions(agent_cls):
 
 
 @pytest.mark.parametrize("agent_cls", ALL_AGENTS)
-def test_prompts_stay_small(agent_cls):
-    """The whole point of the workflow split - no more one 4k mega-prompt."""
+@pytest.mark.parametrize("demo", [False, True], ids=["normal", "demo"])
+def test_prompts_stay_small(agent_cls, demo, monkeypatch):
+    """The whole point of the workflow split - no more one 4k mega-prompt.
+
+    Demo mode swaps wording in rather than piling it on, so the limit holds in
+    both modes.
+    """
+    monkeypatch.setattr(settings, "demo_mode", demo)
     assert len(agent_cls().instructions) < 2500
 
 

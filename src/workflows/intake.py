@@ -10,7 +10,7 @@ import logging
 
 from livekit.agents import RunContext, function_tool
 
-from config import DEFAULT_LANGUAGE_CODE
+from config import DEFAULT_LANGUAGE_CODE, settings
 from knowledge.triage_kb import apply_to_session
 from session_state import MedLinkUserData
 from workflows.base import SHARED_STYLE, MedLinkAgent
@@ -59,6 +59,21 @@ GREETINGS: dict[str, str] = {
     ),
 }
 
+NORMAL_WHO_AND_AGE = """\
+- Once you know what is wrong, show you understand in a few kind words. If you
+  still need to know who is unwell or roughly how old they are, ask it as ONE
+  short question ("Is this for you, and about how old are you?"). If they are
+  clearly talking about themselves ("I have a fever"), only ask the age.
+  Never ask for anyone's name."""
+
+# Demo mode: this costs a whole turn before the questioning stage even begins,
+# and the follow-up cap never sees it. Triage asks for age later, and only when
+# a medicine decision turns on it.
+DEMO_WHO_AND_AGE = """\
+- Once you know what is wrong, show you understand in a few kind words and call
+  `record_complaint` straight away. Do NOT ask who it is for, how old they are,
+  or their name."""
+
 INSTRUCTIONS = f"""\
 You are MedLink, answering a health helpline call. You have just greeted the
 caller. Right now you are simply getting to know what is wrong.
@@ -70,20 +85,23 @@ caller. Right now you are simply getting to know what is wrong.
 - If they share their name or age first but not the problem, welcome that
   warmly and gently ask what has been troubling them. Never reply with just
   "anything else?".
-- Once you know what is wrong, show you understand in a few kind words. If you
-  still need to know who is unwell or roughly how old they are, ask it as ONE
-  short question ("Is this for you, and about how old are you?"). If they are
-  clearly talking about themselves ("I have a fever"), only ask the age.
-  Never ask for anyone's name.
+{{WHO_AND_AGE}}
 - Then call `record_complaint` (with their name and age if they said them).
   Don't try to work out the cause or suggest medicine yet - you will come back
   to that once you understand more.
 """
 
 
+def instructions() -> str:
+    """The intake prompt for the mode this call is running in."""
+    return INSTRUCTIONS.format(
+        WHO_AND_AGE=DEMO_WHO_AND_AGE if settings.demo_mode else NORMAL_WHO_AND_AGE
+    )
+
+
 class IntakeAgent(MedLinkAgent):
     def __init__(self, **kwargs) -> None:
-        super().__init__(instructions=INSTRUCTIONS, **kwargs)
+        super().__init__(instructions=instructions(), **kwargs)
 
     async def on_enter(self) -> None:
         # Always English, whatever the caller spoke last time. They can ask for

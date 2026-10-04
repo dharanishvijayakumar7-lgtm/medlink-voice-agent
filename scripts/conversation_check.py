@@ -212,6 +212,7 @@ async def run_call(caller: Caller, model: llm.LLM) -> dict:
         # "How bad is it? Mild, or strong enough that you can't sit still?" is
         # one question with its options spelled out. Three is a real stack.
         "multi_question_turns": sum(1 for t in agent_turns if t.count("?") >= 3),
+        "questions": userdata.followups_asked,
         "kb_entry": userdata.triage_entry_id,
         "urgency": userdata.urgency,
         "medicines": [r.get("generic_name") for r in userdata.recommendations],
@@ -273,8 +274,9 @@ def _squash(text: str) -> str:
 
 
 def report(call: dict, verdict: dict) -> int:
-    print(f"\n{'=' * 78}\n{call['caller']}  (KB: {call['kb_entry']}, urgency: "
-          f"{call['urgency']}, medicines: {call['medicines'] or 'none'})\n{'=' * 78}")
+    print(f"\n{'=' * 78}\n{call['caller']}  ({call['questions']} follow-up "
+          f"questions, KB: {call['kb_entry']}, urgency: {call['urgency']}, "
+          f"medicines: {call['medicines'] or 'none'})\n{'=' * 78}")
     for who, text in call["lines"]:
         print(f"{who:>6}: {text}")
     print("\n  mechanics")

@@ -66,6 +66,11 @@ class MedLinkUserData:
     patient: PatientContext = field(default_factory=PatientContext)
     answers: dict[str, str] = field(default_factory=dict)
     questions_asked: int = 0
+    # Follow-up questions the caller has actually answered while in triage. Not
+    # the same as `questions_asked`, which counts the slots the model chose to
+    # record - it can ask three questions and record two. The cap has to be
+    # about questions asked, so both are consulted.
+    triage_turns: int = 0
     # How many times finish_questions has sent the agent back for more. Capped:
     # an endlessly refusing gate made the model give up and advise from the
     # questioning stage, skipping the medicine safety checks entirely.
@@ -114,6 +119,11 @@ class MedLinkUserData:
     def record_answer(self, slot: str, value: str) -> None:
         if value and value.strip():
             self.answers[slot] = value.strip()
+
+    @property
+    def followups_asked(self) -> int:
+        """How many follow-ups this call has put to the caller."""
+        return max(self.questions_asked, self.triage_turns)
 
     def unanswered_slots(self) -> list[str]:
         return [s for s in CORE_SLOTS if s not in self.answers]

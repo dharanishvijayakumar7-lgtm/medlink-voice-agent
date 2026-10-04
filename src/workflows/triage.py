@@ -13,6 +13,7 @@ import re
 
 from livekit.agents import ChatContext, ChatMessage, RunContext, function_tool
 
+from config import settings
 from knowledge.triage_kb import apply_to_session
 from session_state import SLOT_QUESTIONS, MedLinkUserData
 from workflows import routing
@@ -50,10 +51,29 @@ wrong. Now understand their situation the way a good doctor would on the phone.
   what it might be and what to do right after `finish_questions`.
 """
 
+# Demo mode: the same job in three questions. Added to the instructions rather
+# than replacing them, so every safety rule above still applies.
+# The bullet demo mode swaps out, so the short-mode rules replace the normal
+# stopping rule instead of piling on top of it - the prompt has to stay small.
+NORMAL_STOP_ASKING = """- Like a good doctor, stop asking once you know how long, how bad, and whether
+  anything worrying is present. Then call `finish_questions` with up to 3
+  `possible_causes` (most likely first) and a one-line `reasoning`."""
+
+DEMO_STOP_ASKING = """- Ask AT MOST {limit} questions, one short sentence each, in this order and
+  skipping any they answered: how long, how bad, warning signs (who it is for,
+  age or pregnancy, only if it decides whether a medicine is safe). Then call
+  `finish_questions` with up to 3 `possible_causes` and a one-line `reasoning`."""
+
 
 class TriageAgent(MedLinkAgent):
     def __init__(self, **kwargs) -> None:
-        super().__init__(instructions=INSTRUCTIONS, **kwargs)
+        instructions = INSTRUCTIONS
+        if settings.demo_mode:
+            instructions = instructions.replace(
+                NORMAL_STOP_ASKING,
+                DEMO_STOP_ASKING.format(limit=settings.followup_limit),
+            )
+        super().__init__(instructions=instructions, **kwargs)
 
     async def on_enter(self) -> None:
         hint = "\n".join(f"- {q}" for q in open_questions(self.data))
@@ -77,6 +97,16 @@ class TriageAgent(MedLinkAgent):
         essentials are known the note says so, so there is a natural point to stop
         asking and start explaining.
         """
+        # One caller turn in triage answers one question. The cap is about
+        # questions asked, and `questions_asked` only counts the slots the model
+        # bothered to record.
+        #
+        # This runs from `on_user_turn_completed`, which LiveKit calls for spoken
+        # turns - the path a real call and `agent.py console` take. A text-only
+        # `AgentSession.run()` injects the turn without it, so in the text test
+        # harness the cap falls back to `questions_asked`.
+        self.data.triage_turns += 1
+
         if routing.has_enough_information(self.data):
             note = (
                 "(Private note, not to be said aloud) You know enough now. Respond "
@@ -383,7 +413,7 @@ def open_questions(data: MedLinkUserData) -> list[str]:
     # nothing had been written to `answers` yet.
     if _parse_duration_days(spoken) is not None:
         answered.add("duration")
-    if _SEVERITY_WORDS & said:
+    if _describes_severity(spoken):
         answered.add("severity")
     kb = [
         q
@@ -396,6 +426,18 @@ def open_questions(data: MedLinkUserData) -> list[str]:
         for slot in routing.ESSENTIAL_SLOTS
         if slot not in answered and not any(_asks_for(q, slot) for q in kb)
     ]
+    if settings.demo_mode:
+        # Only three questions are going to be asked, so spend them on how long
+        # and how bad first, then the presentation's own warning-sign question.
+        # Normally the KB questions lead, which is better clinically but can
+        # spend all three on one presentation's specifics.
+        ordered = [
+            SLOT_QUESTIONS[slot]
+            for slot in routing.ESSENTIAL_SLOTS
+            if slot not in answered
+        ]
+        ordered += [q for q in kb if q not in ordered]
+        return ordered[: settings.followup_limit]
     return (kb + generic)[:3]
 
 
@@ -451,7 +493,11 @@ _HOW_OFTEN = re.compile(
 
 
 def _describes_severity(text: str) -> bool:
-    return bool(_SEVERITY_WORDS & _meaningful(text) or _HOW_OFTEN.search(text))
+    # Matched on the raw words, not the "meaningful" ones: that filter drops
+    # anything under four letters, and "bad" is how most callers answer "how bad
+    # is it?". A caller who said "quite bad" was asked how bad it was.
+    words = {_stem(w) for w in re.findall(r"[a-z]+", text.casefold())}
+    return bool(_SEVERITY_WORDS & words or _HOW_OFTEN.search(text))
 
 
 def _caller_said(data: MedLinkUserData, relevant) -> str:

@@ -98,8 +98,11 @@ def has_enough_information(ud: MedLinkUserData) -> bool:
     why that is unsafe: a caller who gave both in one sentence was handed a
     paracetamol dose with no check for fever, vomiting or vision problems. The
     associated-symptoms answer is that check.
+
+    The cap is the other way out, and in demo mode it is what usually ends the
+    questioning: at `settings.followup_limit` the agent advises on what it has.
     """
-    if ud.questions_asked >= settings.max_followup_questions:
+    if ud.followups_asked >= settings.followup_limit:
         return True
     return all(slot in ud.answers for slot in ESSENTIAL_SLOTS)
 
