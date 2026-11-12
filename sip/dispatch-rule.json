@@ -6,6 +6,10 @@
       }
     },
     "name": "MedLink inbound dispatch",
+    "trunkIds": [
+      "ST_PmuSNZGEDAJ6",
+      "PN_PPN_QLpxiVr4dEm7"
+    ],
     "roomConfig": {
       "agents": [
         { "agentName": "medlink-agent" }

@@ -1,86 +1,99 @@
-# SIP / telephony config
+﻿# MedLink inbound telephony
 
-Applied with the LiveKit CLI (`lk`). Checked in so the telephony setup is
-reproducible rather than living only in a dashboard.
+## Current setup
 
-**Status: working end to end** — a real call to `+91 94293 97308` reaches the
-agent.
+- Dial **+1 484 398 9008** (`+14843989008`), a LiveKit-managed US local number.
+- Project: `medlink-sih` (`p_3kagp74ekiz`).
+- Number ID: `PN_PPN_QLpxiVr4dEm7`.
+- Dispatch rule: `SDR_j4XMGsxuN5ga` (MedLink inbound dispatch).
+- Agent name: `medlink-agent`.
 
+The LiveKit API confirmed the number and inbound service are active and assigned
+to this rule on November 12, 2026. Real phone audio verification remains pending.
+
+```text
+Caller -> LiveKit-managed US number -> MedLink dispatch rule
+       -> individual medlink-call room -> medlink-agent -> Sarvam STT/LLM/TTS
 ```
-Indian mobile -> VoiceLink DID -> VoiceLink SIP trunk
-             -> LiveKit inbound trunk -> dispatch rule -> medlink-agent
+
+Managed numbers need no third-party inbound SIP trunk, carrier password, Python
+changes, or Docker changes. Do not add the managed number to `inbound-trunk.json`.
+
+## Dispatch configuration
+
+`dispatch-rule.json` records the current routing in CLI format: camelCase fields
+inside `dispatch_rule`. The dashboard/API displays equivalent snake_case fields.
+Its `trunkIds` contains the legacy VoiceLink trunk and the managed number ID,
+matching the saved live rule. The dashboard adds the number ID when it is selected
+under Phone numbers; the API confirmed this association.
+
+`roomConfig.agents[0].agentName` must match `LIVEKIT_AGENT_NAME`, whose default is
+`medlink-agent`. Explicit agent dispatch is required. The empty deployment value
+in the live JSON corresponds to the default production selection in the dashboard.
+
+For this existing project, edit **Telephony -> Dispatch rules -> MedLink inbound
+dispatch** instead of creating an overlapping rule. Keep the new number selected
+under Phone numbers. The expired VoiceLink trunk can remain selected; it is not
+needed for managed calls.
+
+For another project, replace the project-specific IDs before creating a rule:
+
+```powershell
+lk sip dispatch create sip/dispatch-rule.json
 ```
 
-## Project facts
+Assign the managed number to that rule using **Telephony -> Phone numbers ->
+number menu -> Assign dispatch rule**. Never reuse IDs from another project.
 
-- LiveKit project: `medlink-sih` (`p_3kagp74ekiz`)
-- **SIP subdomain: `3kagp74ekiz`** — the Project ID minus `p_`. NOT the URL
-  subdomain `medlink-sih-1n96eczu`.
-- LiveKit SIP listens on TCP **5060** (and 5061 for TLS). Nothing listens on
-  3300 — that is VoiceLink's own port.
+## Run the agent
 
-## dispatch-rule.json — applied as `SDR_j4XMGsxuN5ga`
+From the `medlink-agent` directory:
 
-    lk sip dispatch create sip/dispatch-rule.json
+```powershell
+uv run src/agent.py start
+```
 
-Routes each caller into their own `medlink-call_<caller>_<random>` room and
-dispatches the agent named `medlink-agent`. `agentName` must match
-`settings.agent_name` in src/config.py: the agent sets an explicit `agent_name`,
-which disables LiveKit's automatic dispatch, so without this rule a call
-connects to silence.
+Keep the terminal open for local hosting. `.env.local` must contain the existing
+project's `LIVEKIT_URL`, `LIVEKIT_API_KEY`, `LIVEKIT_API_SECRET`, and
+`SARVAM_API_KEY`. Do not print or commit credentials. The Dockerfile already runs
+this command. If the intended deployed worker is already online, do not start a
+second local copy: multiple workers with the same name may receive calls.
 
-Note: `roomPrefix` does not hide the caller's number — it still appears in the
-room name, and room names are logged.
+The CLI is optional for dashboard setup. To install it on Windows if needed:
+`winget install LiveKit.LiveKitCLI`.
 
-## inbound-trunk.json — applied as `ST_PmuSNZGEDAJ6`
+## Demo verification
 
-    lk sip inbound create sip/inbound-trunk.json
-    lk sip inbound update --id <trunk id> \
-        --auth-user <voicelink trunk username> --auth-pass <voicelink password>
+1. Check remaining minutes in LiveKit's usage/billing dashboard. Published Build
+   allowances are one US local number and 50 inbound minutes; this does not
+   establish the project's current remaining allowance.
+2. Confirm the worker registers as `medlink-agent`.
+3. Dial `+14843989008` from the actual demo phone. Indian mobiles may need ISD
+   activation and incur international charges. This is a US local number.
+4. Complete three calls, checking greeting, two-way audio, requested language
+   switching, and normal hangup. Caller ID comes from `sip.phoneNumber`;
+   `MEDLINK_DEV_CALLER_PHONE` is only a development fallback.
+5. Inspect **LiveKit -> Telephony -> Calls** and worker logs. No call record:
+   check dialling/ISD and number status. Room without agent: check worker
+   registration and exact agent name. Agent joins but fails to reply: check
+   Sarvam API/credit errors and audio logs.
+6. If summaries are enabled, verify export under the real caller's number.
+   Sarvam API/hackathon credits and LiveKit allowances are separate.
 
-- Both `+919429397308` and `919429397308` are listed: VoiceLink shows the DID
-  without the `+`, and the trunk only matches numbers it lists.
-- **Credentials are set on the live trunk but deliberately not in this file.**
-  They must match the Username / Registration Password on the VoiceLink trunk.
-  Pass them as flags; never commit them.
-- No `allowed_addresses`: that field has to be enabled for the project by
-  LiveKit support, and a trunk with empty `numbers` plus an un-enabled
-  `allowed_addresses` matches nothing. Explicit numbers plus digest auth is what
-  keeps the trunk from accepting arbitrary SIP.
+## Legacy VoiceLink configuration
 
-## VoiceLink side
+The old number `+919429397308` expired. Do not advertise it as active.
+`inbound-trunk.json` is retained only for the legacy VoiceLink trunk
+`ST_PmuSNZGEDAJ6`; do not apply it for the managed US number.
 
-Provider: VoiceLink (Elision Technolab LLP), a DOT-licensed VNO. Chosen because
-it accepts individual KYC with a PAN card and documents a LiveKit integration.
+Historically VoiceLink used TCP 5060, PCMU/PCMA, and
+`3kagp74ekiz.india.sip.livekit.cloud`, with digest credentials stored only on the
+live trunk. Past failures included missing DID routing, a missing `.india.` host,
+and an empty client wallet despite reseller funds. These settings do not apply
+to the new managed number.
 
-**SIP Trunk (Voice Services → SIP Trunk Management), BOT Provider = Custom:**
+## References
 
-| Field | Value |
-|---|---|
-| SIP Server Host | `3kagp74ekiz.india.sip.livekit.cloud` |
-| SIP Server Port | `5060` |
-| Transport | TCP |
-| Audio Format | PCMU + PCMA |
-
-The `.india.` hostname *is* region pinning for inbound SIP — there is no
-dashboard toggle. Indian numbers need it.
-
-**DID Call Routing:** Inbound → SIP trunk → the LiveKit trunk. Creating the
-trunk alone routes nothing.
-
-## Troubleshooting — what actually broke, in order
-
-1. **No DID call routing** on VoiceLink. Calls went nowhere.
-2. **Host missing `.india.`.**
-3. **Insufficient wallet balance — the real blocker.** The account is a
-   *Reseller*; the DID and trunk belong to a *client* sub-account, and calls are
-   billed to the client wallet, which was empty even though the reseller wallet
-   had funds. Fix: enable **Bypass Wallet** on the client (Client Management),
-   or Allocate Wallet from reseller to client.
-
-To tell which side is failing, check both dashboards before changing config:
-
-- **LiveKit Cloud → Telephony → Calls.** No call listed means the INVITE never
-  arrived; the problem is upstream at VoiceLink.
-- **VoiceLink → Reports → Call Logs Report.** The *Disconnect Reason* field
-  names the cause (it is what showed the wallet problem).
+- [LiveKit Phone Numbers](https://docs.livekit.io/telephony/start/phone-numbers/)
+- [Telephony testing](https://docs.livekit.io/telephony/testing/)
+- [LiveKit pricing](https://livekit.com/pricing)

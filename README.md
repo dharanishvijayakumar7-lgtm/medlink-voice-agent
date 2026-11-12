@@ -2,7 +2,7 @@
 
 2026-09-23 · Dharanish Vijayakumar
 
-MedLink is a phone-based, multilingual AI health helpline for rural India: a caller dials an ordinary +91 number and talks to a voice agent in English, Hindi, Tamil, Telugu, Kannada or Malayalam. This report covers the `medlink-agent` codebase end to end.
+MedLink is a phone-based, multilingual AI health helpline for rural India: a caller dials an ordinary phone number (the current demo uses a US number) and talks to a voice agent in English, Hindi, Tamil, Telugu, Kannada or Malayalam. This report covers the `medlink-agent` codebase end to end.
 
 ## 1. Overview
 
@@ -15,7 +15,7 @@ MedLink works on an ordinary phone call, with no smartphone, app or data connect
 | Product | Voice AI health helpline (triage + OTC guidance), not a doctor |
 | Target users | Rural Indian callers on feature phones / landlines |
 | Languages | English, Hindi, Tamil, Telugu, Kannada, Malayalam + code-mixed speech |
-| Access channel | Live Indian number **+91 94293 97308** (inbound PSTN), plus LiveKit web/console |
+| Access channel | LiveKit-managed US number **+1 484 398 9008** (inbound PSTN), plus LiveKit web/console |
 | AI vendor | Sarvam AI for all three stages (STT, LLM, TTS) on one API key |
 | Runtime | Python 3.10–3.14, LiveKit Agents ≥ 1.8.1 |
 | Code size | ~20,100 tracked lines; 27 Python source modules in `src/` |
@@ -34,7 +34,7 @@ The whole voice pipeline runs on Sarvam AI plus LiveKit Cloud. Everything else i
 | Package manager | `uv` + `uv.lock` | Reproducible installs, `uv run` everywhere |
 | Agent framework | LiveKit Agents ≥ 1.8.1 (`AgentServer`, `AgentSession`, handoffs, `function_tool`) | Session orchestration, multi-agent workflow, tool calling |
 | Transport | LiveKit Cloud (WebRTC rooms, free tier) | Media transport for web and SIP calls |
-| Telephony | LiveKit SIP inbound trunk + VoiceLink (Elision Technolab) DID | Real Indian phone number into a LiveKit room |
+| Telephony | LiveKit-managed US local number + explicit agent dispatch | Inbound phone calls into a LiveKit room |
 | Speech-to-text | Sarvam `saaras:v3-realtime` via `sarvam.STTRealtime` (WebSocket) | Streaming transcription, automatic language detection (`language="auto"`), 8 kHz linear16, server-side VAD |
 | LLM | Sarvam `sarvam-105b-conversations` via `sarvam.LLM`, temperature 0.3 | Conversation and tool calling |
 | Text-to-speech | Sarvam `bulbul:v3`, speaker **"ritu"** (female), 16 kHz linear16 | Streaming voice in all six languages |
@@ -60,7 +60,7 @@ Each call is one LiveKit room with one `AgentSession`. Speech is streamed both w
 
 ```mermaid
 flowchart TD
-    A[Caller phone<br/>+91 number] --> B[VoiceLink DID<br/>+ SIP trunk]
+    A[Caller phone] --> B[LiveKit-managed US number]
     B --> C[LiveKit SIP<br/>dispatch rule]
     C --> D[medlink-agent worker]
     D --> E[ai-coustics<br/>noise cancellation]
@@ -262,27 +262,29 @@ Three offline tools measure the voice without placing a call: `scripts/tts_probe
 
 ## 9. Telephony
 
-A real call to **+91 94293 97308** reaches the agent end to end. The config is checked into `sip/` so it can be reproduced with the LiveKit CLI.
+The demo number is **+1 484 398 9008** (`+14843989008`), a LiveKit-managed US local number. The previous VoiceLink number expired. LiveKit's API confirmed the new number and inbound service are active and assigned to MedLink on November 12, 2026; real-call audio verification is still required.
 
 ```mermaid
 flowchart LR
-    A[Indian mobile] --> B[VoiceLink DID]
-    B --> C[VoiceLink SIP trunk<br/>TCP 5060, PCMU/PCMA]
-    C --> D[LiveKit inbound trunk<br/>*.india.sip.livekit.cloud]
-    D --> E[Dispatch rule<br/>room medlink-call_*]
-    E --> F[medlink-agent]
+    A[Caller phone] --> B[LiveKit-managed US number]
+    B --> C[MedLink dispatch rule]
+    C --> D[Individual medlink-call room]
+    D --> E[medlink-agent]
+    E --> F[Sarvam STT / LLM / TTS]
 ```
 
 | Item | Detail |
 | --- | --- |
-| Carrier | VoiceLink (Elision Technolab LLP), a DoT-licensed VNO; accepts individual KYC with a PAN card |
-| Inbound trunk | `sip/inbound-trunk.json`. Lists the number both with and without `+`. Uses digest auth; credentials are set on the live trunk and never committed |
-| Dispatch rule | `sip/dispatch-rule.json`. One room per caller (`medlink-call_<caller>_<random>`), dispatches the agent named `medlink-agent` |
-| Region | The `.india.` SIP hostname pins inbound SIP to India, which Indian numbers need |
-| Caller ID | Read from the SIP participant attribute `sip.phoneNumber` after connecting; waits up to 5 s. Console sessions can simulate one with `MEDLINK_DEV_CALLER_PHONE` |
-| Emergency numbers | 112 (emergency) and 108 (ambulance), both configurable |
+| Phone number | `+14843989008`, ID `PN_PPN_QLpxiVr4dEm7`; inbound calling only |
+| Dispatch rule | `SDR_j4XMGsxuN5ga`; `sip/dispatch-rule.json` records the live routing and explicitly dispatches `medlink-agent` |
+| Provider setup | No external SIP trunk or carrier credentials required for the managed number |
+| Agent runtime | Existing Python entrypoint, Dockerfile and Sarvam API integration remain applicable |
+| Caller ID | Read from `sip.phoneNumber` after connecting; console sessions can simulate it with `MEDLINK_DEV_CALLER_PHONE` |
+| Demo cost | Check remaining LiveKit allowances; callers in India may need ISD and pay international calling charges |
 
-Three problems had to be fixed to get the line working: DID call routing was missing on VoiceLink, the host was missing `.india.`, and the client sub-account's wallet was empty. Enabling "Bypass Wallet" fixed the last one. Not built yet: SMS (a `sms_provider` setting exists), call transfer to a doctor, and outbound calls.
+Run `uv run src/agent.py start` from the `medlink-agent` directory with the existing `.env.local` credentials, unless the intended deployed worker is already online. See [sip/README.md](sip/README.md) for setup, troubleshooting and the three-call demo checklist.
+
+`sip/inbound-trunk.json` is legacy VoiceLink configuration and is not applied for the new managed number. SMS, call transfer to a doctor, and outbound calling are not implemented.
 
 ## 10. Data, privacy and persistence
 
