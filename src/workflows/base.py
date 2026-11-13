@@ -51,6 +51,7 @@ _LANGUAGE_NAMES = {
 # Only an actual request aimed at the agent. "My mother speaks Tamil" must not
 # switch the call, so a bare "speaks <language>" is deliberately not enough.
 _REQUEST_PATTERNS: tuple[str, ...] = (
+    r"^(?:please\s+)?(?:speak|talk|reply|answer|continue|explain)\s+{lang}[.!?]*$",
     r"\b(?:can|could|will|would)\s+you\s+(?:please\s+)?(?:speak|talk|reply|answer|say|continue|explain)\b[^.?!]*\b{lang}\b",
     r"\b(?:please\s+)?(?:speak|talk|reply|answer|continue|explain|say\s+it)\s+(?:to\s+me\s+)?(?:in|into)\s+{lang}\b",
     r"\b(?:switch|change|shift)\s+(?:over\s+)?(?:to\s+)?{lang}\b",

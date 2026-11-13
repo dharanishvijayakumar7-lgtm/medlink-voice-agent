@@ -81,11 +81,21 @@ def _content(tokens: list[str]) -> list[str]:
 # for suppressing real emergencies.
 _POSTPOSED_NEGATORS = frozenset(
     {
-        "नहीं", "नही", "nahi", "nahin", "nahee",
-        "இல்லை", "இல்ல", "illai", "illa",
-        "లేదు", "ledu",
-        "ಇಲ್ಲ", "ಇಲ್ಲಾ",
-        "ഇല്ല", "ഇല്ലാ",
+        "नहीं",
+        "नही",
+        "nahi",
+        "nahin",
+        "nahee",
+        "இல்லை",
+        "இல்ல",
+        "illai",
+        "illa",
+        "లేదు",
+        "ledu",
+        "ಇಲ್ಲ",
+        "ಇಲ್ಲಾ",
+        "ഇല്ല",
+        "ഇല്ലാ",
     }
 )
 # "Headache, but no fever": a contrast ends the reach of a later negation.
@@ -148,12 +158,31 @@ def _alias_pattern(alias: str) -> re.Pattern[str] | None:
     return re.compile(joined)
 
 
+class FollowupQuestion(BaseModel):
+    topic: str
+    text: dict[str, str]
+
+
+class SelfCareAssessment(BaseModel):
+    likely: str
+    why: str
+    do: str
+    avoid: str
+    seek_care: str
+
+
 class TriageEntry(BaseModel):
     id: str
     presentation: str
     aliases: dict[str, list[str]] = Field(default_factory=dict)
     red_flags: list[str] = Field(default_factory=list)
     candidate_questions: list[str] = Field(default_factory=list)
+    # Optional structured questions/recovery speech; legacy entries still load.
+    followup_questions: list[FollowupQuestion] = Field(default_factory=list)
+    recovery_assessments: dict[str, SelfCareAssessment] = Field(default_factory=dict)
+    explanation: str = ""
+    avoid: str = ""
+    require_alias: bool = False
     severity_modifiers: dict[str, int] = Field(default_factory=dict)
     # [] means no OTC medicine is ever appropriate for this presentation.
     otc_categories_allowed: list[str] = Field(default_factory=list)
@@ -255,7 +284,10 @@ class TriageKB:
             if tokens:
                 scores = self._bm25.get_scores(tokens)
                 best = max(range(len(scores)), key=lambda i: scores[i])
-                if scores[best] >= _BM25_MIN_SCORE:
+                if (
+                    scores[best] >= _BM25_MIN_SCORE
+                    and not self.entries[best].require_alias
+                ):
                     return self.entries[best]
         return None
 

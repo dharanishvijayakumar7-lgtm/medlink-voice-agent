@@ -4,12 +4,14 @@ The model proposes one action. Only the application renders it as speech; there
 are no medicine tools or unconstrained model speech on this path.
 """
 
+import asyncio
 import json
 import logging
 import re
 from dataclasses import dataclass, field
 from typing import Literal
 
+from livekit.agents import APIError
 from pydantic import BaseModel, ConfigDict, Field
 
 from config import SUPPORTED_LANGUAGES
@@ -18,6 +20,7 @@ from medicine.formulary import get_formulary
 from safety.guardrails import scan_output
 from safety.redflags import detect_redflag
 from workflows.base import MedLinkAgent, _script_language, detect_language_request
+from workflows.conversation_text import GENERAL_ASSESSMENT, SERVICE_ERROR
 
 logger = logging.getLogger("medlink.conversation")
 LANGUAGES = Literal["en-IN", "hi-IN", "ta-IN", "te-IN", "kn-IN", "ml-IN"]
@@ -81,29 +84,49 @@ EMERGENCY = {
 }
 
 
+MIN_QUESTIONS = 4
+MAX_QUESTIONS = 6
+MODEL_TIMEOUT = 15.0
+
+
+class ReportedFact(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    topic: str
+    value: str = Field(
+        description="English translation of the reported fact; do not infer."
+    )
+    status: Literal["reported", "denied", "unknown"] = "reported"
+    quote: str = Field(
+        description="Exact supporting quote from a caller message in its original language."
+    )
+
+
 class Decision(BaseModel):
     model_config = ConfigDict(extra="forbid")
-    action: Literal["ask", "assess", "answer", "emergency", "close"]
+    action: Literal["ask", "repeat", "assess", "answer", "emergency", "close"]
     language: LANGUAGES
     confirmed_symptoms: str = Field(
         default="",
-        description="English translation of ONLY positively reported symptoms, never denied symptoms.",
+        description="English summary of ONLY positively reported symptoms. Keep denied symptoms separate.",
     )
-    denied_symptoms: str = Field(
-        default="", description="English translation of explicitly denied symptoms."
-    )
+    denied_symptoms: str = ""
     topic: str = ""
     question: str = ""
+    important_gap: str = Field(
+        default="",
+        description="For question 5 or 6: the important unresolved detail that changes the advice.",
+    )
+    facts: list[ReportedFact] = Field(default_factory=list)
+    stop_quote: str = Field(
+        default="",
+        description="Exact caller quote explicitly declining more questions or ending the call; otherwise empty. Duration is not a request to stop.",
+    )
     likely: str = ""
     why: str = ""
     do: str = ""
     avoid: str = ""
     seek_care: str = ""
     answer: str = ""
-    opening_complete: bool = Field(
-        default=False,
-        description="True ONLY when the FIRST caller message already supplied duration, severity, and warning-sign information; otherwise false.",
-    )
 
 
 def medicine_free(text: str) -> bool:
@@ -111,14 +134,51 @@ def medicine_free(text: str) -> bool:
         return False
     if re.search(r"\d\s*(?:mg|mcg|ml|tablets?|capsules?|मिलीग्राम|गोली)\b", text, re.I):
         return False
-    # Includes generic names, brands, and the native-script names in the
-    # formulary. Reject the entire proposal before any audio is emitted.
-    for name in get_formulary().known_names():
-        if len(name) > 2 and re.search(
-            r"(?<!\w)" + re.escape(name) + r"(?!\w)", text, re.I
-        ):
-            return False
-    return True
+    return not any(
+        len(name) > 2
+        and re.search(r"(?<!\w)" + re.escape(name) + r"(?!\w)", text, re.I)
+        for name in get_formulary().known_names()
+    )
+
+
+def _topic(value: str) -> str:
+    topic = value.strip().casefold().replace(" ", "_")
+    words = topic.split("_")
+    # Keep the same clinical detail from being re-asked under a longer label.
+    for core in ("duration", "age", "severity", "progression", "impact", "triggers"):
+        if core in words:
+            return core
+    return {
+        "hair_thinning_location": "hair_pattern",
+        "hair_loss_pattern": "hair_pattern",
+        "scalp_itching_flaking": "scalp_changes",
+        "hair_care_practices": "hair_care",
+        "hair_care_products": "hair_care",
+    }.get(topic, topic)
+
+
+def _quoted(quote: str, callers: list[str]) -> bool:
+    normalized = " ".join(quote.split()).casefold()
+    return bool(normalized) and any(
+        normalized in " ".join(c.split()).casefold() for c in callers
+    )
+
+
+def _stop_requested(quote: str, latest: str) -> bool:
+    # A model flag or an exact quote of "two years" must not bypass intake.
+    return _quoted(quote, [latest]) and bool(
+        re.search(
+            r"\b(?:stop asking|no more questions|do not ask|don't ask|don't want to answer|do not want to answer|"
+            r"just (?:give|tell)|end (?:the|this) call|goodbye|bye|that's all|that is all)\b|"
+            r"(?:सवाल|प्रश्न).{0,20}(?:मत|नहीं)|बंद करो|अलविदा|"
+            r"கேள்வி.{0,20}(?:வேண்டாம்|கேட்காத)|போதும்|"
+            r"ప్రశ్న.{0,20}(?:వద్దు|అడగకు)|చాలు|"
+            r"ಪ್ರಶ್ನೆ.{0,20}(?:ಬೇಡ|ಕೇಳಬೇಡ)|ಸಾಕು|"
+            r"ചോദ്യം.{0,20}(?:വേണ്ട|ചോദിക്കരുത്)|മതി",
+            quote,
+            re.I,
+        )
+    )
 
 
 @dataclass
@@ -126,21 +186,70 @@ class ConversationPolicy:
     questions: list[tuple[str, str]] = field(default_factory=list)
     assessed: bool = False
 
-    def accept(self, decision: Decision) -> str:
-        if decision.action == "ask":
-            if self.assessed or len(self.questions) >= 6:
-                raise ValueError("Question budget exhausted; provide an assessment")
-            if not decision.topic.strip() or not decision.question.strip():
-                raise ValueError("Question needs a topic and text")
+    def accept(
+        self,
+        decision: Decision,
+        *,
+        known_topics=None,
+        caller_stopped=False,
+        repeat_requested=False,
+    ) -> str:
+        decision.topic = _topic(decision.topic)
+        if decision.action in ("ask", "repeat"):
+            if self.assessed:
+                raise ValueError(
+                    "already_assessed: Answer the follow-up without restarting intake"
+                )
+            if not decision.topic or not decision.question.strip():
+                raise ValueError("question_missing: Question needs a topic and text")
             if decision.question.count("?") + decision.question.count("\uff1f") > 1:
-                raise ValueError("Ask one question only")
-            if any(
-                t.casefold() == decision.topic.casefold() or q == decision.question
-                for t, q in self.questions
+                raise ValueError("bundled_question: Ask one focused question only")
+            if re.search(
+                r"\?\s*\w|\band\s+(?:how|when|where|who|what|do you|have you|are you)\b",
+                decision.question,
+                re.I,
             ):
-                raise ValueError("This question was already asked")
+                raise ValueError("bundled_question: Ask one focused question only")
+            if decision.action == "repeat":
+                if (
+                    not repeat_requested
+                    or not self.questions
+                    or decision.topic != self.questions[-1][0]
+                ):
+                    raise ValueError(
+                        "repeat_not_requested: Only repeat the pending question on request"
+                    )
+            else:
+                if len(self.questions) >= MAX_QUESTIONS:
+                    raise ValueError(
+                        "question_budget: No seventh question; provide an assessment"
+                    )
+                if (
+                    len(self.questions) >= MIN_QUESTIONS
+                    and not decision.important_gap.strip()
+                ):
+                    raise ValueError(
+                        "important_gap: Explain the important gap or assess now"
+                    )
+                known = {_topic(t) for t in (known_topics or ())}
+                if decision.topic in known or any(
+                    _topic(t) == decision.topic
+                    or q.casefold().strip() == decision.question.casefold().strip()
+                    for t, q in self.questions
+                ):
+                    raise ValueError(
+                        "repeated_question: This detail was already supplied or asked"
+                    )
             text = decision.question
         elif decision.action == "assess":
+            if (
+                not self.assessed
+                and len(self.questions) < MIN_QUESTIONS
+                and not caller_stopped
+            ):
+                raise ValueError(
+                    "minimum_questions: Ask four relevant questions before routine assessment"
+                )
             parts = [
                 decision.likely,
                 decision.why,
@@ -149,46 +258,71 @@ class ConversationPolicy:
                 decision.seek_care,
             ]
             if not all(p.strip() for p in parts):
-                raise ValueError("Assessment must contain all five sections")
+                raise ValueError("incomplete_assessment: Include all five sections")
             text = " ".join(parts)
         elif decision.action in ("answer", "close"):
             if not self.assessed or not decision.answer.strip():
-                raise ValueError("Assess before answering follow-up questions")
+                raise ValueError(
+                    "assessment_required: Provide the assessment before closing"
+                )
+            if decision.action == "close" and not caller_stopped:
+                raise ValueError("premature_close: The caller has not finished")
             text = decision.answer
         else:
             self.assessed = True
             return EMERGENCY[decision.language]
         if not medicine_free(text):
-            raise ValueError("Self-care only: no medicine names or doses")
+            raise ValueError(
+                "medicine_content: Self-care only; no medicine names or doses"
+            )
         if decision.action == "ask":
             self.questions.append((decision.topic, decision.question))
-        if decision.action == "assess":
+        elif decision.action == "assess":
             self.assessed = True
         return text
 
 
 INSTRUCTIONS = """You are MedLink, a warm health assistant, not a doctor.
-Return only the requested JSON action, never unstructured speech.
-Follow the caller's language: English, Hindi, Tamil, Telugu, Kannada, Malayalam.
-Use ask to ask ONE useful, focused question, normally 3-6 total; fewer if the
-caller already supplied the necessary details. Never repeat answered details.
-Count age and clarification within that budget. Never ask a seventh question.
-Use consistent English topic labels (age, duration, severity, warning_signs,
-location, history) so the application can prevent repeats. No bundled questions.
-Use assess once enough is known or the budget ends. Include five short spoken
-sections in the caller's language: likely (a possible explanation, not certainty),
-why (tie it to reported facts), do (practical self-care), avoid, seek_care
-(specific warning signs and referral). Mention that you are not a doctor.
-Keep this about 45-60 seconds. If unsure, say so rather than inventing a cause.
-Never assert a symptom is absent unless the caller denied it.
-No medicines, doses, supplements, branded products or medication suggestions,
-even when asked. Explain that a clinician or pharmacist must advise on medicines.
-Keep confirmed_symptoms as an English summary of ONLY positively reported
-symptoms. Keep denied symptoms separate. Never put negated symptoms in confirmed.
-Emergency symptoms require emergency action immediately, without questioning.
-After assessment, use answer for relevant follow-ups; do not restart questioning.
-Use close only when the caller clearly says they have finished. One farewell.
-Do not invent arrangements, appointments, or emergency calls on their behalf.
+Return only the requested JSON action. Speak the caller's language: English,
+Hindi, Tamil, Telugu, Kannada or Malayalam. Metadata and fact values are English;
+fact quotes must be exact caller words in their original language.
+For routine concerns ask FOUR to SIX useful, symptom-specific questions, one per
+turn. Do not assess before four questions even after a detailed opening: explore
+a relevant unanswered detail, not information already volunteered. After four,
+assess unless a fifth or sixth question resolves an important gap that changes
+advice; explain that gap in important_gap. Never ask a seventh question.
+Use the supplied question topics and clinical reference to choose the next most
+useful question. Avoid generic severity questions when pattern or associated
+features are more informative (e.g. hair loss). Question topic IDs describe the
+specific fact, not broad labels like history or warning_signs. Do not bundle
+independent questions into one sentence. Use exactly one question mark.
+Record facts supplied anywhere in the caller messages, including volunteered
+details, negatives and unknowns; give an exact supporting quote for each.
+Never invent an answer, infer a negative from silence, or repeat answered details.
+Unknown means unknown, not normal. If all suggested questions have been answered,
+ask a more specific relevant missing detail under a new descriptive topic.
+Emergency takes priority at EVERY turn, regardless of the question count.
+If the caller explicitly declines more questions, give a cautious assessment with
+available information and put their exact request in stop_quote. Never treat a
+long duration, a brief answer, or missing knowledge as a request to stop.
+Use repeat to translate/rephrase the last pending question when the caller asks
+to switch language or repeat it; this does not spend a new question.
+Use assess to provide five short sections: likely (possible explanation, not a
+confirmed diagnosis), why (connect it to reported facts), do (specific practical
+self-care), avoid (specific precautions), seek_care (when and why to see a doctor).
+Use the reference for advice, conditioned on what the caller actually reported.
+Do not jump to unrelated conditions because of background history. Referral
+must accompany useful self-care, not replace it. Say you are a health assistant,
+not a doctor. Aim for 90-130 spoken words, with at least two useful self-care
+actions and two relevant precautions when the reference supports them.
+For a complaint outside the reference library, acknowledge uncertainty about
+the cause, explain the limitation, and give low-risk practical precautions and
+a next step. Do not invent a diagnosis or unrelated disease-specific treatment.
+No medicines, doses, supplements or branded remedies. If asked about them,
+explain that a clinician must advise. Do not promise regrowth, cure, appointments
+or emergency calls. After assessment use answer for relevant follow-ups, without
+restarting questions. Use close only if the caller explicitly finishes, with an
+exact stop_quote. No unsolicited farewell.
 """
 
 
@@ -196,9 +330,10 @@ class ConversationAgent(MedLinkAgent):
     def __init__(self, **kwargs):
         super().__init__(instructions=INSTRUCTIONS, **kwargs)
         self.policy = ConversationPolicy()
-        self.actions = []
+        self.actions: list[Decision] = []
+        self.facts: dict[str, ReportedFact] = {}
         self.closed = False
-        self.opening_complete = False
+        self.entry = None
 
     async def on_enter(self):
         await self.session.say(
@@ -206,9 +341,182 @@ class ConversationAgent(MedLinkAgent):
         )
 
     async def on_user_turn_completed(self, turn_ctx, new_message):
-        # Deliberately no per-turn clinical mutations here: text and spoken
-        # sessions share llm_node, so they execute identical decision logic.
+        # Text and voice sessions both use the same llm_node state machine.
         return None
+
+    def _reference(self) -> str:
+        if self.entry is None:
+            return "No matched reference. Still ask four relevant questions. Do not invent a diagnosis."
+        entry = self.entry
+        questions = (
+            [
+                {"topic": q.topic, "question": q.text["en-IN"]}
+                for q in entry.followup_questions
+            ]
+            if entry.followup_questions
+            else entry.candidate_questions
+        )
+        return json.dumps(
+            {
+                "presentation": entry.presentation,
+                "question_guidance": questions,
+                "possible_explanations": entry.explanation,
+                "self_care": entry.self_care,
+                "avoid": entry.avoid,
+                "seek_care": entry.refer_when,
+                "warning_signs": entry.red_flags,
+            },
+            ensure_ascii=False,
+        )
+
+    async def _propose(self, context):
+        raw = ""
+        async with self.session.llm.chat(
+            chat_ctx=context,
+            tools=[],
+            extra_kwargs={"response_format": {"type": "json_object"}},
+        ) as stream:
+            async for chunk in stream:
+                if chunk.delta and chunk.delta.content:
+                    raw += chunk.delta.content
+        return Decision.model_validate_json(raw)
+
+    def _remember(self, candidate, callers):
+        for fact in candidate.facts:
+            if not _quoted(fact.quote, callers):
+                raise ValueError(
+                    "unsupported_fact: Every fact needs an exact caller quote"
+                )
+        for fact in candidate.facts:
+            fact.topic = _topic(fact.topic)
+            self.facts[fact.topic] = fact
+        if candidate.confirmed_symptoms:
+            self.data.chief_complaint = candidate.confirmed_symptoms
+        self.data.answers.update({t: f.value for t, f in self.facts.items()})
+
+    def _commit(
+        self, candidate, *, caller_stopped=False, repeat_requested=False, fallback=False
+    ):
+        if (
+            candidate.action == "assess"
+            and self.entry
+            and candidate.language in self.entry.recovery_assessments
+        ):
+            # The model personalizes the explanation, not the curated self-care.
+            # This prevents unsupported additions such as scalp massage to
+            # stimulate circulation appearing in an otherwise valid assessment.
+            guidance = self.entry.recovery_assessments[candidate.language]
+            candidate.do = guidance.do
+            candidate.avoid = guidance.avoid
+            candidate.seek_care = guidance.seek_care
+        text = self.policy.accept(
+            candidate,
+            known_topics=self.facts,
+            caller_stopped=caller_stopped,
+            repeat_requested=repeat_requested,
+        )
+        self.actions.append(candidate)
+        self.closed = candidate.action == "close"
+        self._language(candidate.language)
+        self.data.questions_asked = len(self.policy.questions)
+        self.data.recommendations = []
+        if candidate.action == "assess":
+            self.data.possible_causes = [candidate.likely]
+            self.data.possible_causes_reasoning = candidate.why
+            self.data.self_care_advice = candidate.do + " " + candidate.avoid
+            self.data.refer_when = candidate.seek_care
+            self.data.disposition = "self_care_guidance"
+        if candidate.action == "emergency":
+            self.data.urgency = "emergency"
+            self.data.escalated = True
+            self.data.disposition = "emergency"
+        logger.info(
+            "conversation action",
+            extra={
+                "action": candidate.action,
+                "question_count": len(self.policy.questions),
+                "topic": candidate.topic,
+                "language": candidate.language,
+                "knowledge_entry": self.entry.id if self.entry else None,
+                "fallback": fallback,
+            },
+        )
+        return text
+
+    def _recovery_question(self, language):
+        used = {_topic(t) for t, _ in self.policy.questions} | set(self.facts)
+        if self.entry and self.entry.followup_questions:
+            for question in self.entry.followup_questions:
+                if question.topic not in used and language in question.text:
+                    return Decision(
+                        action="ask",
+                        language=language,
+                        topic=question.topic,
+                        question=question.text[language],
+                    )
+            return None
+        # Legacy references supply useful questions for normal generation.
+        # English recovery can use those directly without another provider call.
+        if self.entry and language == "en-IN":
+            for index, question in enumerate(self.entry.candidate_questions):
+                topic = f"{self.entry.id}_detail_{index}"
+                already = any(
+                    question.casefold() == q.casefold()
+                    for _, q in self.policy.questions
+                )
+                if topic not in used and not already and medicine_free(question):
+                    return Decision(
+                        action="ask", language=language, topic=topic, question=question
+                    )
+        for topic, question in zip(
+            ("duration", "severity", "associated", "age"),
+            RECOVERY_QUESTIONS[language],
+            strict=True,
+        ):
+            if topic not in used:
+                return Decision(
+                    action="ask", language=language, topic=topic, question=question
+                )
+        return None
+
+    def _recovery_assessment(self, language):
+        if self.entry and language in self.entry.recovery_assessments:
+            parts = self.entry.recovery_assessments[language].model_dump()
+        else:
+            parts = dict(GENERAL_ASSESSMENT[language])
+            if self.entry:
+                # Do not invent a native-language translation during an outage.
+                # A known condition needs its own localized recovery guidance.
+                if language != "en-IN":
+                    return None
+                sentences = re.split(r"(?<=[.!?])\s+", self.entry.self_care)
+                positive = [
+                    s
+                    for s in sentences
+                    if medicine_free(s)
+                    and not re.search(r"\b(?:avoid|do not|never)\b", s, re.I)
+                ]
+                negative = [
+                    s
+                    for s in sentences
+                    if medicine_free(s)
+                    and re.search(r"\b(?:avoid|do not|never)\b", s, re.I)
+                ]
+                if self.entry.avoid and medicine_free(self.entry.avoid):
+                    negative.append(self.entry.avoid)
+                parts["why"] = (
+                    f"The concern you described matches the guidance for {self.entry.presentation.lower()}, but an examination may be needed to identify its cause."
+                )
+                if positive:
+                    parts["do"] = " ".join(positive)
+                if negative:
+                    parts["avoid"] = " ".join(negative)
+                if medicine_free(self.entry.refer_when):
+                    parts["seek_care"] = (
+                        self.entry.refer_when
+                        + " I am a health assistant, not a doctor."
+                    )
+        return Decision(action="assess", language=language, **parts)
 
     async def llm_node(self, chat_ctx, tools, model_settings):
         callers = [
@@ -216,168 +524,178 @@ class ConversationAgent(MedLinkAgent):
             for m in chat_ctx.items
             if getattr(m, "role", None) == "user" and m.text_content
         ]
-        latest = callers[-1] if callers else ""
-        if self.closed:
+        if self.closed or not callers:
             return
+        latest = callers[-1]
         explicit = detect_language_request(latest)
         language = explicit or _script_language(latest) or self.data.language
         self.data.heard = callers[-40:]
+        repeat_requested = bool(
+            explicit
+            or re.search(
+                r"\b(?:repeat|say (?:it |that )?again|did not hear|didn't hear)\b",
+                latest,
+                re.I,
+            )
+        )
         hit = detect_redflag(latest)
-        # A long English denial list can exceed the legacy lexicon's negation
-        # window. Defer those ambiguous matches to the structured decision,
-        # rather than announcing an emergency for "no ... shortness of breath".
         ambiguous_denial = re.search(
             r"\b(?:no|not|never|without|don't|dont)\b", latest, re.I
         )
         if hit and hit.is_emergency and not ambiguous_denial:
             self.data.red_flag = hit
-            self.data.urgency = "emergency"
-            self.data.escalated = True
-            self.data.disposition = "emergency"
-            self.policy.assessed = True
-            self._language(language)
-            yield EMERGENCY[language]
+            yield self._commit(Decision(action="emergency", language=language))
             return
 
-        # First extract an action; then ground its assessment using only the
-        # caller's affirmative symptom summary, never the whole negated history.
-        decision = None
+        # Establish the reference BEFORE the first question. Keep the primary
+        # complaint stable so later family history cannot steal the KB match.
+        if self.entry is None:
+            self.entry = get_triage_kb().match(self.data.chief_complaint or callers[0])
+        self.data.triage_entry_id = self.entry.id if self.entry else None
         error = ""
-        for _attempt in range(3):
+        stopped = False
+        for attempt in range(2):
             context = chat_ctx.copy()
             context.add_message(
                 role="system",
                 content=(
-                    f"Return JSON matching this schema: {json.dumps(Decision.model_json_schema())}\n"
-                    f"Already asked: {self.policy.questions}. Assessed: {self.policy.assessed}. "
-                    f"Language hint: {language}. Remaining question budget: {6 - len(self.policy.questions)}. "
-                    f"Correction: {error}. IMPORTANT: confirmed_symptoms and denied_symptoms MUST be in English even when the spoken fields are in another language."
-                    + (
-                        " The ONLY permitted action this turn is ask; pick one unanswered topic. Do not assess yet."
-                        if len(self.policy.questions) < 3
-                        and not self.opening_complete
-                        and not self.policy.assessed
-                        and callers
-                        and len(callers) > 1
-                        else ""
-                    )
+                    f"Return JSON matching: {json.dumps(Decision.model_json_schema())}\n"
+                    f"Questions already asked: {self.policy.questions}\n"
+                    f"Known facts: {json.dumps({t: f.model_dump() for t, f in self.facts.items()}, ensure_ascii=False)}\n"
+                    f"Assessed: {self.policy.assessed}. Language: {language}. "
+                    f"Question count: {len(self.policy.questions)}; minimum FOUR, maximum SIX. "
+                    f"Repeat/language switch requested: {repeat_requested}. Correction: {error}\n"
+                    "Emergency and explicit caller requests to stop override the minimum. "
+                    "Otherwise ask until four, then assess unless an important gap remains. "
+                    "Use symptom-specific topics. Do not re-ask facts supplied in ANY caller message.\n"
+                    f"Clinical reference (omit medicines and doses): {self._reference()}"
                 ),
             )
-            if decision and decision.action == "assess":
-                entry = get_triage_kb().match(decision.confirmed_symptoms)
-                self.data.triage_entry_id = entry.id if entry else None
-                context.add_message(
-                    role="system",
-                    content=(
-                        "Ground the assessment in this self-care reference only; omit all medicines, "
-                        "supplements, ORS products and doses. If not matched, acknowledge uncertainty "
-                        "and recommend medical assessment. Do not add unrelated symptoms or advice.\n"
-                        + (
-                            f"{entry.presentation}: {entry.self_care} Warning signs: {entry.refer_when}"
-                            if entry
-                            else "No matched reference."
-                        )
-                    ),
-                )
-            raw = ""
-            async with self.session.llm.chat(
-                chat_ctx=context,
-                tools=[],
-                extra_kwargs={"response_format": {"type": "json_object"}},
-            ) as stream:
-                async for chunk in stream:
-                    if chunk.delta and chunk.delta.content:
-                        raw += chunk.delta.content
             try:
-                candidate = Decision.model_validate_json(raw)
-                if not self.policy.questions:
-                    self.opening_complete = candidate.opening_complete
-                if (
-                    candidate.action == "assess"
-                    and not self.policy.assessed
-                    and len(self.policy.questions) < 3
-                    and not self.opening_complete
-                ):
-                    raise ValueError(
-                        "Ask 3 useful questions before assessing a brief opening; ask the most important unanswered topic now."
-                    )
-                if candidate.action == "assess" and not candidate.confirmed_symptoms:
-                    candidate.confirmed_symptoms = (
-                        self.data.chief_complaint or callers[0]
-                    )
+                candidate = await asyncio.wait_for(
+                    self._propose(context), timeout=MODEL_TIMEOUT
+                )
                 if (
                     explicit or _script_language(latest)
                 ) and candidate.language != language:
-                    raise ValueError(f"All spoken fields must be in {language}")
-                if self.data.escalated and candidate.action not in (
-                    "emergency",
-                    "close",
-                ):
-                    candidate.action = "emergency"
-                if candidate.action == "assess" and decision is None:
-                    decision = candidate
-                    error = (
-                        "Now provide the assessment grounded in the supplied reference."
+                    raise ValueError("wrong_language: Use the requested language")
+                # A valid model language choice also guides any offline recovery.
+                language = candidate.language
+                self._remember(candidate, callers)
+                stopped = bool(
+                    candidate.stop_quote
+                    and _stop_requested(candidate.stop_quote, latest)
+                )
+                if candidate.stop_quote and not stopped:
+                    raise ValueError(
+                        "invalid_stop_quote: Quote the caller's actual request to stop"
                     )
-                    continue
-                if candidate.action == "assess" and self.data.triage_entry_id is None:
-                    self.policy.assessed = True
-                    self._language(candidate.language)
-                    yield FALLBACK[candidate.language]
-                    return
-                if candidate.action == "emergency":
-                    self.data.urgency = "emergency"
-                    self.data.escalated = True
-                    self.data.disposition = "emergency"
-                text = self.policy.accept(candidate)
-                self.actions.append(candidate)
-                if candidate.action == "close":
-                    self.closed = True
-                self._language(candidate.language)
-                self.data.questions_asked = len(self.policy.questions)
-                if candidate.confirmed_symptoms:
-                    self.data.chief_complaint = candidate.confirmed_symptoms
-                self.data.recommendations = []
-                if candidate.action == "assess":
-                    self.data.possible_causes = [candidate.likely]
-                    self.data.possible_causes_reasoning = candidate.why
-                    self.data.self_care_advice = candidate.do + " " + candidate.avoid
-                    self.data.refer_when = candidate.seek_care
-                logger.info(
-                    "conversation action",
+                if self.data.escalated and candidate.action != "close":
+                    candidate.action = "emergency"
+                if self.entry is None and candidate.confirmed_symptoms:
+                    matched = get_triage_kb().match(candidate.confirmed_symptoms)
+                    if matched:
+                        self.entry = matched
+                        self.data.triage_entry_id = matched.id
+                        if candidate.action == "assess":
+                            if attempt == 0:
+                                error = "Use the newly matched reference for your assessment."
+                                continue
+                            # Never speak an assessment generated before its
+                            # relevant clinical reference was available.
+                            break
+                if (
+                    repeat_requested
+                    and self.policy.questions
+                    and not self.policy.assessed
+                    and candidate.action == "ask"
+                ):
+                    raise ValueError(
+                        "repeat_requested: Translate/rephrase the pending question using repeat"
+                    )
+                if (
+                    candidate.action == "ask"
+                    and self.entry
+                    and self.entry.followup_questions
+                ):
+                    topics = {q.topic for q in self.entry.followup_questions}
+                    used = {_topic(t) for t, _ in self.policy.questions} | set(
+                        self.facts
+                    )
+                    if topics - used and _topic(candidate.topic) not in topics:
+                        raise ValueError(
+                            "irrelevant_topic: Select a relevant unanswered topic ID from the supplied question guidance"
+                        )
+                yield self._commit(
+                    candidate, caller_stopped=stopped, repeat_requested=repeat_requested
+                )
+                return
+            except (APIError, TimeoutError) as exc:
+                logger.warning(
+                    "conversation provider unavailable",
                     extra={
-                        "action": candidate.action,
+                        "error_type": type(exc).__name__,
                         "question_count": len(self.policy.questions),
-                        "language": self.data.language,
                     },
                 )
-                yield text
+                # Preserve state. A provider outage is not evidence about health.
+                self._language(language)
+                yield SERVICE_ERROR[language]
                 return
             except ValueError as exc:
                 error = str(exc)
+                reason = (
+                    error.split(":", 1)[0]
+                    if re.match(r"^[a-z_]+:", error)
+                    else "invalid_schema"
+                )
                 logger.warning(
                     "invalid conversation proposal",
-                    extra={"validation_error_type": type(exc).__name__},
+                    extra={
+                        "reason_code": reason,
+                        "attempt": attempt + 1,
+                        "question_count": len(self.policy.questions),
+                        "knowledge_entry": self.entry.id if self.entry else None,
+                    },
                 )
-        if not self.policy.assessed and len(self.policy.questions) < 3:
-            for topic, question in zip(
-                ("duration", "severity", "warning_signs", "age"),
-                RECOVERY_QUESTIONS[language],
-                strict=True,
-            ):
-                if topic not in {t for t, _ in self.policy.questions}:
-                    recovery = Decision(
-                        action="ask", language=language, topic=topic, question=question
+
+        if self.policy.assessed:
+            self._language(language)
+            yield SERVICE_ERROR[language]
+            return
+        if repeat_requested and self.policy.questions:
+            topic = self.policy.questions[-1][0]
+            if self.entry:
+                question = next(
+                    (q for q in self.entry.followup_questions if q.topic == topic), None
+                )
+                if question and language in question.text:
+                    yield self._commit(
+                        Decision(
+                            action="repeat",
+                            language=language,
+                            topic=topic,
+                            question=question.text[language],
+                        ),
+                        repeat_requested=True,
+                        fallback=True,
                     )
-                    text = self.policy.accept(recovery)
-                    self.actions.append(recovery)
-                    self.data.questions_asked = len(self.policy.questions)
-                    self._language(language)
-                    yield text
                     return
-        self.policy.assessed = True
+            self._language(language)
+            yield SERVICE_ERROR[language]
+            return
+        if len(self.policy.questions) < MIN_QUESTIONS and not stopped:
+            recovery = self._recovery_question(language)
+            if recovery:
+                yield self._commit(recovery, fallback=True)
+                return
+        else:
+            recovery = self._recovery_assessment(language)
+            if recovery:
+                yield self._commit(recovery, caller_stopped=stopped, fallback=True)
+                return
         self._language(language)
-        yield FALLBACK[language]
+        yield SERVICE_ERROR[language]
 
     def _language(self, language):
         if language not in SUPPORTED_LANGUAGES.values():

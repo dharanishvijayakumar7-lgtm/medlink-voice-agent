@@ -21,7 +21,11 @@ def test_no_seventh_question():
     for i in range(6):
         policy.accept(
             Decision(
-                action="ask", language="en-IN", topic=str(i), question=f"Question {i}?"
+                action="ask",
+                language="en-IN",
+                topic=str(i),
+                question=f"Question {i}?",
+                important_gap="A remaining detail changes the advice.",
             )
         )
     with pytest.raises(ValueError):
@@ -47,14 +51,68 @@ def test_doses_and_medicines_rejected():
         decision = assessment()
         decision.do = text
         with pytest.raises(ValueError):
-            ConversationPolicy().accept(decision)
+            ConversationPolicy(questions=[(str(i), str(i)) for i in range(4)]).accept(
+                decision
+            )
 
 
 def test_incomplete_assessment_rejected():
     decision = assessment()
     decision.why = ""
     with pytest.raises(ValueError):
-        ConversationPolicy().accept(decision)
+        ConversationPolicy(questions=[(str(i), str(i)) for i in range(4)]).accept(
+            decision
+        )
+
+
+def test_four_questions_required_even_for_a_detailed_opening():
+    for count in range(4):
+        policy = ConversationPolicy(questions=[(str(i), str(i)) for i in range(count)])
+        with pytest.raises(ValueError, match="four"):
+            policy.accept(assessment())
+        assert not policy.assessed
+
+
+def test_caller_can_decline_more_questions_and_receive_assessment():
+    policy = ConversationPolicy(questions=[("duration", "How long?")])
+    assert policy.accept(assessment(), caller_stopped=True)
+    assert policy.assessed
+
+
+def test_extra_questions_need_an_important_gap():
+    policy = ConversationPolicy(questions=[(str(i), str(i)) for i in range(4)])
+    question = Decision(
+        action="ask", language="en-IN", topic="age", question="How old are you?"
+    )
+    with pytest.raises(ValueError, match="gap"):
+        policy.accept(question)
+    question.important_gap = "Age is needed to interpret this child's symptoms."
+    assert policy.accept(question)
+
+
+def test_cannot_reask_a_fact_volunteered_by_the_caller():
+    policy = ConversationPolicy()
+    with pytest.raises(ValueError, match="already"):
+        policy.accept(
+            Decision(
+                action="ask", language="en-IN", topic="duration", question="How long?"
+            ),
+            known_topics={"duration"},
+        )
+    assert not policy.questions
+
+
+def test_followup_answers_do_not_restart_questionnaire():
+    policy = ConversationPolicy(questions=[(str(i), str(i)) for i in range(4)])
+    policy.accept(assessment())
+    assert policy.accept(
+        Decision(action="answer", language="en-IN", answer="Try smaller meals.")
+    )
+    with pytest.raises(ValueError):
+        policy.accept(
+            Decision(action="ask", language="en-IN", topic="new", question="More?")
+        )
+    assert len(policy.questions) == 4
 
 
 @pytest.mark.parametrize(
@@ -73,7 +131,8 @@ async def test_runtime_retries_seventh_question_then_falls_back(monkeypatch):
     from livekit.agents import ChatContext
 
     from session_state import MedLinkUserData
-    from workflows.conversation import FALLBACK, ConversationAgent
+    from workflows.conversation import ConversationAgent
+    from workflows.conversation_text import GENERAL_ASSESSMENT
 
     class Stream:
         async def __aenter__(self):
@@ -113,7 +172,8 @@ async def test_runtime_retries_seventh_question_then_falls_back(monkeypatch):
     ctx = ChatContext()
     ctx.add_message(role="user", content="It is still mild.")
     replies = [part async for part in agent.llm_node(ctx, [], None)]
-    assert replies == [FALLBACK["en-IN"]]
+    assert replies == [" ".join(GENERAL_ASSESSMENT["en-IN"].values())]
+    assert agent.actions[-1].action == "assess"
     assert len(agent.policy.questions) == 6
 
 

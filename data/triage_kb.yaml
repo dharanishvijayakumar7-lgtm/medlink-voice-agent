@@ -27,6 +27,156 @@ version: 1
 last_reviewed: "2026-09-09"
 
 entries:
+  - id: hair_loss
+    presentation: "Hair loss or thinning"
+    # The word "hair" alone also occurs in unrelated concerns such as greying.
+    require_alias: true
+    aliases:
+      en: [hair loss, hair fall, hairfall, hair falling, losing hair, thinning hair, hair thinning, hair thinned, thinned hair, hair getting thinner, shedding hair, hair shedding, bald patches, receding hairline, alopecia]
+      hi: [baal jhadna, baal jhad rahe, bal jhad, बाल झड़, बाल गिर, बाल कम]
+      ta: [mudi uthir, முடி உதிர், முடி கொட்டு, தலைமுடி உதிர்]
+      te: [juttu ralu, జుట్టు రాలు, జుట్టు రాలి, జుట్టు ఊడు]
+      kn: [koodalu uduru, koodalu uduruttide, ಕೂದಲು ಉದುರು, ಕೂದಲು ಉದುರಿ]
+      ml: [mudi kozhichil, മുടി കൊഴി, മുടികൊഴിച്ചിൽ]
+    candidate_questions:
+      - "How long have you been noticing the hair loss?"
+      - "Where is the thinning: all over, in separate patches, or along the hairline?"
+      - "Have you noticed changes to the scalp, such as itching or flaking?"
+      - "Does anyone in your family have a similar pattern of hair thinning?"
+      - "Was there an illness or major change in your health before the shedding began?"
+      - "How do you usually style or treat your hair?"
+    followup_questions:
+      - topic: duration
+        text:
+          en-IN: "How long have you been noticing the hair loss?"
+          hi-IN: "बाल कितने समय से झड़ रहे हैं?"
+          ta-IN: "எவ்வளவு காலமாக முடி உதிர்கிறது?"
+          te-IN: "ఎంతకాలంగా జుట్టు రాలుతోంది?"
+          kn-IN: "ಎಷ್ಟು ಸಮಯದಿಂದ ಕೂದಲು ಉದುರುತ್ತಿದೆ?"
+          ml-IN: "എത്ര കാലമായി മുടി കൊഴിയുന്നു?"
+      - topic: hair_pattern
+        text:
+          en-IN: "Where is the thinning: all over, in separate patches, or mainly along the hairline?"
+          hi-IN: "बाल पूरे सिर से कम हो रहे हैं, अलग-अलग जगहों से, या मुख्य रूप से आगे की तरफ से?"
+          ta-IN: "முடி தலை முழுவதுமா, திட்டுத் திட்டாகவா, அல்லது முன்பகுதியிலா குறைகிறது?"
+          te-IN: "జుట్టు తల అంతటా, అక్కడక్కడా మచ్చల్లా, లేదా ముఖ్యంగా ముందుభాగంలో తగ్గుతోందా?"
+          kn-IN: "ಕೂದಲು ತಲೆ ತುಂಬಾ, ಅಲ್ಲಲ್ಲಿ ತೇಪೆಯಂತೆ, ಅಥವಾ ಮುಖ್ಯವಾಗಿ ಮುಂಭಾಗದಲ್ಲಿ ಕಡಿಮೆಯಾಗುತ್ತಿದೆಯೇ?"
+          ml-IN: "മുടി തല മുഴുവനായോ, ചില ഭാഗങ്ങളിൽ മാത്രമായോ, പ്രധാനമായും മുൻവശത്തോ കുറയുന്നുണ്ടോ?"
+      - topic: scalp_changes
+        text:
+          en-IN: "Have you noticed any changes to your scalp, such as itching or flaking?"
+          hi-IN: "सिर की त्वचा में खुजली या पपड़ी जैसे कोई बदलाव हैं?"
+          ta-IN: "தலைத்தோலில் அரிப்பு அல்லது செதில்கள் போன்ற மாற்றங்கள் உள்ளனவா?"
+          te-IN: "తల చర్మంలో దురద లేదా పొట్టు వంటి మార్పులు గమనించారా?"
+          kn-IN: "ತಲೆಯ ಚರ್ಮದಲ್ಲಿ ತುರಿಕೆ ಅಥವಾ ಹೊಟ್ಟು ಉದುರುವಂತಹ ಬದಲಾವಣೆಗಳಿವೆಯೇ?"
+          ml-IN: "തലയോട്ടിയിൽ ചൊറിച്ചിലോ തൊലി പൊഴിയുന്നതോ പോലുള്ള മാറ്റങ്ങളുണ്ടോ?"
+      - topic: family_history
+        text:
+          en-IN: "Does anyone in your family have a similar pattern of hair thinning?"
+          hi-IN: "क्या परिवार में किसी और के बाल भी इसी तरह कम हुए हैं?"
+          ta-IN: "குடும்பத்தில் வேறு யாருக்காவது இதேபோல் முடி குறைந்துள்ளதா?"
+          te-IN: "మీ కుటుంబంలో మరెవరికైనా ఇలాగే జుట్టు తగ్గిందా?"
+          kn-IN: "ನಿಮ್ಮ ಕುಟುಂಬದಲ್ಲಿ ಬೇರೆಯವರಿಗೆ ಇದೇ ರೀತಿಯಲ್ಲಿ ಕೂದಲು ಕಡಿಮೆಯಾಗಿದೆಯೇ?"
+          ml-IN: "കുടുംബത്തിൽ മറ്റാർക്കെങ്കിലും ഇതുപോലെ മുടി കുറഞ്ഞിട്ടുണ്ടോ?"
+      - topic: recent_changes
+        text:
+          en-IN: "Was there an illness or major change in your health before the shedding began?"
+          hi-IN: "बाल झड़ना शुरू होने से पहले कोई बीमारी या सेहत में बड़ा बदलाव हुआ था?"
+          ta-IN: "முடி உதிரத் தொடங்குமுன் நோய் அல்லது உடல்நலத்தில் பெரிய மாற்றம் ஏற்பட்டதா?"
+          te-IN: "జుట్టు రాలడం మొదలయ్యే ముందు అనారోగ్యం లేదా ఆరోగ్యంలో పెద్ద మార్పు వచ్చిందా?"
+          kn-IN: "ಕೂದಲು ಉದುರುವ ಮೊದಲು ಅನಾರೋಗ್ಯ ಅಥವಾ ಆರೋಗ್ಯದಲ್ಲಿ ದೊಡ್ಡ ಬದಲಾವಣೆಯಾಗಿತ್ತೇ?"
+          ml-IN: "മുടി കൊഴിയാൻ തുടങ്ങുന്നതിന് മുമ്പ് അസുഖമോ ആരോഗ്യത്തിൽ വലിയ മാറ്റമോ ഉണ്ടായിരുന്നോ?"
+      - topic: hair_care
+        text:
+          en-IN: "How do you usually style or treat your hair?"
+          hi-IN: "आप आम तौर पर बालों को कैसे बाँधते या संवारते हैं?"
+          ta-IN: "வழக்கமாக முடியை எப்படிக் கட்டுகிறீர்கள் அல்லது பராமரிக்கிறீர்கள்?"
+          te-IN: "మీ జుట్టును సాధారణంగా ఎలా కట్టుకుంటారు లేదా సంరక్షిస్తారు?"
+          kn-IN: "ನೀವು ಸಾಮಾನ್ಯವಾಗಿ ಕೂದಲನ್ನು ಹೇಗೆ ಕಟ್ಟುತ್ತೀರಿ ಅಥವಾ ಆರೈಕೆ ಮಾಡುತ್ತೀರಿ?"
+          ml-IN: "സാധാരണയായി മുടി എങ്ങനെയാണ് കെട്ടുകയോ പരിചരിക്കുകയോ ചെയ്യുന്നത്?"
+      - topic: age
+        text:
+          en-IN: "How old are you?"
+          hi-IN: "आपकी उम्र कितनी है?"
+          ta-IN: "உங்கள் வயது என்ன?"
+          te-IN: "మీ వయసు ఎంత?"
+          kn-IN: "ನಿಮ್ಮ ವಯಸ್ಸು ಎಷ್ಟು?"
+          ml-IN: "നിങ്ങളുടെ പ്രായം എത്രയാണ്?"
+      - topic: progression
+        text:
+          en-IN: "Has the thinning been gradual, or has it changed suddenly?"
+          hi-IN: "बाल धीरे-धीरे कम हो रहे हैं या अचानक बदलाव आया है?"
+          ta-IN: "முடி மெதுவாகக் குறைகிறதா அல்லது திடீரென மாற்றம் ஏற்பட்டதா?"
+          te-IN: "జుట్టు నెమ్మదిగా తగ్గుతోందా లేదా అకస్మాత్తుగా మార్పు వచ్చిందా?"
+          kn-IN: "ಕೂದಲು ನಿಧಾನವಾಗಿ ಕಡಿಮೆಯಾಗುತ್ತಿದೆಯೇ ಅಥವಾ ಇದ್ದಕ್ಕಿದ್ದಂತೆ ಬದಲಾಗಿದೆಯೇ?"
+          ml-IN: "മുടി ക്രമേണയാണോ കുറയുന്നത്, അതോ പെട്ടെന്ന് മാറ്റം വന്നതാണോ?"
+      - topic: impact
+        text:
+          en-IN: "How is the hair loss affecting your daily life?"
+          hi-IN: "बाल झड़ने का आपकी रोज़मर्रा की ज़िंदगी पर क्या असर पड़ रहा है?"
+          ta-IN: "முடி உதிர்வது உங்கள் அன்றாட வாழ்க்கையை எப்படிப் பாதிக்கிறது?"
+          te-IN: "జుట్టు రాలడం మీ రోజువారీ జీవితాన్ని ఎలా ప్రభావితం చేస్తోంది?"
+          kn-IN: "ಕೂದಲು ಉದುರುವುದು ನಿಮ್ಮ ದಿನನಿತ್ಯದ ಜೀವನದ ಮೇಲೆ ಹೇಗೆ ಪರಿಣಾಮ ಬೀರುತ್ತಿದೆ?"
+          ml-IN: "മുടി കൊഴിച്ചിൽ നിങ്ങളുടെ ദൈനംദിന ജീവിതത്തെ എങ്ങനെ ബാധിക്കുന്നു?"
+    explanation: >-
+      Hair loss is a symptom, not a confirmed diagnosis. Gradual hairline or crown
+      thinning with a similar family pattern can suggest hereditary pattern hair
+      loss. Diffuse shedding after illness or a major health change can have a
+      different cause. Separate patches or scalp symptoms need examination;
+      do not assume they are hereditary. Duration alone does not identify the
+      cause. Do not infer stress, nutritional deficiency or hormone problems
+      unless supported, and never claim a confirmed diagnosis on this call.
+    self_care: >-
+      Handle hair gently, wash with a gentle shampoo, and use conditioner to
+      reduce breakage. Let hair dry naturally when practical. These steps reduce
+      damage; they do not guarantee regrowth or treat every cause of hair loss.
+    avoid: >-
+      Avoid tight hairstyles, high-heat styling, harsh chemical treatments and
+      unverified hair-growth remedies. Do not recommend medicines or supplements.
+    refer_when: >-
+      Arrange a clinician or dermatologist examination for persistent or
+      progressive loss. Seek earlier review for sudden patches, a painful or
+      inflamed scalp, or rapid worsening. Chronic hair loss alone is not an emergency.
+    otc_categories_allowed: []
+    source: "https://www.aad.org/public/diseases/hair-loss/treatment/diagnosis-treat ; https://www.aad.org/public/diseases/hair-loss/treatment/tips (accessed 2026-11-13; clinician review pending)"
+    recovery_assessments:
+      en-IN:
+        likely: "Hair loss can have several causes; I cannot confirm which one applies on this call."
+        why: "The pattern and scalp examination help distinguish them; duration alone is not enough."
+        do: "Handle your hair gently, use a gentle shampoo and conditioner, and let it dry naturally."
+        avoid: "Avoid tight hairstyles, high heat, harsh chemical treatments and unverified hair-growth remedies."
+        seek_care: "Arrange a clinician or dermatologist visit for ongoing loss, sooner for sudden patches or a painful, inflamed scalp. I am a health assistant, not a doctor."
+      hi-IN:
+        likely: "बाल झड़ने की कई वजहें हो सकती हैं; फोन पर पक्की वजह नहीं बता सकती।"
+        why: "बाल कहाँ से कम हो रहे हैं और सिर की त्वचा की जाँच से वजह समझने में मदद मिलती है; सिर्फ समय जानना पर्याप्त नहीं है।"
+        do: "बालों को धीरे सँवारें, हल्के शैम्पू और कंडीशनर का उपयोग करें और हवा में सूखने दें।"
+        avoid: "बाल कसकर बाँधने, तेज गर्मी, कठोर केमिकल और बिना प्रमाण वाले बाल उगाने के नुस्खों से बचें।"
+        seek_care: "बाल लगातार झड़ें तो डॉक्टर या त्वचा विशेषज्ञ से मिलें। अचानक चकत्तों में बाल झड़ें या सिर की त्वचा में दर्द और सूजन हो तो जल्दी दिखाएँ। मैं स्वास्थ्य सहायक हूँ, डॉक्टर नहीं।"
+      ta-IN:
+        likely: "முடி உதிர்வதற்குப் பல காரணங்கள் இருக்கலாம்; தொலைபேசியில் காரணத்தை உறுதி செய்ய முடியாது."
+        why: "முடி குறையும் விதமும் தலைத்தோல் பரிசோதனையும் காரணத்தைக் கண்டறிய உதவும்; கால அளவு மட்டும் போதாது."
+        do: "முடியை மென்மையாகப் பராமரிக்கவும், மென்மையான ஷாம்பூவும் கண்டிஷனரும் பயன்படுத்தி இயற்கையாக உலரவிடவும்."
+        avoid: "முடியை இறுக்கமாகக் கட்டுதல், அதிக வெப்பம், கடுமையான ரசாயனங்கள் மற்றும் நிரூபிக்கப்படாத முடி வளர்க்கும் முறைகளைத் தவிர்க்கவும்."
+        seek_care: "தொடர்ந்து முடி உதிர்ந்தால் மருத்துவர் அல்லது தோல் மருத்துவரைச் சந்திக்கவும். திடீர் வழுக்கைத் திட்டுகள் அல்லது தலைத்தோலில் வலி, வீக்கம் இருந்தால் விரைவில் காட்டவும். நான் சுகாதார உதவியாளர், மருத்துவர் அல்ல."
+      te-IN:
+        likely: "జుట్టు రాలడానికి అనేక కారణాలు ఉండవచ్చు; ఫోనులో ఖచ్చితమైన కారణాన్ని నిర్ధారించలేను."
+        why: "జుట్టు తగ్గే విధానం, తల చర్మం పరీక్ష కారణాన్ని తెలుసుకోవడానికి సహాయపడతాయి; ఎంతకాలమైందో మాత్రమే తెలిస్తే సరిపోదు."
+        do: "జుట్టును మృదువుగా చూసుకోండి, మృదువైన షాంపూ, కండిషనర్ వాడి సహజంగా ఆరనివ్వండి."
+        avoid: "జుట్టును బిగించి కట్టడం, అధిక వేడి, కఠినమైన రసాయనాలు, నిరూపించని జుట్టు పెంచే చిట్కాలను నివారించండి."
+        seek_care: "జుట్టు రాలడం కొనసాగితే వైద్యుని లేదా చర్మ వైద్యుని కలవండి. అకస్మాత్తుగా బట్టతల మచ్చలు లేదా తల చర్మంలో నొప్పి, వాపు వస్తే త్వరగా చూపించండి. నేను ఆరోగ్య సహాయకురాలిని, వైద్యురాలిని కాదు."
+      kn-IN:
+        likely: "ಕೂದಲು ಉದುರುವುದಕ್ಕೆ ಹಲವಾರು ಕಾರಣಗಳಿರಬಹುದು; ಫೋನಿನಲ್ಲಿ ಖಚಿತ ಕಾರಣವನ್ನು ಹೇಳಲು ಸಾಧ್ಯವಿಲ್ಲ."
+        why: "ಕೂದಲು ಕಡಿಮೆಯಾಗುವ ಮಾದರಿ ಮತ್ತು ತಲೆಯ ಚರ್ಮದ ಪರೀಕ್ಷೆ ಕಾರಣ ತಿಳಿಯಲು ಸಹಾಯ ಮಾಡುತ್ತವೆ; ಎಷ್ಟು ಕಾಲದಿಂದ ಎಂಬುದು ಮಾತ್ರ ಸಾಕಾಗುವುದಿಲ್ಲ."
+        do: "ಕೂದಲನ್ನು ಮೃದುವಾಗಿ ಆರೈಕೆ ಮಾಡಿ, ಸೌಮ್ಯವಾದ ಶಾಂಪೂ ಮತ್ತು ಕಂಡಿಷನರ್ ಬಳಸಿ ಸಹಜವಾಗಿ ಒಣಗಲು ಬಿಡಿ."
+        avoid: "ಕೂದಲನ್ನು ಬಿಗಿಯಾಗಿ ಕಟ್ಟುವುದು, ಹೆಚ್ಚು ಶಾಖ, ಕಠಿಣ ರಾಸಾಯನಿಕಗಳು ಮತ್ತು ಸಾಬೀತಾಗದ ಕೂದಲು ಬೆಳೆಯುವ ಮನೆಮದ್ದುಗಳನ್ನು ತಪ್ಪಿಸಿ."
+        seek_care: "ಕೂದಲು ಉದುರುವುದು ಮುಂದುವರಿದರೆ ವೈದ್ಯರನ್ನು ಅಥವಾ ಚರ್ಮರೋಗ ತಜ್ಞರನ್ನು ಭೇಟಿ ಮಾಡಿ. ಇದ್ದಕ್ಕಿದ್ದಂತೆ ಬೋಳು ತೇಪೆಗಳು ಅಥವಾ ತಲೆಯ ಚರ್ಮದಲ್ಲಿ ನೋವು, ಉರಿಯೂತ ಇದ್ದರೆ ಬೇಗ ತೋರಿಸಿ. ನಾನು ಆರೋಗ್ಯ ಸಹಾಯಕಿ, ವೈದ್ಯೆಯಲ್ಲ."
+      ml-IN:
+        likely: "മുടി കൊഴിച്ചിലിന് പല കാരണങ്ങളുണ്ടാകാം; ഫോണിലൂടെ കൃത്യമായ കാരണം ഉറപ്പിക്കാനാവില്ല."
+        why: "മുടി കുറയുന്ന രീതിയും തലയോട്ടിയുടെ പരിശോധനയും കാരണം തിരിച്ചറിയാൻ സഹായിക്കും; കാലയളവ് മാത്രം അറിഞ്ഞാൽ പോരാ."
+        do: "മുടി സൗമ്യമായി പരിചരിക്കുക, മൃദുവായ ഷാംപൂവും കണ്ടീഷണറും ഉപയോഗിക്കുക, സ്വാഭാവികമായി ഉണങ്ങാൻ അനുവദിക്കുക."
+        avoid: "മുടി മുറുക്കിക്കെട്ടൽ, അമിത ചൂട്, കടുത്ത രാസവസ്തുക്കൾ, തെളിവില്ലാത്ത മുടി വളർത്തൽ വിദ്യകൾ എന്നിവ ഒഴിവാക്കുക."
+        seek_care: "മുടി കൊഴിച്ചിൽ തുടരുകയാണെങ്കിൽ ഡോക്ടറെയോ ത്വക്ക് വിദഗ്ധനെയോ കാണുക. പെട്ടെന്ന് കഷണ്ടിപ്പാടുകളോ തലയോട്ടിയിൽ വേദനയും വീക്കമോ ഉണ്ടെങ്കിൽ നേരത്തേ കാണിക്കുക. ഞാൻ ആരോഗ്യ സഹായിയാണ്, ഡോക്ടറല്ല."
+
   - id: fever
     presentation: "Fever"
     aliases:

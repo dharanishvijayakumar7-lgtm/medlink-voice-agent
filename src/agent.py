@@ -47,6 +47,13 @@ def _prewarm(_proc) -> None:
         "openai.resources.chat.completions.completions",
     ):
         importlib.import_module(module)
+    # The question reference and safety lexicon must be ready before a caller
+    # speaks; their first YAML/regex load otherwise stalls the audio loop.
+    from knowledge.triage_kb import get_triage_kb
+    from medicine.formulary import get_formulary
+
+    get_triage_kb()
+    get_formulary()
 
 
 server = AgentServer(setup_fnc=_prewarm)
