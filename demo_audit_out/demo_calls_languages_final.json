@@ -1,0 +1,1642 @@
+[
+  {
+    "case": "hair_gradual",
+    "language": "hi-IN",
+    "lines": [
+      [
+        "caller",
+        "मुझे बाल झड़ रहे हैं।"
+      ],
+      [
+        "agent",
+        "आपको यह बाल झड़ना कब से दिख रहा है?"
+      ],
+      [
+        "caller",
+        "लगभग दो साल।"
+      ],
+      [
+        "agent",
+        "क्या आपको अपने सिर की त्वचा में कोई खुजली, पपड़ी या बदलाव महसूस हो रहा है?"
+      ],
+      [
+        "caller",
+        "मुझे अपने सिर की त्वचा पर खुजली, पपड़ी, लालिमा या दर्द महसूस नहीं हुआ है।"
+      ],
+      [
+        "agent",
+        "क्या यह पतलापन पूरे सिर में है, अलग-अलग हिस्सों में, या मुख्य रूप से हेयरलाइन के साथ है?"
+      ],
+      [
+        "caller",
+        "मेरे सामने के हेयरलाइन पर धीरे-धीरे बाल पतले हो रहे हैं। कोई अलग से गंजे हिस्से नहीं हैं।"
+      ],
+      [
+        "agent",
+        "क्या आपके परिवार में किसी को भी इसी तरह के बाल पतले होने की समस्या है?"
+      ],
+      [
+        "caller",
+        "मेरे पिताजी के बाल भी इसी तरह पतले हो रहे हैं।"
+      ],
+      [
+        "agent",
+        "A hereditary pattern of hair thinning may be possible given the gradual front hairline thinning and a similar family pattern. You mentioned the thinning has been gradual over about two years at your front hairline and that your father has a similar pattern, while you have no scalp symptoms. बालों को धीरे सँवारें, हल्के शैम्पू और कंडीशनर का उपयोग करें और हवा में सूखने दें। बाल कसकर बाँधने, तेज गर्मी, कठोर केमिकल और बिना प्रमाण वाले बाल उगाने के नुस्खों से बचें। बाल लगातार झड़ें तो डॉक्टर या त्वचा विशेषज्ञ से मिलें। अचानक चकत्तों में बाल झड़ें या सिर की त्वचा में दर्द और सूजन हो तो जल्दी दिखाएँ। मैं स्वास्थ्य सहायक हूँ, डॉक्टर नहीं।"
+      ]
+    ],
+    "facts": {
+      "duration": "About two years.",
+      "hair_pattern": "It is gradually thinning at my front hairline. There are no separate bald patches.",
+      "scalp_changes": "I have not noticed itching, flaking, redness or pain on my scalp.",
+      "family_history": "My father has a similar pattern of hair thinning.",
+      "recent_changes": "I do not recall an illness or major health change before it started.",
+      "hair_care": "I wash gently. I do not use tight hairstyles, heat styling or chemical treatments.",
+      "age": "I am 28 years old.",
+      "progression": "The thinning has been gradual, not sudden.",
+      "impact": "I am worried about my appearance, but can do my usual daily activities."
+    },
+    "turn_seconds": [
+      0.41,
+      0.42,
+      0.8,
+      1.48,
+      1.18
+    ],
+    "questions": 4,
+    "assessed": true,
+    "emergency": false,
+    "kb": "hair_loss",
+    "question_topics": [
+      "duration",
+      "scalp_changes",
+      "hair_pattern",
+      "family_history"
+    ],
+    "actions": [
+      {
+        "action": "ask",
+        "language": "hi-IN",
+        "confirmed_symptoms": "",
+        "denied_symptoms": "",
+        "topic": "duration",
+        "question": "आपको यह बाल झड़ना कब से दिख रहा है?",
+        "important_gap": "",
+        "facts": [],
+        "stop_quote": "",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": ""
+      },
+      {
+        "action": "ask",
+        "language": "hi-IN",
+        "confirmed_symptoms": "",
+        "denied_symptoms": "",
+        "topic": "scalp_changes",
+        "question": "क्या आपको अपने सिर की त्वचा में कोई खुजली, पपड़ी या बदलाव महसूस हो रहा है?",
+        "important_gap": "",
+        "facts": [],
+        "stop_quote": "",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": ""
+      },
+      {
+        "action": "ask",
+        "language": "hi-IN",
+        "confirmed_symptoms": "",
+        "denied_symptoms": "",
+        "topic": "hair_pattern",
+        "question": "क्या यह पतलापन पूरे सिर में है, अलग-अलग हिस्सों में, या मुख्य रूप से हेयरलाइन के साथ है?",
+        "important_gap": "",
+        "facts": [],
+        "stop_quote": "",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": ""
+      },
+      {
+        "action": "ask",
+        "language": "hi-IN",
+        "confirmed_symptoms": "",
+        "denied_symptoms": "",
+        "topic": "family_history",
+        "question": "क्या आपके परिवार में किसी को भी इसी तरह के बाल पतले होने की समस्या है?",
+        "important_gap": "",
+        "facts": [
+          {
+            "topic": "duration",
+            "value": "The caller reports hair loss for approximately two years.",
+            "status": "reported",
+            "quote": "लगभग दो साल"
+          },
+          {
+            "topic": "scalp_changes",
+            "value": "The caller denies itching, flaking, redness, or pain on the scalp.",
+            "status": "denied",
+            "quote": "मुझे अपने सिर की त्वचा पर खुजली, पपड़ी, लालिमा या दर्द महसूस नहीं हुआ है"
+          },
+          {
+            "topic": "hair_pattern",
+            "value": "The caller reports gradual thinning at the front hairline without distinct bald patches.",
+            "status": "reported",
+            "quote": "मेरे सामने के हेयरलाइन पर धीरे-धीरे बाल पतले हो रहे हैं। कोई अलग से गंजे हिस्से नहीं हैं"
+          }
+        ],
+        "stop_quote": "",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": ""
+      },
+      {
+        "action": "assess",
+        "language": "hi-IN",
+        "confirmed_symptoms": "Gradual thinning at the front hairline.",
+        "denied_symptoms": "Itching, flaking, redness, or pain on the scalp.",
+        "topic": "",
+        "question": "",
+        "important_gap": "",
+        "facts": [
+          {
+            "topic": "duration",
+            "value": "The caller reports hair loss for approximately two years.",
+            "status": "reported",
+            "quote": "लगभग दो साल"
+          },
+          {
+            "topic": "scalp_changes",
+            "value": "The caller denies itching, flaking, redness, or pain on the scalp.",
+            "status": "denied",
+            "quote": "मुझे अपने सिर की त्वचा पर खुजली, पपड़ी, लालिमा या दर्द महसूस नहीं हुआ है"
+          },
+          {
+            "topic": "hair_pattern",
+            "value": "The caller reports gradual thinning at the front hairline without distinct bald patches.",
+            "status": "reported",
+            "quote": "मेरे सामने के हेयरलाइन पर धीरे-धीरे बाल पतले हो रहे हैं। कोई अलग से गंजे हिस्से नहीं हैं"
+          },
+          {
+            "topic": "family_history",
+            "value": "The caller reports that their father has similar hair thinning.",
+            "status": "reported",
+            "quote": "मेरे पिताजी के बाल भी इसी तरह पतले हो रहे हैं"
+          }
+        ],
+        "stop_quote": "",
+        "likely": "A hereditary pattern of hair thinning may be possible given the gradual front hairline thinning and a similar family pattern.",
+        "why": "You mentioned the thinning has been gradual over about two years at your front hairline and that your father has a similar pattern, while you have no scalp symptoms.",
+        "do": "बालों को धीरे सँवारें, हल्के शैम्पू और कंडीशनर का उपयोग करें और हवा में सूखने दें।",
+        "avoid": "बाल कसकर बाँधने, तेज गर्मी, कठोर केमिकल और बिना प्रमाण वाले बाल उगाने के नुस्खों से बचें।",
+        "seek_care": "बाल लगातार झड़ें तो डॉक्टर या त्वचा विशेषज्ञ से मिलें। अचानक चकत्तों में बाल झड़ें या सिर की त्वचा में दर्द और सूजन हो तो जल्दी दिखाएँ। मैं स्वास्थ्य सहायक हूँ, डॉक्टर नहीं।",
+        "answer": ""
+      }
+    ],
+    "complete_assessment": true,
+    "passed_structure": true
+  },
+  {
+    "case": "hair_patchy",
+    "language": "hi-IN",
+    "lines": [
+      [
+        "caller",
+        "मेरे बाल अलग-अलग जगहों से झड़ रहे हैं।"
+      ],
+      [
+        "agent",
+        "यह तकलीफ कितने समय से है?"
+      ],
+      [
+        "caller",
+        "लगभग तीन हफ्ते।"
+      ],
+      [
+        "agent",
+        "अभी तकलीफ कितनी तेज है?"
+      ],
+      [
+        "caller",
+        "मुझे पक्का नहीं पता।"
+      ],
+      [
+        "agent",
+        "बाल पूरे सिर से कम हो रहे हैं, अलग-अलग जगहों से, या मुख्य रूप से आगे की तरफ से?"
+      ],
+      [
+        "caller",
+        "सामने की हेयरलाइन पर पतला होने के बजाय, दो अलग-अलग गोल पैच हैं।"
+      ],
+      [
+        "agent",
+        "क्या आपने अपने सिर की त्वचा पर कोई खुजली, जलन या पपड़ी देखी है?"
+      ],
+      [
+        "caller",
+        "मैंने अपने सिर की त्वचा पर खुजली, पपड़ी, लाली या दर्द नहीं देखा है।"
+      ],
+      [
+        "agent",
+        "बाल झड़ने की कई वजहें हो सकती हैं; फोन पर पक्की वजह नहीं बता सकती। बाल कहाँ से कम हो रहे हैं और सिर की त्वचा की जाँच से वजह समझने में मदद मिलती है; सिर्फ समय जानना पर्याप्त नहीं है। बालों को धीरे सँवारें, हल्के शैम्पू और कंडीशनर का उपयोग करें और हवा में सूखने दें। बाल कसकर बाँधने, तेज गर्मी, कठोर केमिकल और बिना प्रमाण वाले बाल उगाने के नुस्खों से बचें। बाल लगातार झड़ें तो डॉक्टर या त्वचा विशेषज्ञ से मिलें। अचानक चकत्तों में बाल झड़ें या सिर की त्वचा में दर्द और सूजन हो तो जल्दी दिखाएँ। मैं स्वास्थ्य सहायक हूँ, डॉक्टर नहीं।"
+      ]
+    ],
+    "facts": {
+      "duration": "About three weeks.",
+      "hair_pattern": "There are two separate round patches, rather than thinning at the front hairline.",
+      "scalp_changes": "I have not noticed itching, flaking, redness or pain on my scalp.",
+      "family_history": "I do not know of any similar hair loss in my family.",
+      "recent_changes": "I do not recall an illness or major health change before it started.",
+      "hair_care": "I wash gently. I do not use tight hairstyles, heat styling or chemical treatments.",
+      "age": "I am 28 years old.",
+      "progression": "I first noticed the patches suddenly three weeks ago.",
+      "impact": "I am worried about my appearance, but can do my usual daily activities."
+    },
+    "turn_seconds": [
+      0.96,
+      1.71,
+      1.36,
+      0.57,
+      3.5
+    ],
+    "questions": 4,
+    "assessed": true,
+    "emergency": false,
+    "kb": "hair_loss",
+    "question_topics": [
+      "duration",
+      "severity",
+      "hair_pattern",
+      "scalp_changes"
+    ],
+    "actions": [
+      {
+        "action": "ask",
+        "language": "hi-IN",
+        "confirmed_symptoms": "",
+        "denied_symptoms": "",
+        "topic": "duration",
+        "question": "यह तकलीफ कितने समय से है?",
+        "important_gap": "",
+        "facts": [],
+        "stop_quote": "",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": ""
+      },
+      {
+        "action": "ask",
+        "language": "hi-IN",
+        "confirmed_symptoms": "",
+        "denied_symptoms": "",
+        "topic": "severity",
+        "question": "अभी तकलीफ कितनी तेज है?",
+        "important_gap": "",
+        "facts": [],
+        "stop_quote": "",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": ""
+      },
+      {
+        "action": "ask",
+        "language": "hi-IN",
+        "confirmed_symptoms": "",
+        "denied_symptoms": "",
+        "topic": "hair_pattern",
+        "question": "बाल पूरे सिर से कम हो रहे हैं, अलग-अलग जगहों से, या मुख्य रूप से आगे की तरफ से?",
+        "important_gap": "",
+        "facts": [],
+        "stop_quote": "",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": ""
+      },
+      {
+        "action": "ask",
+        "language": "hi-IN",
+        "confirmed_symptoms": "",
+        "denied_symptoms": "",
+        "topic": "scalp_changes",
+        "question": "क्या आपने अपने सिर की त्वचा पर कोई खुजली, जलन या पपड़ी देखी है?",
+        "important_gap": "",
+        "facts": [
+          {
+            "topic": "hair_loss",
+            "value": "hair is falling from different places",
+            "status": "reported",
+            "quote": "मेरे बाल अलग-अलग जगहों से झड़ रहे हैं"
+          },
+          {
+            "topic": "duration",
+            "value": "approximately three weeks",
+            "status": "reported",
+            "quote": "लगभग तीन हफ्ते"
+          },
+          {
+            "topic": "hair_pattern",
+            "value": "two separate round patches instead of thinning along the hairline",
+            "status": "reported",
+            "quote": "सामने की हेयरलाइन पर पतला होने के बजाय, दो अलग-अलग गोल पैच हैं"
+          }
+        ],
+        "stop_quote": "",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": ""
+      },
+      {
+        "action": "assess",
+        "language": "hi-IN",
+        "confirmed_symptoms": "",
+        "denied_symptoms": "",
+        "topic": "",
+        "question": "",
+        "important_gap": "",
+        "facts": [],
+        "stop_quote": "",
+        "likely": "बाल झड़ने की कई वजहें हो सकती हैं; फोन पर पक्की वजह नहीं बता सकती।",
+        "why": "बाल कहाँ से कम हो रहे हैं और सिर की त्वचा की जाँच से वजह समझने में मदद मिलती है; सिर्फ समय जानना पर्याप्त नहीं है।",
+        "do": "बालों को धीरे सँवारें, हल्के शैम्पू और कंडीशनर का उपयोग करें और हवा में सूखने दें।",
+        "avoid": "बाल कसकर बाँधने, तेज गर्मी, कठोर केमिकल और बिना प्रमाण वाले बाल उगाने के नुस्खों से बचें।",
+        "seek_care": "बाल लगातार झड़ें तो डॉक्टर या त्वचा विशेषज्ञ से मिलें। अचानक चकत्तों में बाल झड़ें या सिर की त्वचा में दर्द और सूजन हो तो जल्दी दिखाएँ। मैं स्वास्थ्य सहायक हूँ, डॉक्टर नहीं।",
+        "answer": ""
+      }
+    ],
+    "complete_assessment": true,
+    "passed_structure": true
+  },
+  {
+    "case": "hair_gradual",
+    "language": "ta-IN",
+    "lines": [
+      [
+        "caller",
+        "எனக்கு முடி கொட்டுகிறது."
+      ],
+      [
+        "agent",
+        "இந்த முடி கொட்டுதல் எவ்வளவு காலமாக இருக்கிறது?"
+      ],
+      [
+        "caller",
+        "ഏകദേശം രണ്ടു വർഷം."
+      ],
+      [
+        "agent",
+        "മുടി കൊഴിച്ചിൽ എല്ലായിടത്തും ആണോ, അതോ ചില ഭാഗങ്ങളിൽ മാത്രമാണോ കാണുന്നത്?"
+      ],
+      [
+        "caller",
+        "என் நெற்றியின் முன்பகுதியில் முடி மெல்ல மெல்லக் கொட்டுகிறது. தனித்தனி வழுக்கைகள் எதுவும் இல்லை."
+      ],
+      [
+        "agent",
+        "உங்கள் உச்சந்தலையில் அரிப்பு அல்லது செதில் செதிலாக இருப்பது போன்ற மாற்றங்கள் ஏதேனும் இருக்கிறதா?"
+      ],
+      [
+        "caller",
+        "എന്റെ തലയോട്ടിയിൽ ചൊറിച്ചിലോ, അടരലോ, ചുവപ്പോ, വേദനയോ ഒന്നും ഞാൻ ശ്രദ്ധിച്ചിട്ടില്ല."
+      ],
+      [
+        "agent",
+        "നിങ്ങളുടെ കുടുംബത്തിൽ ആർക്കെങ്കിലും സമാനമായ രീതിയിൽ മുടി കൊഴിയുന്ന ചരിത്രമുണ്ടോ?"
+      ],
+      [
+        "caller",
+        "എന്റെ അച്ഛനും സമാനമായ രീതിയിലാണ് മുടി കൊഴിയുന്നത്."
+      ],
+      [
+        "agent",
+        "മുടി കൊഴിച്ചിലിന് പല കാരണങ്ങളുണ്ടാകാം; ഫോണിലൂടെ കൃത്യമായ കാരണം ഉറപ്പിക്കാനാവില്ല. മുടി കുറയുന്ന രീതിയും തലയോട്ടിയുടെ പരിശോധനയും കാരണം തിരിച്ചറിയാൻ സഹായിക്കും; കാലയളവ് മാത്രം അറിഞ്ഞാൽ പോരാ. മുടി സൗമ്യമായി പരിചരിക്കുക, മൃദുവായ ഷാംപൂവും കണ്ടീഷണറും ഉപയോഗിക്കുക, സ്വാഭാവികമായി ഉണങ്ങാൻ അനുവദിക്കുക. മുടി മുറുക്കിക്കെട്ടൽ, അമിത ചൂട്, കടുത്ത രാസവസ്തുക്കൾ, തെളിവില്ലാത്ത മുടി വളർത്തൽ വിദ്യകൾ എന്നിവ ഒഴിവാക്കുക. മുടി കൊഴിച്ചിൽ തുടരുകയാണെങ്കിൽ ഡോക്ടറെയോ ത്വക്ക് വിദഗ്ധനെയോ കാണുക. പെട്ടെന്ന് കഷണ്ടിപ്പാടുകളോ തലയോട്ടിയിൽ വേദനയും വീക്കമോ ഉണ്ടെങ്കിൽ നേരത്തേ കാണിക്കുക. ഞാൻ ആരോഗ്യ സഹായിയാണ്, ഡോക്ടറല്ല."
+      ]
+    ],
+    "facts": {
+      "duration": "About two years.",
+      "hair_pattern": "It is gradually thinning at my front hairline. There are no separate bald patches.",
+      "scalp_changes": "I have not noticed itching, flaking, redness or pain on my scalp.",
+      "family_history": "My father has a similar pattern of hair thinning.",
+      "recent_changes": "I do not recall an illness or major health change before it started.",
+      "hair_care": "I wash gently. I do not use tight hairstyles, heat styling or chemical treatments.",
+      "age": "I am 28 years old.",
+      "progression": "The thinning has been gradual, not sudden.",
+      "impact": "I am worried about my appearance, but can do my usual daily activities."
+    },
+    "turn_seconds": [
+      1.24,
+      0.75,
+      0.8,
+      0.83,
+      2.72
+    ],
+    "questions": 4,
+    "assessed": true,
+    "emergency": false,
+    "kb": "hair_loss",
+    "question_topics": [
+      "duration",
+      "hair_pattern",
+      "scalp_changes",
+      "family_history"
+    ],
+    "actions": [
+      {
+        "action": "ask",
+        "language": "ta-IN",
+        "confirmed_symptoms": "",
+        "denied_symptoms": "",
+        "topic": "duration",
+        "question": "இந்த முடி கொட்டுதல் எவ்வளவு காலமாக இருக்கிறது?",
+        "important_gap": "",
+        "facts": [
+          {
+            "topic": "presenting_complaint",
+            "value": "Hair loss",
+            "status": "reported",
+            "quote": "எனக்கு முடி கொட்டுகிறது"
+          }
+        ],
+        "stop_quote": "",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": ""
+      },
+      {
+        "action": "ask",
+        "language": "ml-IN",
+        "confirmed_symptoms": "Hair loss",
+        "denied_symptoms": "",
+        "topic": "hair_pattern",
+        "question": "മുടി കൊഴിച്ചിൽ എല്ലായിടത്തും ആണോ, അതോ ചില ഭാഗങ്ങളിൽ മാത്രമാണോ കാണുന്നത്?",
+        "important_gap": "",
+        "facts": [
+          {
+            "topic": "presenting_complaint",
+            "value": "Hair loss",
+            "status": "reported",
+            "quote": "எனக்கு முடி கொட்டுகிறது"
+          },
+          {
+            "topic": "duration",
+            "value": "About two years",
+            "status": "reported",
+            "quote": "ഏകദേശം രണ്ടു വർഷം"
+          }
+        ],
+        "stop_quote": "",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": ""
+      },
+      {
+        "action": "ask",
+        "language": "ta-IN",
+        "confirmed_symptoms": "",
+        "denied_symptoms": "",
+        "topic": "scalp_changes",
+        "question": "உங்கள் உச்சந்தலையில் அரிப்பு அல்லது செதில் செதிலாக இருப்பது போன்ற மாற்றங்கள் ஏதேனும் இருக்கிறதா?",
+        "important_gap": "",
+        "facts": [
+          {
+            "topic": "presenting_complaint",
+            "value": "Hair loss",
+            "status": "reported",
+            "quote": "எனக்கு முடி கொட்டுகிறது"
+          },
+          {
+            "topic": "duration",
+            "value": "About two years",
+            "status": "reported",
+            "quote": "ഏകദേശം രണ്ടു വർഷം"
+          },
+          {
+            "topic": "hair_pattern",
+            "value": "Thinning mainly at the front of the head, not separate bald patches",
+            "status": "reported",
+            "quote": "என் நெற்றியின் முன்பகுதியில் முடி மெல்ல மெல்லக் கொட்டுகிறது. தனித்தனி வழுக்கைகள் எதுவும் இல்லை"
+          }
+        ],
+        "stop_quote": "",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": ""
+      },
+      {
+        "action": "ask",
+        "language": "ml-IN",
+        "confirmed_symptoms": "Gradual hair thinning at the front of the head for about two years without scalp symptoms.",
+        "denied_symptoms": "Itching, flaking, redness, and pain on the scalp.",
+        "topic": "family_history",
+        "question": "നിങ്ങളുടെ കുടുംബത്തിൽ ആർക്കെങ്കിലും സമാനമായ രീതിയിൽ മുടി കൊഴിയുന്ന ചരിത്രമുണ്ടോ?",
+        "important_gap": "",
+        "facts": [
+          {
+            "topic": "presenting_complaint",
+            "value": "Hair loss",
+            "status": "reported",
+            "quote": "எனக்கு முடி கொட்டுகிறது"
+          },
+          {
+            "topic": "duration",
+            "value": "About two years",
+            "status": "reported",
+            "quote": "ഏകദേശം രണ്ടു വർഷം"
+          },
+          {
+            "topic": "hair_pattern",
+            "value": "Thinning mainly at the front of the head, not separate bald patches",
+            "status": "reported",
+            "quote": "என் நெற்றியின் முன்பகுதியில் முடி மெல்ல மெல்லக் கொட்டுகிறது. தனித்தனி வழுக்கைகள் எதுவும் இல்லை"
+          },
+          {
+            "topic": "scalp_changes",
+            "value": "No itching, flaking, redness or pain noticed",
+            "status": "reported",
+            "quote": "എന്റെ തലയോട്ടിയിൽ ചൊറിച്ചിലോ, അടരലോ, ചുവപ്പോ, വേദനയോ ഒന്നും ഞാൻ ശ്രദ്ധിച്ചിട്ടില്ല"
+          }
+        ],
+        "stop_quote": "",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": ""
+      },
+      {
+        "action": "assess",
+        "language": "ml-IN",
+        "confirmed_symptoms": "",
+        "denied_symptoms": "",
+        "topic": "",
+        "question": "",
+        "important_gap": "",
+        "facts": [],
+        "stop_quote": "",
+        "likely": "മുടി കൊഴിച്ചിലിന് പല കാരണങ്ങളുണ്ടാകാം; ഫോണിലൂടെ കൃത്യമായ കാരണം ഉറപ്പിക്കാനാവില്ല.",
+        "why": "മുടി കുറയുന്ന രീതിയും തലയോട്ടിയുടെ പരിശോധനയും കാരണം തിരിച്ചറിയാൻ സഹായിക്കും; കാലയളവ് മാത്രം അറിഞ്ഞാൽ പോരാ.",
+        "do": "മുടി സൗമ്യമായി പരിചരിക്കുക, മൃദുവായ ഷാംപൂവും കണ്ടീഷണറും ഉപയോഗിക്കുക, സ്വാഭാവികമായി ഉണങ്ങാൻ അനുവദിക്കുക.",
+        "avoid": "മുടി മുറുക്കിക്കെട്ടൽ, അമിത ചൂട്, കടുത്ത രാസവസ്തുക്കൾ, തെളിവില്ലാത്ത മുടി വളർത്തൽ വിദ്യകൾ എന്നിവ ഒഴിവാക്കുക.",
+        "seek_care": "മുടി കൊഴിച്ചിൽ തുടരുകയാണെങ്കിൽ ഡോക്ടറെയോ ത്വക്ക് വിദഗ്ധനെയോ കാണുക. പെട്ടെന്ന് കഷണ്ടിപ്പാടുകളോ തലയോട്ടിയിൽ വേദനയും വീക്കമോ ഉണ്ടെങ്കിൽ നേരത്തേ കാണിക്കുക. ഞാൻ ആരോഗ്യ സഹായിയാണ്, ഡോക്ടറല്ല.",
+        "answer": ""
+      }
+    ],
+    "complete_assessment": true,
+    "passed_structure": true
+  },
+  {
+    "case": "hair_patchy",
+    "language": "ta-IN",
+    "lines": [
+      [
+        "caller",
+        "எனக்கு முடி கொத்து கொத்தாக கொட்டுகிறது."
+      ],
+      [
+        "agent",
+        "இந்த முடி கொட்டுதல் உங்களுக்கு எவ்வளவு காலமாக இருக்கிறது?"
+      ],
+      [
+        "caller",
+        "ഏകദേശം മൂന്നാഴ്ച."
+      ],
+      [
+        "agent",
+        "முடி கொத்து கொத்தாக கொட்டுகிறதா, அல்லது தலையில் குறிப்பிட்ட இடங்களில் மட்டும் முடியிழப்பு இருக்கிறதா?"
+      ],
+      [
+        "caller",
+        "முன்புற முடி வளரும் இடத்தில் மெலிவதற்குப் பதிலாக, இரண்டு தனித்தனி வட்ட வடிவ திட்டுகள் உள்ளன."
+      ],
+      [
+        "agent",
+        "உங்கள் உச்சந்தலையில் அரிப்பு அல்லது செதில் செதிலாக உதிர்தல் போன்ற ஏதேனும் மாற்றங்கள் தெரிகிறதா?."
+      ],
+      [
+        "caller",
+        "என் தலையில் அரிப்பு, செதில்கள், சிவந்து போதல் அல்லது வலி எதுவும் எனக்குத் தெரியவில்லை."
+      ],
+      [
+        "agent",
+        "குடும்பத்தில் வேறு யாருக்காவது இதேபோல் முடி குறைந்துள்ளதா?"
+      ],
+      [
+        "caller",
+        "എന്റെ കുടുംബത്തിൽ ഇതുപോലെയുള്ള മുടികൊഴിച്ചിൽ ഒന്നും എനിക്കറിയില്ല."
+      ],
+      [
+        "agent",
+        "മുടി കൊഴിച്ചിലിന് പല കാരണങ്ങളുണ്ടാകാം; ഫോണിലൂടെ കൃത്യമായ കാരണം ഉറപ്പിക്കാനാവില്ല. മുടി കുറയുന്ന രീതിയും തലയോട്ടിയുടെ പരിശോധനയും കാരണം തിരിച്ചറിയാൻ സഹായിക്കും; കാലയളവ് മാത്രം അറിഞ്ഞാൽ പോരാ. മുടി സൗമ്യമായി പരിചരിക്കുക, മൃദുവായ ഷാംപൂവും കണ്ടീഷണറും ഉപയോഗിക്കുക, സ്വാഭാവികമായി ഉണങ്ങാൻ അനുവദിക്കുക. മുടി മുറുക്കിക്കെട്ടൽ, അമിത ചൂട്, കടുത്ത രാസവസ്തുക്കൾ, തെളിവില്ലാത്ത മുടി വളർത്തൽ വിദ്യകൾ എന്നിവ ഒഴിവാക്കുക. മുടി കൊഴിച്ചിൽ തുടരുകയാണെങ്കിൽ ഡോക്ടറെയോ ത്വക്ക് വിദഗ്ധനെയോ കാണുക. പെട്ടെന്ന് കഷണ്ടിപ്പാടുകളോ തലയോട്ടിയിൽ വേദനയും വീക്കമോ ഉണ്ടെങ്കിൽ നേരത്തേ കാണിക്കുക. ഞാൻ ആരോഗ്യ സഹായിയാണ്, ഡോക്ടറല്ല."
+      ]
+    ],
+    "facts": {
+      "duration": "About three weeks.",
+      "hair_pattern": "There are two separate round patches, rather than thinning at the front hairline.",
+      "scalp_changes": "I have not noticed itching, flaking, redness or pain on my scalp.",
+      "family_history": "I do not know of any similar hair loss in my family.",
+      "recent_changes": "I do not recall an illness or major health change before it started.",
+      "hair_care": "I wash gently. I do not use tight hairstyles, heat styling or chemical treatments.",
+      "age": "I am 28 years old.",
+      "progression": "I first noticed the patches suddenly three weeks ago.",
+      "impact": "I am worried about my appearance, but can do my usual daily activities."
+    },
+    "turn_seconds": [
+      0.37,
+      0.4,
+      1.03,
+      1.59,
+      3.85
+    ],
+    "questions": 4,
+    "assessed": true,
+    "emergency": false,
+    "kb": "hair_loss",
+    "question_topics": [
+      "duration",
+      "hair_pattern",
+      "scalp_changes",
+      "family_history"
+    ],
+    "actions": [
+      {
+        "action": "ask",
+        "language": "ta-IN",
+        "confirmed_symptoms": "",
+        "denied_symptoms": "",
+        "topic": "duration",
+        "question": "இந்த முடி கொட்டுதல் உங்களுக்கு எவ்வளவு காலமாக இருக்கிறது?",
+        "important_gap": "",
+        "facts": [],
+        "stop_quote": "",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": ""
+      },
+      {
+        "action": "ask",
+        "language": "ml-IN",
+        "confirmed_symptoms": "",
+        "denied_symptoms": "",
+        "topic": "hair_pattern",
+        "question": "முடி கொத்து கொத்தாக கொட்டுகிறதா, அல்லது தலையில் குறிப்பிட்ட இடங்களில் மட்டும் முடியிழப்பு இருக்கிறதா?",
+        "important_gap": "",
+        "facts": [],
+        "stop_quote": "",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": ""
+      },
+      {
+        "action": "ask",
+        "language": "ta-IN",
+        "confirmed_symptoms": "",
+        "denied_symptoms": "",
+        "topic": "scalp_changes",
+        "question": "உங்கள் உச்சந்தலையில் அரிப்பு அல்லது செதில் செதிலாக உதிர்தல் போன்ற ஏதேனும் மாற்றங்கள் தெரிகிறதா?.",
+        "important_gap": "",
+        "facts": [],
+        "stop_quote": "",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": ""
+      },
+      {
+        "action": "ask",
+        "language": "ta-IN",
+        "confirmed_symptoms": "",
+        "denied_symptoms": "",
+        "topic": "family_history",
+        "question": "குடும்பத்தில் வேறு யாருக்காவது இதேபோல் முடி குறைந்துள்ளதா?",
+        "important_gap": "",
+        "facts": [],
+        "stop_quote": "",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": ""
+      },
+      {
+        "action": "assess",
+        "language": "ml-IN",
+        "confirmed_symptoms": "",
+        "denied_symptoms": "",
+        "topic": "",
+        "question": "",
+        "important_gap": "",
+        "facts": [],
+        "stop_quote": "",
+        "likely": "മുടി കൊഴിച്ചിലിന് പല കാരണങ്ങളുണ്ടാകാം; ഫോണിലൂടെ കൃത്യമായ കാരണം ഉറപ്പിക്കാനാവില്ല.",
+        "why": "മുടി കുറയുന്ന രീതിയും തലയോട്ടിയുടെ പരിശോധനയും കാരണം തിരിച്ചറിയാൻ സഹായിക്കും; കാലയളവ് മാത്രം അറിഞ്ഞാൽ പോരാ.",
+        "do": "മുടി സൗമ്യമായി പരിചരിക്കുക, മൃദുവായ ഷാംപൂവും കണ്ടീഷണറും ഉപയോഗിക്കുക, സ്വാഭാവികമായി ഉണങ്ങാൻ അനുവദിക്കുക.",
+        "avoid": "മുടി മുറുക്കിക്കെട്ടൽ, അമിത ചൂട്, കടുത്ത രാസവസ്തുക്കൾ, തെളിവില്ലാത്ത മുടി വളർത്തൽ വിദ്യകൾ എന്നിവ ഒഴിവാക്കുക.",
+        "seek_care": "മുടി കൊഴിച്ചിൽ തുടരുകയാണെങ്കിൽ ഡോക്ടറെയോ ത്വക്ക് വിദഗ്ധനെയോ കാണുക. പെട്ടെന്ന് കഷണ്ടിപ്പാടുകളോ തലയോട്ടിയിൽ വേദനയും വീക്കമോ ഉണ്ടെങ്കിൽ നേരത്തേ കാണിക്കുക. ഞാൻ ആരോഗ്യ സഹായിയാണ്, ഡോക്ടറല്ല.",
+        "answer": ""
+      }
+    ],
+    "complete_assessment": true,
+    "passed_structure": true
+  },
+  {
+    "case": "hair_gradual",
+    "language": "te-IN",
+    "lines": [
+      [
+        "caller",
+        "నాకు జుట్టు రాలుతోంది."
+      ],
+      [
+        "agent",
+        "మీరు ఈ జుట్టు రాలడాన్ని ఎంతకాలంగా గమనిస్తున్నారు?"
+      ],
+      [
+        "caller",
+        "సుమారు రెండేళ్లు."
+      ],
+      [
+        "agent",
+        "ఈ జుట్టు రాలడం అంతటా ఉందా, లేదా కొన్ని చోట్ల మాత్రమే ఉందా, లేదా ప్రధానంగా హెయిర్‌లైన్ వెంబడి ఉందా?"
+      ],
+      [
+        "caller",
+        "నా ముందు జుట్టు గీత దగ్గర క్రమంగా పలుచబడుతోంది. అక్కడక్కడా పూర్తిగా గుండుగా ఉన్న భాగాలేమీ లేవు."
+      ],
+      [
+        "agent",
+        "మీ తల మీద దురద లేదా పొలుసులు లాంటి ఏవైనా మార్పులు ఏమైనా గమనించారా?"
+      ],
+      [
+        "caller",
+        "నా తల మీద దురద, పొట్టు, ఎరుపు లేదా నొప్పి ఏమీ గమనించలేదు."
+      ],
+      [
+        "agent",
+        "మీ కుటుంబంలో ఎవరికైనా ఇలాంటి జుట్టు పలుచబడే సమస్య ఉందా?"
+      ],
+      [
+        "caller",
+        "మా నాన్నగారికి కూడా జుట్టు రాలడం ఇలాగే ఉంటుంది."
+      ],
+      [
+        "agent",
+        "The gradual thinning at your hairline with a similar pattern in your father may suggest hereditary pattern hair loss. You reported hair loss for about two years, thinning mainly along the hairline without patchy bald spots, and no scalp itching or redness. A family history of similar hair loss supports this pattern. జుట్టును మృదువుగా చూసుకోండి, మృదువైన షాంపూ, కండిషనర్ వాడి సహజంగా ఆరనివ్వండి. జుట్టును బిగించి కట్టడం, అధిక వేడి, కఠినమైన రసాయనాలు, నిరూపించని జుట్టు పెంచే చిట్కాలను నివారించండి. జుట్టు రాలడం కొనసాగితే వైద్యుని లేదా చర్మ వైద్యుని కలవండి. అకస్మాత్తుగా బట్టతల మచ్చలు లేదా తల చర్మంలో నొప్పి, వాపు వస్తే త్వరగా చూపించండి. నేను ఆరోగ్య సహాయకురాలిని, వైద్యురాలిని కాదు."
+      ]
+    ],
+    "facts": {
+      "duration": "About two years.",
+      "hair_pattern": "It is gradually thinning at my front hairline. There are no separate bald patches.",
+      "scalp_changes": "I have not noticed itching, flaking, redness or pain on my scalp.",
+      "family_history": "My father has a similar pattern of hair thinning.",
+      "recent_changes": "I do not recall an illness or major health change before it started.",
+      "hair_care": "I wash gently. I do not use tight hairstyles, heat styling or chemical treatments.",
+      "age": "I am 28 years old.",
+      "progression": "The thinning has been gradual, not sudden.",
+      "impact": "I am worried about my appearance, but can do my usual daily activities."
+    },
+    "turn_seconds": [
+      0.62,
+      0.6,
+      0.65,
+      1.21,
+      1.09
+    ],
+    "questions": 4,
+    "assessed": true,
+    "emergency": false,
+    "kb": "hair_loss",
+    "question_topics": [
+      "duration",
+      "hair_pattern",
+      "scalp_changes",
+      "family_history"
+    ],
+    "actions": [
+      {
+        "action": "ask",
+        "language": "te-IN",
+        "confirmed_symptoms": "",
+        "denied_symptoms": "",
+        "topic": "duration",
+        "question": "మీరు ఈ జుట్టు రాలడాన్ని ఎంతకాలంగా గమనిస్తున్నారు?",
+        "important_gap": "",
+        "facts": [
+          {
+            "topic": "presenting_complaint",
+            "value": "Hair loss",
+            "status": "reported",
+            "quote": "నాకు జుట్టు రాలుతోంది"
+          }
+        ],
+        "stop_quote": "",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": ""
+      },
+      {
+        "action": "ask",
+        "language": "te-IN",
+        "confirmed_symptoms": "",
+        "denied_symptoms": "",
+        "topic": "hair_pattern",
+        "question": "ఈ జుట్టు రాలడం అంతటా ఉందా, లేదా కొన్ని చోట్ల మాత్రమే ఉందా, లేదా ప్రధానంగా హెయిర్‌లైన్ వెంబడి ఉందా?",
+        "important_gap": "",
+        "facts": [
+          {
+            "topic": "presenting_complaint",
+            "value": "Hair loss",
+            "status": "reported",
+            "quote": "నాకు జుట్టు రాలుతోంది"
+          },
+          {
+            "topic": "duration",
+            "value": "Approximately two years",
+            "status": "reported",
+            "quote": "సుమారు రెండేళ్లు"
+          }
+        ],
+        "stop_quote": "",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": ""
+      },
+      {
+        "action": "ask",
+        "language": "te-IN",
+        "confirmed_symptoms": "",
+        "denied_symptoms": "",
+        "topic": "scalp_changes",
+        "question": "మీ తల మీద దురద లేదా పొలుసులు లాంటి ఏవైనా మార్పులు ఏమైనా గమనించారా?",
+        "important_gap": "",
+        "facts": [
+          {
+            "topic": "presenting_complaint",
+            "value": "Hair loss",
+            "status": "reported",
+            "quote": "నాకు జుట్టు రాలుతోంది"
+          },
+          {
+            "topic": "duration",
+            "value": "Approximately two years",
+            "status": "reported",
+            "quote": "సుమారు రెండేళ్లు"
+          },
+          {
+            "topic": "hair_pattern",
+            "value": "Gradual thinning at the hairline, not patchy bald spots",
+            "status": "reported",
+            "quote": "నా ముందు జుట్టు గీత దగ్గర క్రమంగా పలుచబడుతోంది. అక్కడక్కడా పూర్తిగా గుండుగా ఉన్న భాగాలేమీ లేవు"
+          }
+        ],
+        "stop_quote": "",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": ""
+      },
+      {
+        "action": "ask",
+        "language": "te-IN",
+        "confirmed_symptoms": "",
+        "denied_symptoms": "",
+        "topic": "family_history",
+        "question": "మీ కుటుంబంలో ఎవరికైనా ఇలాంటి జుట్టు పలుచబడే సమస్య ఉందా?",
+        "important_gap": "",
+        "facts": [
+          {
+            "topic": "presenting_complaint",
+            "value": "Hair loss",
+            "status": "reported",
+            "quote": "నాకు జుట్టు రాలుతోంది"
+          },
+          {
+            "topic": "duration",
+            "value": "Approximately two years",
+            "status": "reported",
+            "quote": "సుమారు రెండేళ్లు"
+          },
+          {
+            "topic": "hair_pattern",
+            "value": "Gradual thinning at the hairline, not patchy bald spots",
+            "status": "reported",
+            "quote": "నా ముందు జుట్టు గీత దగ్గర క్రమంగా పలుచబడుతోంది. అక్కడక్కడా పూర్తిగా గుండుగా ఉన్న భాగాలేమీ లేవు"
+          },
+          {
+            "topic": "scalp_changes",
+            "value": "No itching, flaking, redness, or pain",
+            "status": "reported",
+            "quote": "నా తల మీద దురద, పొట్టు, ఎరుపు లేదా నొప్పి ఏమీ గమనించలేదు"
+          }
+        ],
+        "stop_quote": "",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": ""
+      },
+      {
+        "action": "assess",
+        "language": "te-IN",
+        "confirmed_symptoms": "",
+        "denied_symptoms": "",
+        "topic": "",
+        "question": "",
+        "important_gap": "",
+        "facts": [
+          {
+            "topic": "presenting_complaint",
+            "value": "Hair loss",
+            "status": "reported",
+            "quote": "నాకు జుట్టు రాలుతోంది"
+          },
+          {
+            "topic": "duration",
+            "value": "Approximately two years",
+            "status": "reported",
+            "quote": "సుమారు రెండేళ్లు"
+          },
+          {
+            "topic": "hair_pattern",
+            "value": "Gradual thinning at the hairline, not patchy bald spots",
+            "status": "reported",
+            "quote": "నా ముందు జుట్టు గీత దగ్గర క్రమంగా పలుచబడుతోంది. అక్కడక్కడా పూర్తిగా గుండుగా ఉన్న భాగాలేమీ లేవు"
+          },
+          {
+            "topic": "scalp_changes",
+            "value": "No itching, flaking, redness, or pain",
+            "status": "reported",
+            "quote": "నా తల మీద దురద, పొట్టు, ఎరుపు లేదా నొప్పి ఏమీ గమనించలేదు"
+          },
+          {
+            "topic": "family_history",
+            "value": "Father has similar hair loss",
+            "status": "reported",
+            "quote": "మా నాన్నగారికి కూడా జుట్టు రాలడం ఇలాగే ఉంటుంది"
+          }
+        ],
+        "stop_quote": "",
+        "likely": "The gradual thinning at your hairline with a similar pattern in your father may suggest hereditary pattern hair loss.",
+        "why": "You reported hair loss for about two years, thinning mainly along the hairline without patchy bald spots, and no scalp itching or redness. A family history of similar hair loss supports this pattern.",
+        "do": "జుట్టును మృదువుగా చూసుకోండి, మృదువైన షాంపూ, కండిషనర్ వాడి సహజంగా ఆరనివ్వండి.",
+        "avoid": "జుట్టును బిగించి కట్టడం, అధిక వేడి, కఠినమైన రసాయనాలు, నిరూపించని జుట్టు పెంచే చిట్కాలను నివారించండి.",
+        "seek_care": "జుట్టు రాలడం కొనసాగితే వైద్యుని లేదా చర్మ వైద్యుని కలవండి. అకస్మాత్తుగా బట్టతల మచ్చలు లేదా తల చర్మంలో నొప్పి, వాపు వస్తే త్వరగా చూపించండి. నేను ఆరోగ్య సహాయకురాలిని, వైద్యురాలిని కాదు.",
+        "answer": ""
+      }
+    ],
+    "complete_assessment": true,
+    "passed_structure": true
+  },
+  {
+    "case": "hair_patchy",
+    "language": "te-IN",
+    "lines": [
+      [
+        "caller",
+        "నాకు అక్కడక్కడా జుట్టు రాలిపోతోంది."
+      ],
+      [
+        "agent",
+        "ఈ జుట్టు రాలడం మీరు ఎంతకాలంగా గమనిస్తున్నారు?"
+      ],
+      [
+        "caller",
+        "సుమారు మూడు వారాలు."
+      ],
+      [
+        "agent",
+        "మీ జుట్టు ఎక్కడ పల్చబడుతోంది: అంతటా, వేర్వేరు మచ్చలుగా, లేదా ప్రధానంగా హెయిర్‌లైన్ వెంబడినా?"
+      ],
+      [
+        "caller",
+        "ముందు హెయిర్‌లైన్ దగ్గర పలచబడటానికి బదులుగా, రెండు వేర్వేరు గుండ్రటి మచ్చలు ఉన్నాయి."
+      ],
+      [
+        "agent",
+        "మీ తల మీద దురద లేదా పొలుసులు లాంటి ఏవైనా మార్పులు గమనించారా?"
+      ],
+      [
+        "caller",
+        "నా తల మీద దురద, పొట్టు, ఎరుపు లేదా నొప్పి ఏమీ నాకు అనిపించలేదు."
+      ],
+      [
+        "agent",
+        "మీ కుటుంబంలో ఎవరికైనా ఇలాంటి జుట్టు రాలే సమస్య ఉందా?"
+      ],
+      [
+        "caller",
+        "మా కుటుంబంలో ఇలాంటి జుట్టు రాలడం గురించి నాకు తెలియదు."
+      ],
+      [
+        "agent",
+        "The patchy loss you describe may be related to a non-scarring hair-loss condition affecting separate areas, though this is only a possibility and not a confirmed diagnosis. You mentioned \"రెండు వేర్వేరు గుండ్రటి మచ్చలు ఉన్నాయి\" and that this has been happening for \"సుమారు మూడు వారాలు,\" with no \"దురద, పొట్టు, ఎరుపు లేదా నొప్పి,\" which helps narrow the pattern. జుట్టును మృదువుగా చూసుకోండి, మృదువైన షాంపూ, కండిషనర్ వాడి సహజంగా ఆరనివ్వండి. జుట్టును బిగించి కట్టడం, అధిక వేడి, కఠినమైన రసాయనాలు, నిరూపించని జుట్టు పెంచే చిట్కాలను నివారించండి. జుట్టు రాలడం కొనసాగితే వైద్యుని లేదా చర్మ వైద్యుని కలవండి. అకస్మాత్తుగా బట్టతల మచ్చలు లేదా తల చర్మంలో నొప్పి, వాపు వస్తే త్వరగా చూపించండి. నేను ఆరోగ్య సహాయకురాలిని, వైద్యురాలిని కాదు."
+      ]
+    ],
+    "facts": {
+      "duration": "About three weeks.",
+      "hair_pattern": "There are two separate round patches, rather than thinning at the front hairline.",
+      "scalp_changes": "I have not noticed itching, flaking, redness or pain on my scalp.",
+      "family_history": "I do not know of any similar hair loss in my family.",
+      "recent_changes": "I do not recall an illness or major health change before it started.",
+      "hair_care": "I wash gently. I do not use tight hairstyles, heat styling or chemical treatments.",
+      "age": "I am 28 years old.",
+      "progression": "I first noticed the patches suddenly three weeks ago.",
+      "impact": "I am worried about my appearance, but can do my usual daily activities."
+    },
+    "turn_seconds": [
+      0.77,
+      0.49,
+      0.75,
+      0.66,
+      1.45
+    ],
+    "questions": 4,
+    "assessed": true,
+    "emergency": false,
+    "kb": "hair_loss",
+    "question_topics": [
+      "duration",
+      "hair_pattern",
+      "scalp_changes",
+      "family_history"
+    ],
+    "actions": [
+      {
+        "action": "ask",
+        "language": "te-IN",
+        "confirmed_symptoms": "",
+        "denied_symptoms": "",
+        "topic": "duration",
+        "question": "ఈ జుట్టు రాలడం మీరు ఎంతకాలంగా గమనిస్తున్నారు?",
+        "important_gap": "",
+        "facts": [
+          {
+            "topic": "presenting_complaint",
+            "value": "Patchy hair loss",
+            "status": "reported",
+            "quote": "నాకు అక్కడక్కడా జుట్టు రాలిపోతోంది"
+          }
+        ],
+        "stop_quote": "",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": ""
+      },
+      {
+        "action": "ask",
+        "language": "te-IN",
+        "confirmed_symptoms": "",
+        "denied_symptoms": "",
+        "topic": "hair_pattern",
+        "question": "మీ జుట్టు ఎక్కడ పల్చబడుతోంది: అంతటా, వేర్వేరు మచ్చలుగా, లేదా ప్రధానంగా హెయిర్‌లైన్ వెంబడినా?",
+        "important_gap": "",
+        "facts": [
+          {
+            "topic": "presenting_complaint",
+            "value": "Patchy hair loss",
+            "status": "reported",
+            "quote": "నాకు అక్కడక్కడా జుట్టు రాలిపోతోంది"
+          },
+          {
+            "topic": "duration",
+            "value": "About three weeks",
+            "status": "reported",
+            "quote": "సుమారు మూడు వారాలు"
+          }
+        ],
+        "stop_quote": "",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": ""
+      },
+      {
+        "action": "ask",
+        "language": "te-IN",
+        "confirmed_symptoms": "",
+        "denied_symptoms": "",
+        "topic": "scalp_changes",
+        "question": "మీ తల మీద దురద లేదా పొలుసులు లాంటి ఏవైనా మార్పులు గమనించారా?",
+        "important_gap": "",
+        "facts": [
+          {
+            "topic": "presenting_complaint",
+            "value": "Patchy hair loss",
+            "status": "reported",
+            "quote": "నాకు అక్కడక్కడా జుట్టు రాలిపోతోంది"
+          },
+          {
+            "topic": "duration",
+            "value": "About three weeks",
+            "status": "reported",
+            "quote": "సుమారు మూడు వారాలు"
+          },
+          {
+            "topic": "hair_pattern",
+            "value": "Two separate round patches",
+            "status": "reported",
+            "quote": "రెండు వేర్వేరు గుండ్రటి మచ్చలు ఉన్నాయి"
+          }
+        ],
+        "stop_quote": "",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": ""
+      },
+      {
+        "action": "ask",
+        "language": "te-IN",
+        "confirmed_symptoms": "",
+        "denied_symptoms": "",
+        "topic": "family_history",
+        "question": "మీ కుటుంబంలో ఎవరికైనా ఇలాంటి జుట్టు రాలే సమస్య ఉందా?",
+        "important_gap": "",
+        "facts": [
+          {
+            "topic": "presenting_complaint",
+            "value": "Patchy hair loss",
+            "status": "reported",
+            "quote": "నాకు అక్కడక్కడా జుట్టు రాలిపోతోంది"
+          },
+          {
+            "topic": "duration",
+            "value": "About three weeks",
+            "status": "reported",
+            "quote": "సుమారు మూడు వారాలు"
+          },
+          {
+            "topic": "hair_pattern",
+            "value": "Two separate round patches",
+            "status": "reported",
+            "quote": "రెండు వేర్వేరు గుండ్రటి మచ్చలు ఉన్నాయి"
+          },
+          {
+            "topic": "scalp_changes",
+            "value": "No itching, flaking, redness or pain",
+            "status": "denied",
+            "quote": "నా తల మీద దురద, పొట్టు, ఎరుపు లేదా నొప్పి ఏమీ నాకు అనిపించలేదు"
+          }
+        ],
+        "stop_quote": "",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": ""
+      },
+      {
+        "action": "assess",
+        "language": "te-IN",
+        "confirmed_symptoms": "",
+        "denied_symptoms": "",
+        "topic": "",
+        "question": "",
+        "important_gap": "Family history is unknown, which limits the ability to distinguish hereditary patterns from other causes.",
+        "facts": [
+          {
+            "topic": "presenting_complaint",
+            "value": "Patchy hair loss",
+            "status": "reported",
+            "quote": "నాకు అక్కడక్కడా జుట్టు రాలిపోతోంది"
+          },
+          {
+            "topic": "duration",
+            "value": "About three weeks",
+            "status": "reported",
+            "quote": "సుమారు మూడు వారాలు"
+          },
+          {
+            "topic": "hair_pattern",
+            "value": "Two separate round patches",
+            "status": "reported",
+            "quote": "రెండు వేర్వేరు గుండ్రటి మచ్చలు ఉన్నాయి"
+          },
+          {
+            "topic": "scalp_changes",
+            "value": "No itching, flaking, redness or pain",
+            "status": "denied",
+            "quote": "నా తల మీద దురద, పొట్టు, ఎరుపు లేదా నొప్పి ఏమీ నాకు అనిపించలేదు"
+          }
+        ],
+        "stop_quote": "",
+        "likely": "The patchy loss you describe may be related to a non-scarring hair-loss condition affecting separate areas, though this is only a possibility and not a confirmed diagnosis.",
+        "why": "You mentioned \"రెండు వేర్వేరు గుండ్రటి మచ్చలు ఉన్నాయి\" and that this has been happening for \"సుమారు మూడు వారాలు,\" with no \"దురద, పొట్టు, ఎరుపు లేదా నొప్పి,\" which helps narrow the pattern.",
+        "do": "జుట్టును మృదువుగా చూసుకోండి, మృదువైన షాంపూ, కండిషనర్ వాడి సహజంగా ఆరనివ్వండి.",
+        "avoid": "జుట్టును బిగించి కట్టడం, అధిక వేడి, కఠినమైన రసాయనాలు, నిరూపించని జుట్టు పెంచే చిట్కాలను నివారించండి.",
+        "seek_care": "జుట్టు రాలడం కొనసాగితే వైద్యుని లేదా చర్మ వైద్యుని కలవండి. అకస్మాత్తుగా బట్టతల మచ్చలు లేదా తల చర్మంలో నొప్పి, వాపు వస్తే త్వరగా చూపించండి. నేను ఆరోగ్య సహాయకురాలిని, వైద్యురాలిని కాదు.",
+        "answer": "I am a health assistant, not a doctor. These self-care steps and precautions are practical measures, but they do not replace a professional evaluation. A clinician can determine the exact cause and suggest appropriate next steps."
+      }
+    ],
+    "complete_assessment": true,
+    "passed_structure": true
+  },
+  {
+    "case": "hair_gradual",
+    "language": "kn-IN",
+    "lines": [
+      [
+        "caller",
+        "ನನಗೆ ಕೂದಲು ಉದುರುತ್ತಿದೆ."
+      ],
+      [
+        "agent",
+        "ಈ ಕೂದಲು ಉದುರುವಿಕೆ ಎಷ್ಟು ದಿನಗಳಿಂದ ಗಮನಿಸುತ್ತಿದ್ದೀರಿ?"
+      ],
+      [
+        "caller",
+        "ಸುಮಾರು ಎರಡು ವರ್ಷ."
+      ],
+      [
+        "agent",
+        "ಕೂದಲು ಉದುರುವಿಕೆ ಎಲ್ಲೆಲ್ಲಿ ಕಾಣಿಸುತ್ತಿದೆ: ತಲೆಯ ಮೇಲೆಲ್ಲಾ, ಬೇರೆ ಬೇರೆ ಕಡೆ ಗುಡ್ಡೆಗಳಲ್ಲಿ ಅಥವಾ ಮುಖ್ಯವಾಗಿ ಮುಂಭಾಗದ ಕೂದಲಿನ ಸಾಲಿನಲ್ಲಿ?"
+      ],
+      [
+        "caller",
+        "ನನ್ನ ಹಣೆಯ ಮುಂದಿನ ಕೂದಲಿನ ಸಾಲು ಕ್ರಮೇಣ ತೆಳುವಾಗುತ್ತಿದೆ. ಪ್ರತ್ಯೇಕವಾಗಿ ಬೋಳು ತೇಪೆಗಳೇನೂ ಇಲ್ಲ."
+      ],
+      [
+        "agent",
+        "ನಿಮ್ಮ ತಲೆಬುರುಡೆಯಲ್ಲಿ ತುರಿಕೆ ಅಥವಾ ಚರ್ಮ ಸುಲಿಯುವಂತಹ ಯಾವುದೇ ಬದಲಾವಣೆಗಳನ್ನು ಗಮನಿಸಿದ್ದೀರಾ?"
+      ],
+      [
+        "caller",
+        "ನನ್ನ ನೆತ್ತಿಯ ಮೇಲೆ ತುರಿಕೆ, ಪದರಗಳು, ಕೆಂಪು ಅಥವಾ ನೋವು ನನಗೆ ಕಂಡುಬಂದಿಲ್ಲ."
+      ],
+      [
+        "agent",
+        "ನಿಮ್ಮ ಕುಟುಂಬದಲ್ಲಿ ಯಾರಿಗಾದರೂ ಇದೇ ರೀತಿಯ ಕೂದಲು ತೆಳುವಾಗುವ ಸಮಸ್ಯೆ ಇದೆಯಾ?"
+      ],
+      [
+        "caller",
+        "ನನ್ನ ಅಪ್ಪನಿಗೂ ಇದೇ ರೀತಿ ಕೂದಲು ಉದುರುತ್ತಿದೆ."
+      ],
+      [
+        "agent",
+        "The gradual thinning along your hairline with a similar pattern in your father could suggest hereditary pattern hair loss. You reported that the thinning has been happening for about two years, mainly along the hairline without separate bald patches, and you have no scalp symptoms. A similar family history was also mentioned. ಕೂದಲನ್ನು ಮೃದುವಾಗಿ ಆರೈಕೆ ಮಾಡಿ, ಸೌಮ್ಯವಾದ ಶಾಂಪೂ ಮತ್ತು ಕಂಡಿಷನರ್ ಬಳಸಿ ಸಹಜವಾಗಿ ಒಣಗಲು ಬಿಡಿ. ಕೂದಲನ್ನು ಬಿಗಿಯಾಗಿ ಕಟ್ಟುವುದು, ಹೆಚ್ಚು ಶಾಖ, ಕಠಿಣ ರಾಸಾಯನಿಕಗಳು ಮತ್ತು ಸಾಬೀತಾಗದ ಕೂದಲು ಬೆಳೆಯುವ ಮನೆಮದ್ದುಗಳನ್ನು ತಪ್ಪಿಸಿ. ಕೂದಲು ಉದುರುವುದು ಮುಂದುವರಿದರೆ ವೈದ್ಯರನ್ನು ಅಥವಾ ಚರ್ಮರೋಗ ತಜ್ಞರನ್ನು ಭೇಟಿ ಮಾಡಿ. ಇದ್ದಕ್ಕಿದ್ದಂತೆ ಬೋಳು ತೇಪೆಗಳು ಅಥವಾ ತಲೆಯ ಚರ್ಮದಲ್ಲಿ ನೋವು, ಉರಿಯೂತ ಇದ್ದರೆ ಬೇಗ ತೋರಿಸಿ. ನಾನು ಆರೋಗ್ಯ ಸಹಾಯಕಿ, ವೈದ್ಯೆಯಲ್ಲ."
+      ]
+    ],
+    "facts": {
+      "duration": "About two years.",
+      "hair_pattern": "It is gradually thinning at my front hairline. There are no separate bald patches.",
+      "scalp_changes": "I have not noticed itching, flaking, redness or pain on my scalp.",
+      "family_history": "My father has a similar pattern of hair thinning.",
+      "recent_changes": "I do not recall an illness or major health change before it started.",
+      "hair_care": "I wash gently. I do not use tight hairstyles, heat styling or chemical treatments.",
+      "age": "I am 28 years old.",
+      "progression": "The thinning has been gradual, not sudden.",
+      "impact": "I am worried about my appearance, but can do my usual daily activities."
+    },
+    "turn_seconds": [
+      0.44,
+      1.33,
+      0.53,
+      0.57,
+      1.41
+    ],
+    "questions": 4,
+    "assessed": true,
+    "emergency": false,
+    "kb": "hair_loss",
+    "question_topics": [
+      "duration",
+      "hair_pattern",
+      "scalp_changes",
+      "family_history"
+    ],
+    "actions": [
+      {
+        "action": "ask",
+        "language": "kn-IN",
+        "confirmed_symptoms": "",
+        "denied_symptoms": "",
+        "topic": "duration",
+        "question": "ಈ ಕೂದಲು ಉದುರುವಿಕೆ ಎಷ್ಟು ದಿನಗಳಿಂದ ಗಮನಿಸುತ್ತಿದ್ದೀರಿ?",
+        "important_gap": "",
+        "facts": [],
+        "stop_quote": "",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": ""
+      },
+      {
+        "action": "ask",
+        "language": "kn-IN",
+        "confirmed_symptoms": "",
+        "denied_symptoms": "",
+        "topic": "hair_pattern",
+        "question": "ಕೂದಲು ಉದುರುವಿಕೆ ಎಲ್ಲೆಲ್ಲಿ ಕಾಣಿಸುತ್ತಿದೆ: ತಲೆಯ ಮೇಲೆಲ್ಲಾ, ಬೇರೆ ಬೇರೆ ಕಡೆ ಗುಡ್ಡೆಗಳಲ್ಲಿ ಅಥವಾ ಮುಖ್ಯವಾಗಿ ಮುಂಭಾಗದ ಕೂದಲಿನ ಸಾಲಿನಲ್ಲಿ?",
+        "important_gap": "",
+        "facts": [
+          {
+            "topic": "duration",
+            "value": "Approximately two years",
+            "status": "reported",
+            "quote": "ಸುಮಾರು ಎರಡು ವರ್ಷ"
+          }
+        ],
+        "stop_quote": "",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": ""
+      },
+      {
+        "action": "ask",
+        "language": "kn-IN",
+        "confirmed_symptoms": "",
+        "denied_symptoms": "",
+        "topic": "scalp_changes",
+        "question": "ನಿಮ್ಮ ತಲೆಬುರುಡೆಯಲ್ಲಿ ತುರಿಕೆ ಅಥವಾ ಚರ್ಮ ಸುಲಿಯುವಂತಹ ಯಾವುದೇ ಬದಲಾವಣೆಗಳನ್ನು ಗಮನಿಸಿದ್ದೀರಾ?",
+        "important_gap": "",
+        "facts": [
+          {
+            "topic": "duration",
+            "value": "Approximately two years",
+            "status": "reported",
+            "quote": "ಸುಮಾರು ಎರಡು ವರ್ಷ"
+          },
+          {
+            "topic": "hair_pattern",
+            "value": "Thinning along the hairline without separate bald patches",
+            "status": "reported",
+            "quote": "ನನ್ನ ಹಣೆಯ ಮುಂದಿನ ಕೂದಲಿನ ಸಾಲು ಕ್ರಮೇಣ ತೆಳುವಾಗುತ್ತಿದೆ. ಪ್ರತ್ಯೇಕವಾಗಿ ಬೋಳು ತೇಪೆಗಳೇನೂ ಇಲ್ಲ."
+          }
+        ],
+        "stop_quote": "",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": ""
+      },
+      {
+        "action": "ask",
+        "language": "kn-IN",
+        "confirmed_symptoms": "",
+        "denied_symptoms": "",
+        "topic": "family_history",
+        "question": "ನಿಮ್ಮ ಕುಟುಂಬದಲ್ಲಿ ಯಾರಿಗಾದರೂ ಇದೇ ರೀತಿಯ ಕೂದಲು ತೆಳುವಾಗುವ ಸಮಸ್ಯೆ ಇದೆಯಾ?",
+        "important_gap": "",
+        "facts": [
+          {
+            "topic": "duration",
+            "value": "Approximately two years",
+            "status": "reported",
+            "quote": "ಸುಮಾರು ಎರಡು ವರ್ಷ"
+          },
+          {
+            "topic": "hair_pattern",
+            "value": "Thinning along the hairline without separate bald patches",
+            "status": "reported",
+            "quote": "ನನ್ನ ಹಣೆಯ ಮುಂದಿನ ಕೂದಲಿನ ಸಾಲು ಕ್ರಮೇಣ ತೆಳುವಾಗುತ್ತಿದೆ. ಪ್ರತ್ಯೇಕವಾಗಿ ಬೋಳು ತೇಪೆಗಳೇನೂ ಇಲ್ಲ."
+          },
+          {
+            "topic": "scalp_changes",
+            "value": "No itching, flaking, redness, or pain on the scalp",
+            "status": "reported",
+            "quote": "ನನ್ನ ನೆತ್ತಿಯ ಮೇಲೆ ತುರಿಕೆ, ಪದರಗಳು, ಕೆಂಪು ಅಥವಾ ನೋವು ನನಗೆ ಕಂಡುಬಂದಿಲ್ಲ."
+          }
+        ],
+        "stop_quote": "",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": ""
+      },
+      {
+        "action": "assess",
+        "language": "kn-IN",
+        "confirmed_symptoms": "Gradual thinning along the hairline for about two years without scalp symptoms.",
+        "denied_symptoms": "No itching, flaking, redness, or pain on the scalp.",
+        "topic": "",
+        "question": "",
+        "important_gap": "",
+        "facts": [
+          {
+            "topic": "duration",
+            "value": "Approximately two years",
+            "status": "reported",
+            "quote": "ಸುಮಾರು ಎರಡು ವರ್ಷ"
+          },
+          {
+            "topic": "hair_pattern",
+            "value": "Thinning along the hairline without separate bald patches",
+            "status": "reported",
+            "quote": "ನನ್ನ ಹಣೆಯ ಮುಂದಿನ ಕೂದಲಿನ ಸಾಲು ಕ್ರಮೇಣ ತೆಳುವಾಗುತ್ತಿದೆ. ಪ್ರತ್ಯೇಕವಾಗಿ ಬೋಳು ತೇಪೆಗಳೇನೂ ಇಲ್ಲ."
+          },
+          {
+            "topic": "scalp_changes",
+            "value": "No itching, flaking, redness, or pain on the scalp",
+            "status": "reported",
+            "quote": "ನನ್ನ ನೆತ್ತಿಯ ಮೇಲೆ ತುರಿಕೆ, ಪದರಗಳು, ಕೆಂಪು ಅಥವಾ ನೋವು ನನಗೆ ಕಂಡುಬಂದಿಲ್ಲ."
+          },
+          {
+            "topic": "family_history",
+            "value": "Father has a similar hair thinning pattern",
+            "status": "reported",
+            "quote": "ನನ್ನ ಅಪ್ಪನಿಗೂ ಇದೇ ರೀತಿ ಕೂದಲು ಉದುರುತ್ತಿದೆ."
+          }
+        ],
+        "stop_quote": "",
+        "likely": "The gradual thinning along your hairline with a similar pattern in your father could suggest hereditary pattern hair loss.",
+        "why": "You reported that the thinning has been happening for about two years, mainly along the hairline without separate bald patches, and you have no scalp symptoms. A similar family history was also mentioned.",
+        "do": "ಕೂದಲನ್ನು ಮೃದುವಾಗಿ ಆರೈಕೆ ಮಾಡಿ, ಸೌಮ್ಯವಾದ ಶಾಂಪೂ ಮತ್ತು ಕಂಡಿಷನರ್ ಬಳಸಿ ಸಹಜವಾಗಿ ಒಣಗಲು ಬಿಡಿ.",
+        "avoid": "ಕೂದಲನ್ನು ಬಿಗಿಯಾಗಿ ಕಟ್ಟುವುದು, ಹೆಚ್ಚು ಶಾಖ, ಕಠಿಣ ರಾಸಾಯನಿಕಗಳು ಮತ್ತು ಸಾಬೀತಾಗದ ಕೂದಲು ಬೆಳೆಯುವ ಮನೆಮದ್ದುಗಳನ್ನು ತಪ್ಪಿಸಿ.",
+        "seek_care": "ಕೂದಲು ಉದುರುವುದು ಮುಂದುವರಿದರೆ ವೈದ್ಯರನ್ನು ಅಥವಾ ಚರ್ಮರೋಗ ತಜ್ಞರನ್ನು ಭೇಟಿ ಮಾಡಿ. ಇದ್ದಕ್ಕಿದ್ದಂತೆ ಬೋಳು ತೇಪೆಗಳು ಅಥವಾ ತಲೆಯ ಚರ್ಮದಲ್ಲಿ ನೋವು, ಉರಿಯೂತ ಇದ್ದರೆ ಬೇಗ ತೋರಿಸಿ. ನಾನು ಆರೋಗ್ಯ ಸಹಾಯಕಿ, ವೈದ್ಯೆಯಲ್ಲ.",
+        "answer": "I am a health assistant, not a doctor. The gradual thinning along your hairline for about two years, without scalp symptoms and with a similar pattern in your father, could suggest hereditary pattern hair loss. Handle your hair gently, wash with a gentle shampoo, and use conditioner to reduce breakage. Let your hair air-dry when practical. Avoid tight hairstyles, high-heat styling, harsh chemical treatments, and unverified hair-growth remedies. These steps reduce damage, but they do not guarantee regrowth or treat every cause. Please arrange a clinician or dermatologist examination for persistent or progressive loss, and seek earlier review if you notice sudden patches, a painful or inflamed scalp, or rapid worsening."
+      }
+    ],
+    "complete_assessment": true,
+    "passed_structure": true
+  },
+  {
+    "case": "hair_gradual",
+    "language": "ml-IN",
+    "lines": [
+      [
+        "caller",
+        "എനിക്ക് മുടി കൊഴിയുന്നുണ്ട്."
+      ],
+      [
+        "agent",
+        "ഈ മുടി കൊഴിച്ചിൽ എത്ര കാലമായി ശ്രദ്ധിക്കുന്നു?"
+      ],
+      [
+        "caller",
+        "ഏകദേശം രണ്ട് വർഷം."
+      ],
+      [
+        "agent",
+        "മുടി കൊഴിച്ചിൽ എവിടെയാണ് കാണുന്നത്: തലയിൽ മുഴുവനായോ, പ്രത്യേക ഭാഗങ്ങളിലോ, അല്ലെങ്കിൽ മുടിയുടെ മുൻഭാഗത്തായോ? "
+      ],
+      [
+        "caller",
+        "എന്റെ നെറ്റിയുടെ മുൻവശത്തെ മുടി ക്രമേണ കുറയുന്നുണ്ട്. വേറെ എവിടെയും കഷണ്ടിപ്പാടുകളൊന്നുമില്ല."
+      ],
+      [
+        "agent",
+        "നിങ്ങളുടെ തലയോട്ടിയിൽ ചൊറിച്ചിലോ തൊലി അടർന്നു പോകുന്നതോ പോലുള്ള എന്തെങ്കിലും മാറ്റങ്ങൾ ശ്രദ്ധിച്ചിട്ടുണ്ടോ?"
+      ]
+    ],
+    "facts": {
+      "duration": "About two years.",
+      "hair_pattern": "It is gradually thinning at my front hairline. There are no separate bald patches.",
+      "scalp_changes": "I have not noticed itching, flaking, redness or pain on my scalp.",
+      "family_history": "My father has a similar pattern of hair thinning.",
+      "recent_changes": "I do not recall an illness or major health change before it started.",
+      "hair_care": "I wash gently. I do not use tight hairstyles, heat styling or chemical treatments.",
+      "age": "I am 28 years old.",
+      "progression": "The thinning has been gradual, not sudden.",
+      "impact": "I am worried about my appearance, but can do my usual daily activities."
+    },
+    "turn_seconds": [
+      0.98,
+      0.5,
+      0.72
+    ],
+    "error": "APIConnectionError",
+    "passed_structure": false
+  },
+  {
+    "case": "hair_patchy",
+    "language": "ml-IN",
+    "lines": [],
+    "facts": {
+      "duration": "About three weeks.",
+      "hair_pattern": "There are two separate round patches, rather than thinning at the front hairline.",
+      "scalp_changes": "I have not noticed itching, flaking, redness or pain on my scalp.",
+      "family_history": "I do not know of any similar hair loss in my family.",
+      "recent_changes": "I do not recall an illness or major health change before it started.",
+      "hair_care": "I wash gently. I do not use tight hairstyles, heat styling or chemical treatments.",
+      "age": "I am 28 years old.",
+      "progression": "I first noticed the patches suddenly three weeks ago.",
+      "impact": "I am worried about my appearance, but can do my usual daily activities."
+    },
+    "turn_seconds": [],
+    "error": "APIConnectionError",
+    "passed_structure": false
+  },
+  {
+    "case": "hair_patchy",
+    "language": "kn-IN",
+    "lines": [
+      [
+        "caller",
+        "ನನ್ನ ಕೂದಲು ಬೇರೆ ಬೇರೆ ಕಡೆಗಳಲ್ಲಿ ಉದುರುತ್ತಿದೆ."
+      ],
+      [
+        "agent",
+        "ಈ ತೊಂದರೆ ಎಷ್ಟು ಸಮಯದಿಂದ ಇದೆ?"
+      ],
+      [
+        "caller",
+        "ಸುಮಾರು ಮೂರು ವಾರಗಳು."
+      ],
+      [
+        "agent",
+        "ಈಗ ತೊಂದರೆ ಎಷ್ಟು ತೀವ್ರವಾಗಿದೆ?"
+      ],
+      [
+        "caller",
+        "ನನಗೆ ಖಚಿತವಿಲ್ಲ."
+      ],
+      [
+        "agent",
+        "ಬೇರೆ ಯಾವುದೇ ಲಕ್ಷಣಗಳಿವೆಯೇ?"
+      ],
+      [
+        "caller",
+        "ನನಗೆ ಖಚಿತವಿಲ್ಲ."
+      ],
+      [
+        "agent",
+        "ಉತ್ತರ ಸೇವೆಯಲ್ಲಿ ಸಂಪರ್ಕದ ಸಮಸ್ಯೆ ಇದೆ. ನಿಮ್ಮ ಮೌಲ್ಯಮಾಪನ ಇನ್ನೂ ಮುಗಿದಿಲ್ಲ. ದಯವಿಟ್ಟು ಸ್ವಲ್ಪ ಸಮಯದ ನಂತರ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ."
+      ]
+    ],
+    "facts": {
+      "duration": "About three weeks.",
+      "hair_pattern": "There are two separate round patches, rather than thinning at the front hairline.",
+      "scalp_changes": "I have not noticed itching, flaking, redness or pain on my scalp.",
+      "family_history": "I do not know of any similar hair loss in my family.",
+      "recent_changes": "I do not recall an illness or major health change before it started.",
+      "hair_care": "I wash gently. I do not use tight hairstyles, heat styling or chemical treatments.",
+      "age": "I am 28 years old.",
+      "progression": "I first noticed the patches suddenly three weeks ago.",
+      "impact": "I am worried about my appearance, but can do my usual daily activities."
+    },
+    "turn_seconds": [
+      0.74,
+      1.03,
+      1.77,
+      5.68
+    ],
+    "error": "APIConnectionError",
+    "passed_structure": false
+  }
+]

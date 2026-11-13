@@ -290,7 +290,10 @@ def test_duration_alias_cannot_spend_another_question():
 async def test_legacy_reference_recovery_does_not_reask_duration(monkeypatch):
     agent, _, _ = setup_agent(monkeypatch, "invalid JSON")
     agent.policy.questions = [("duration", "When did your fever start?")]
-    replies = [p async for p in agent.llm_node(context("I have fever.", "Yesterday."), [], None)]
+    replies = [
+        p
+        async for p in agent.llm_node(context("I have fever.", "Yesterday."), [], None)
+    ]
     assert replies
     assert "how many days" not in replies[0].lower()
     assert agent.actions[-1].topic != "duration"

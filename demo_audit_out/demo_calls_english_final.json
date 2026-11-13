@@ -1,0 +1,1128 @@
+[
+  {
+    "case": "hair_patchy",
+    "language": "en-IN",
+    "lines": [
+      [
+        "caller",
+        "I am losing hair in separate patches."
+      ],
+      [
+        "agent",
+        "How long have you been noticing the hair loss?"
+      ],
+      [
+        "caller",
+        "About three weeks."
+      ],
+      [
+        "agent",
+        "Have you noticed any changes to your scalp, such as itching or flaking?"
+      ],
+      [
+        "caller",
+        "I have not noticed itching, flaking, redness or pain on my scalp."
+      ],
+      [
+        "agent",
+        "Does anyone in your family have a similar pattern of hair thinning?"
+      ],
+      [
+        "caller",
+        "I do not know of any similar hair loss in my family."
+      ],
+      [
+        "agent",
+        "Was there an illness or major change in your health before the shedding began?"
+      ],
+      [
+        "caller",
+        "I do not recall an illness or major health change before it started."
+      ],
+      [
+        "agent",
+        "Patchy hair loss can have several causes, and this is not a confirmed diagnosis. You reported losing hair in separate patches for about three weeks, with no itching, flaking, redness or pain on the scalp. Handle your hair gently, use a gentle shampoo and conditioner, and let it dry naturally. Avoid tight hairstyles, high heat, harsh chemical treatments and unverified hair-growth remedies. Arrange a clinician or dermatologist visit for ongoing loss, sooner for sudden patches or a painful, inflamed scalp. I am a health assistant, not a doctor."
+      ]
+    ],
+    "facts": {
+      "duration": "About three weeks.",
+      "hair_pattern": "There are two separate round patches, rather than thinning at the front hairline.",
+      "scalp_changes": "I have not noticed itching, flaking, redness or pain on my scalp.",
+      "family_history": "I do not know of any similar hair loss in my family.",
+      "recent_changes": "I do not recall an illness or major health change before it started.",
+      "hair_care": "I wash gently. I do not use tight hairstyles, heat styling or chemical treatments.",
+      "age": "I am 28 years old.",
+      "progression": "I first noticed the patches suddenly three weeks ago.",
+      "impact": "I am worried about my appearance, but can do my usual daily activities."
+    },
+    "turn_seconds": [
+      0.98,
+      0.79,
+      0.99,
+      0.91,
+      0.96
+    ],
+    "questions": 4,
+    "assessed": true,
+    "emergency": false,
+    "kb": "hair_loss",
+    "question_topics": [
+      "duration",
+      "scalp_changes",
+      "family_history",
+      "recent_changes"
+    ],
+    "actions": [
+      {
+        "action": "ask",
+        "language": "en-IN",
+        "confirmed_symptoms": "",
+        "denied_symptoms": "",
+        "topic": "duration",
+        "question": "How long have you been noticing the hair loss?",
+        "important_gap": "",
+        "facts": [
+          {
+            "topic": "hair_pattern",
+            "value": "hair loss in separate patches",
+            "status": "reported",
+            "quote": "I am losing hair in separate patches."
+          }
+        ],
+        "stop_quote": "",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": ""
+      },
+      {
+        "action": "ask",
+        "language": "en-IN",
+        "confirmed_symptoms": "",
+        "denied_symptoms": "",
+        "topic": "scalp_changes",
+        "question": "Have you noticed any changes to your scalp, such as itching or flaking?",
+        "important_gap": "",
+        "facts": [],
+        "stop_quote": "",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": ""
+      },
+      {
+        "action": "ask",
+        "language": "en-IN",
+        "confirmed_symptoms": "",
+        "denied_symptoms": "",
+        "topic": "family_history",
+        "question": "Does anyone in your family have a similar pattern of hair thinning?",
+        "important_gap": "",
+        "facts": [
+          {
+            "topic": "hair_pattern",
+            "value": "hair loss in separate patches",
+            "status": "reported",
+            "quote": "I am losing hair in separate patches."
+          },
+          {
+            "topic": "duration",
+            "value": "about three weeks",
+            "status": "reported",
+            "quote": "About three weeks."
+          },
+          {
+            "topic": "scalp_changes",
+            "value": "no itching, flaking, redness or pain",
+            "status": "reported",
+            "quote": "I have not noticed itching, flaking, redness or pain on my scalp."
+          }
+        ],
+        "stop_quote": "",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": ""
+      },
+      {
+        "action": "ask",
+        "language": "en-IN",
+        "confirmed_symptoms": "",
+        "denied_symptoms": "",
+        "topic": "recent_changes",
+        "question": "Was there an illness or major change in your health before the shedding began?",
+        "important_gap": "",
+        "facts": [
+          {
+            "topic": "hair_pattern",
+            "value": "hair loss in separate patches",
+            "status": "reported",
+            "quote": "I am losing hair in separate patches."
+          },
+          {
+            "topic": "duration",
+            "value": "about three weeks",
+            "status": "reported",
+            "quote": "About three weeks."
+          },
+          {
+            "topic": "scalp_changes",
+            "value": "no itching, flaking, redness or pain",
+            "status": "reported",
+            "quote": "I have not noticed itching, flaking, redness or pain on my scalp."
+          }
+        ],
+        "stop_quote": "",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": ""
+      },
+      {
+        "action": "assess",
+        "language": "en-IN",
+        "confirmed_symptoms": "",
+        "denied_symptoms": "",
+        "topic": "",
+        "question": "",
+        "important_gap": "Whether the patches are expanding, stable, or affecting your scalp beyond hair absence.",
+        "facts": [
+          {
+            "topic": "hair_pattern",
+            "value": "hair loss in separate patches",
+            "status": "reported",
+            "quote": "I am losing hair in separate patches."
+          },
+          {
+            "topic": "duration",
+            "value": "about three weeks",
+            "status": "reported",
+            "quote": "About three weeks."
+          },
+          {
+            "topic": "scalp_changes",
+            "value": "no itching, flaking, redness or pain",
+            "status": "reported",
+            "quote": "I have not noticed itching, flaking, redness or pain on my scalp."
+          }
+        ],
+        "stop_quote": "",
+        "likely": "Patchy hair loss can have several causes, and this is not a confirmed diagnosis.",
+        "why": "You reported losing hair in separate patches for about three weeks, with no itching, flaking, redness or pain on the scalp.",
+        "do": "Handle your hair gently, use a gentle shampoo and conditioner, and let it dry naturally.",
+        "avoid": "Avoid tight hairstyles, high heat, harsh chemical treatments and unverified hair-growth remedies.",
+        "seek_care": "Arrange a clinician or dermatologist visit for ongoing loss, sooner for sudden patches or a painful, inflamed scalp. I am a health assistant, not a doctor.",
+        "answer": "I am a health assistant, not a doctor. These steps may help protect your hair, but they do not guarantee regrowth or treat every cause. A clinician can examine the pattern and advise you properly."
+      }
+    ],
+    "complete_assessment": true,
+    "passed_structure": true
+  },
+  {
+    "case": "hair_gradual",
+    "language": "en-IN",
+    "lines": [
+      [
+        "caller",
+        "I have hair fall."
+      ],
+      [
+        "agent",
+        "How long have you been noticing the hair loss?"
+      ],
+      [
+        "caller",
+        "About two years."
+      ],
+      [
+        "agent",
+        "Where is the thinning: all over, in separate patches, or mainly along the hairline?"
+      ],
+      [
+        "caller",
+        "It is gradually thinning at my front hairline. There are no separate bald patches."
+      ],
+      [
+        "agent",
+        "Have you noticed any changes to your scalp, such as itching or flaking?"
+      ],
+      [
+        "caller",
+        "I have not noticed itching, flaking, redness or pain on my scalp."
+      ],
+      [
+        "agent",
+        "Does anyone in your family have a similar pattern of hair thinning?"
+      ],
+      [
+        "caller",
+        "My father has a similar pattern of hair thinning."
+      ],
+      [
+        "agent",
+        "A hereditary pattern of hair thinning is possible given the gradual front-hairline loss and your father’s similar history. You described a gradual thinning at your front hairline for about two years without scalp symptoms, and your father has a similar pattern. Handle your hair gently, use a gentle shampoo and conditioner, and let it dry naturally. Avoid tight hairstyles, high heat, harsh chemical treatments and unverified hair-growth remedies. Arrange a clinician or dermatologist visit for ongoing loss, sooner for sudden patches or a painful, inflamed scalp. I am a health assistant, not a doctor."
+      ]
+    ],
+    "facts": {
+      "duration": "About two years.",
+      "hair_pattern": "It is gradually thinning at my front hairline. There are no separate bald patches.",
+      "scalp_changes": "I have not noticed itching, flaking, redness or pain on my scalp.",
+      "family_history": "My father has a similar pattern of hair thinning.",
+      "recent_changes": "I do not recall an illness or major health change before it started.",
+      "hair_care": "I wash gently. I do not use tight hairstyles, heat styling or chemical treatments.",
+      "age": "I am 28 years old.",
+      "progression": "The thinning has been gradual, not sudden.",
+      "impact": "I am worried about my appearance, but can do my usual daily activities."
+    },
+    "turn_seconds": [
+      0.8,
+      0.42,
+      0.91,
+      2.02,
+      1.16
+    ],
+    "questions": 4,
+    "assessed": true,
+    "emergency": false,
+    "kb": "hair_loss",
+    "question_topics": [
+      "duration",
+      "hair_pattern",
+      "scalp_changes",
+      "family_history"
+    ],
+    "actions": [
+      {
+        "action": "ask",
+        "language": "en-IN",
+        "confirmed_symptoms": "",
+        "denied_symptoms": "",
+        "topic": "duration",
+        "question": "How long have you been noticing the hair loss?",
+        "important_gap": "",
+        "facts": [
+          {
+            "topic": "presenting_complaint",
+            "value": "Hair fall",
+            "status": "reported",
+            "quote": "I have hair fall."
+          }
+        ],
+        "stop_quote": "",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": ""
+      },
+      {
+        "action": "ask",
+        "language": "en-IN",
+        "confirmed_symptoms": "",
+        "denied_symptoms": "",
+        "topic": "hair_pattern",
+        "question": "Where is the thinning: all over, in separate patches, or mainly along the hairline?",
+        "important_gap": "",
+        "facts": [
+          {
+            "topic": "presenting_complaint",
+            "value": "Hair fall",
+            "status": "reported",
+            "quote": "I have hair fall."
+          },
+          {
+            "topic": "duration",
+            "value": "About two years",
+            "status": "reported",
+            "quote": "About two years."
+          }
+        ],
+        "stop_quote": "",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": ""
+      },
+      {
+        "action": "ask",
+        "language": "en-IN",
+        "confirmed_symptoms": "",
+        "denied_symptoms": "",
+        "topic": "scalp_changes",
+        "question": "Have you noticed any changes to your scalp, such as itching or flaking?",
+        "important_gap": "",
+        "facts": [
+          {
+            "topic": "presenting_complaint",
+            "value": "Hair fall",
+            "status": "reported",
+            "quote": "I have hair fall."
+          },
+          {
+            "topic": "duration",
+            "value": "About two years",
+            "status": "reported",
+            "quote": "About two years."
+          },
+          {
+            "topic": "hair_pattern",
+            "value": "Thinning at the front hairline with no separate bald patches",
+            "status": "reported",
+            "quote": "It is gradually thinning at my front hairline. There are no separate bald patches."
+          }
+        ],
+        "stop_quote": "",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": ""
+      },
+      {
+        "action": "ask",
+        "language": "en-IN",
+        "confirmed_symptoms": "",
+        "denied_symptoms": "",
+        "topic": "family_history",
+        "question": "Does anyone in your family have a similar pattern of hair thinning?",
+        "important_gap": "",
+        "facts": [
+          {
+            "topic": "presenting_complaint",
+            "value": "Hair fall",
+            "status": "reported",
+            "quote": "I have hair fall."
+          },
+          {
+            "topic": "duration",
+            "value": "About two years",
+            "status": "reported",
+            "quote": "About two years."
+          },
+          {
+            "topic": "hair_pattern",
+            "value": "Thinning at the front hairline with no separate bald patches",
+            "status": "reported",
+            "quote": "It is gradually thinning at my front hairline. There are no separate bald patches."
+          },
+          {
+            "topic": "scalp_changes",
+            "value": "No itching, flaking, redness or pain on scalp",
+            "status": "reported",
+            "quote": "I have not noticed itching, flaking, redness or pain on my scalp."
+          }
+        ],
+        "stop_quote": "",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": ""
+      },
+      {
+        "action": "assess",
+        "language": "en-IN",
+        "confirmed_symptoms": "Gradual thinning at the front hairline for about two years without itching, flaking, redness or pain.",
+        "denied_symptoms": "",
+        "topic": "",
+        "question": "",
+        "important_gap": "",
+        "facts": [
+          {
+            "topic": "presenting_complaint",
+            "value": "Hair fall",
+            "status": "reported",
+            "quote": "I have hair fall."
+          },
+          {
+            "topic": "duration",
+            "value": "About two years",
+            "status": "reported",
+            "quote": "About two years."
+          },
+          {
+            "topic": "hair_pattern",
+            "value": "Thinning at the front hairline with no separate bald patches",
+            "status": "reported",
+            "quote": "It is gradually thinning at my front hairline. There are no separate bald patches."
+          },
+          {
+            "topic": "scalp_changes",
+            "value": "No itching, flaking, redness or pain on scalp",
+            "status": "reported",
+            "quote": "I have not noticed itching, flaking, redness or pain on my scalp."
+          },
+          {
+            "topic": "family_history",
+            "value": "Father has a similar pattern of hair thinning",
+            "status": "reported",
+            "quote": "My father has a similar pattern of hair thinning."
+          }
+        ],
+        "stop_quote": "",
+        "likely": "A hereditary pattern of hair thinning is possible given the gradual front-hairline loss and your father’s similar history.",
+        "why": "You described a gradual thinning at your front hairline for about two years without scalp symptoms, and your father has a similar pattern.",
+        "do": "Handle your hair gently, use a gentle shampoo and conditioner, and let it dry naturally.",
+        "avoid": "Avoid tight hairstyles, high heat, harsh chemical treatments and unverified hair-growth remedies.",
+        "seek_care": "Arrange a clinician or dermatologist visit for ongoing loss, sooner for sudden patches or a painful, inflamed scalp. I am a health assistant, not a doctor.",
+        "answer": ""
+      }
+    ],
+    "complete_assessment": true,
+    "passed_structure": true
+  },
+  {
+    "case": "hair_scalp",
+    "language": "en-IN",
+    "lines": [
+      [
+        "caller",
+        "I have hair fall with an itchy scalp."
+      ],
+      [
+        "agent",
+        "How long have you been noticing the hair loss?"
+      ],
+      [
+        "caller",
+        "About two months."
+      ],
+      [
+        "agent",
+        "Where is the thinning: all over, in separate patches, or mainly along the hairline?"
+      ],
+      [
+        "caller",
+        "The hair is thinning all over my scalp, not just at the hairline."
+      ],
+      [
+        "agent",
+        "Have you noticed any changes to your scalp, such as itching or flaking?"
+      ],
+      [
+        "caller",
+        "The scalp is itchy and flaky. I have not noticed pain."
+      ],
+      [
+        "agent",
+        "Does anyone in your family have a similar pattern of hair thinning?"
+      ],
+      [
+        "caller",
+        "I do not know of any similar hair loss in my family."
+      ],
+      [
+        "agent",
+        "A common cause could be a scalp condition such as dandruff or seborrheic dermatitis contributing to diffuse shedding. You reported itching and flaking along with all-over thinning for about two months, and no family pattern is known. Handle your hair gently, use a gentle shampoo and conditioner, and let it dry naturally. Avoid tight hairstyles, high heat, harsh chemical treatments and unverified hair-growth remedies. Arrange a clinician or dermatologist visit for ongoing loss, sooner for sudden patches or a painful, inflamed scalp. I am a health assistant, not a doctor."
+      ]
+    ],
+    "facts": {
+      "duration": "About two months.",
+      "hair_pattern": "The hair is thinning all over my scalp, not just at the hairline.",
+      "scalp_changes": "The scalp is itchy and flaky. I have not noticed pain.",
+      "family_history": "I do not know of any similar hair loss in my family.",
+      "recent_changes": "I do not recall an illness or major health change before it started.",
+      "hair_care": "I wash gently. I do not use tight hairstyles, heat styling or chemical treatments.",
+      "age": "I am 28 years old.",
+      "progression": "The thinning has been gradual, not sudden.",
+      "impact": "I am worried about my appearance, but can do my usual daily activities."
+    },
+    "turn_seconds": [
+      0.33,
+      0.39,
+      0.69,
+      0.6,
+      1.08
+    ],
+    "questions": 4,
+    "assessed": true,
+    "emergency": false,
+    "kb": "hair_loss",
+    "question_topics": [
+      "duration",
+      "hair_pattern",
+      "scalp_changes",
+      "family_history"
+    ],
+    "actions": [
+      {
+        "action": "ask",
+        "language": "en-IN",
+        "confirmed_symptoms": "",
+        "denied_symptoms": "",
+        "topic": "duration",
+        "question": "How long have you been noticing the hair loss?",
+        "important_gap": "",
+        "facts": [],
+        "stop_quote": "",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": ""
+      },
+      {
+        "action": "ask",
+        "language": "en-IN",
+        "confirmed_symptoms": "",
+        "denied_symptoms": "",
+        "topic": "hair_pattern",
+        "question": "Where is the thinning: all over, in separate patches, or mainly along the hairline?",
+        "important_gap": "",
+        "facts": [],
+        "stop_quote": "",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": ""
+      },
+      {
+        "action": "ask",
+        "language": "en-IN",
+        "confirmed_symptoms": "",
+        "denied_symptoms": "",
+        "topic": "scalp_changes",
+        "question": "Have you noticed any changes to your scalp, such as itching or flaking?",
+        "important_gap": "",
+        "facts": [],
+        "stop_quote": "",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": ""
+      },
+      {
+        "action": "ask",
+        "language": "en-IN",
+        "confirmed_symptoms": "",
+        "denied_symptoms": "",
+        "topic": "family_history",
+        "question": "Does anyone in your family have a similar pattern of hair thinning?",
+        "important_gap": "",
+        "facts": [],
+        "stop_quote": "",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": ""
+      },
+      {
+        "action": "assess",
+        "language": "en-IN",
+        "confirmed_symptoms": "Diffuse hair thinning, itchy scalp, flaky scalp.",
+        "denied_symptoms": "Pain.",
+        "topic": "",
+        "question": "",
+        "important_gap": "",
+        "facts": [
+          {
+            "topic": "duration",
+            "value": "About two months",
+            "status": "reported",
+            "quote": "About two months"
+          },
+          {
+            "topic": "hair_pattern",
+            "value": "Thinning all over the scalp",
+            "status": "reported",
+            "quote": "The hair is thinning all over my scalp, not just at the hairline"
+          },
+          {
+            "topic": "scalp_changes",
+            "value": "Itchy and flaky scalp, no pain",
+            "status": "reported",
+            "quote": "The scalp is itchy and flaky. I have not noticed pain"
+          },
+          {
+            "topic": "family_history",
+            "value": "Unknown",
+            "status": "reported",
+            "quote": "I do not know of any similar hair loss in my family"
+          }
+        ],
+        "stop_quote": "",
+        "likely": "A common cause could be a scalp condition such as dandruff or seborrheic dermatitis contributing to diffuse shedding.",
+        "why": "You reported itching and flaking along with all-over thinning for about two months, and no family pattern is known.",
+        "do": "Handle your hair gently, use a gentle shampoo and conditioner, and let it dry naturally.",
+        "avoid": "Avoid tight hairstyles, high heat, harsh chemical treatments and unverified hair-growth remedies.",
+        "seek_care": "Arrange a clinician or dermatologist visit for ongoing loss, sooner for sudden patches or a painful, inflamed scalp. I am a health assistant, not a doctor.",
+        "answer": "I am a health assistant, not a doctor. These steps may help reduce further damage, but they do not guarantee regrowth. A clinician can examine your scalp and suggest appropriate care."
+      }
+    ],
+    "complete_assessment": true,
+    "passed_structure": true
+  },
+  {
+    "case": "hair_detailed",
+    "language": "en-IN",
+    "lines": [
+      [
+        "caller",
+        "I am 28. My hair has thinned gradually at the front hairline for two years. My father has similar thinning. I have no scalp itching or flaking."
+      ],
+      [
+        "agent",
+        "Has the thinning been gradual, or has it changed suddenly?"
+      ],
+      [
+        "caller",
+        "The thinning has been gradual, not sudden."
+      ],
+      [
+        "agent",
+        "Was there an illness or major change in your health before the shedding began?"
+      ],
+      [
+        "caller",
+        "I do not recall an illness or major health change before it started."
+      ],
+      [
+        "agent",
+        "How do you usually style or treat your hair?"
+      ],
+      [
+        "caller",
+        "I wash gently. I do not use tight hairstyles, heat styling or chemical treatments."
+      ],
+      [
+        "agent",
+        "How is the hair loss affecting your daily life?"
+      ],
+      [
+        "caller",
+        "I am worried about my appearance, but can do my usual daily activities."
+      ],
+      [
+        "agent",
+        "Hereditary pattern hair loss is a possible explanation given the gradual front hairline thinning over two years and a similar family history. You reported gradual thinning at the front hairline for two years, a father with similar thinning, and no scalp itching or flaking, which fits a hereditary pattern. Handle your hair gently, use a gentle shampoo and conditioner, and let it dry naturally. Avoid tight hairstyles, high heat, harsh chemical treatments and unverified hair-growth remedies. Arrange a clinician or dermatologist visit for ongoing loss, sooner for sudden patches or a painful, inflamed scalp. I am a health assistant, not a doctor."
+      ]
+    ],
+    "facts": {
+      "duration": "About two years.",
+      "hair_pattern": "It is gradually thinning at my front hairline. There are no separate bald patches.",
+      "scalp_changes": "I have not noticed itching, flaking, redness or pain on my scalp.",
+      "family_history": "My father has a similar pattern of hair thinning.",
+      "recent_changes": "I do not recall an illness or major health change before it started.",
+      "hair_care": "I wash gently. I do not use tight hairstyles, heat styling or chemical treatments.",
+      "age": "I am 28 years old.",
+      "progression": "The thinning has been gradual, not sudden.",
+      "impact": "I am worried about my appearance, but can do my usual daily activities."
+    },
+    "turn_seconds": [
+      0.85,
+      0.86,
+      0.84,
+      0.93,
+      1.7
+    ],
+    "questions": 4,
+    "assessed": true,
+    "emergency": false,
+    "kb": "hair_loss",
+    "question_topics": [
+      "progression",
+      "recent_changes",
+      "hair_care",
+      "impact"
+    ],
+    "actions": [
+      {
+        "action": "ask",
+        "language": "en-IN",
+        "confirmed_symptoms": "Gradual thinning at the front hairline for two years.",
+        "denied_symptoms": "Scalp itching and flaking.",
+        "topic": "progression",
+        "question": "Has the thinning been gradual, or has it changed suddenly?",
+        "important_gap": "",
+        "facts": [
+          {
+            "topic": "age",
+            "value": "28 years old",
+            "status": "reported",
+            "quote": "I am 28."
+          },
+          {
+            "topic": "hair_pattern",
+            "value": "Thinning at the front hairline",
+            "status": "reported",
+            "quote": "My hair has thinned gradually at the front hairline"
+          },
+          {
+            "topic": "duration",
+            "value": "Two years",
+            "status": "reported",
+            "quote": "for two years"
+          },
+          {
+            "topic": "family_history",
+            "value": "Father has similar thinning",
+            "status": "reported",
+            "quote": "My father has similar thinning"
+          },
+          {
+            "topic": "scalp_changes",
+            "value": "No scalp itching or flaking",
+            "status": "denied",
+            "quote": "I have no scalp itching or flaking"
+          }
+        ],
+        "stop_quote": "",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": ""
+      },
+      {
+        "action": "ask",
+        "language": "en-IN",
+        "confirmed_symptoms": "",
+        "denied_symptoms": "",
+        "topic": "recent_changes",
+        "question": "Was there an illness or major change in your health before the shedding began?",
+        "important_gap": "",
+        "facts": [],
+        "stop_quote": "",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": ""
+      },
+      {
+        "action": "ask",
+        "language": "en-IN",
+        "confirmed_symptoms": "",
+        "denied_symptoms": "",
+        "topic": "hair_care",
+        "question": "How do you usually style or treat your hair?",
+        "important_gap": "",
+        "facts": [],
+        "stop_quote": "",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": ""
+      },
+      {
+        "action": "ask",
+        "language": "en-IN",
+        "confirmed_symptoms": "",
+        "denied_symptoms": "",
+        "topic": "impact",
+        "question": "How is the hair loss affecting your daily life?",
+        "important_gap": "",
+        "facts": [],
+        "stop_quote": "",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": ""
+      },
+      {
+        "action": "assess",
+        "language": "en-IN",
+        "confirmed_symptoms": "",
+        "denied_symptoms": "",
+        "topic": "",
+        "question": "",
+        "important_gap": "",
+        "facts": [
+          {
+            "topic": "age",
+            "value": "28 years old",
+            "status": "reported",
+            "quote": "I am 28."
+          },
+          {
+            "topic": "hair_pattern",
+            "value": "Thinning at the front hairline",
+            "status": "reported",
+            "quote": "My hair has thinned gradually at the front hairline"
+          },
+          {
+            "topic": "duration",
+            "value": "Two years",
+            "status": "reported",
+            "quote": "for two years"
+          },
+          {
+            "topic": "family_history",
+            "value": "Father has similar thinning",
+            "status": "reported",
+            "quote": "My father has similar thinning"
+          },
+          {
+            "topic": "scalp_changes",
+            "value": "No scalp itching or flaking",
+            "status": "denied",
+            "quote": "I have no scalp itching or flaking"
+          },
+          {
+            "topic": "progression",
+            "value": "Gradual, not sudden",
+            "status": "reported",
+            "quote": "The thinning has been gradual, not sudden."
+          },
+          {
+            "topic": "hair_care",
+            "value": "Gentle washing, no tight hairstyles, heat styling or chemical treatments",
+            "status": "reported",
+            "quote": "I wash gently. I do not use tight hairstyles, heat styling or chemical treatments."
+          },
+          {
+            "topic": "impact",
+            "value": "Worried about appearance but can do usual daily activities",
+            "status": "reported",
+            "quote": "I am worried about my appearance, but can do my usual daily activities."
+          }
+        ],
+        "stop_quote": "",
+        "likely": "Hereditary pattern hair loss is a possible explanation given the gradual front hairline thinning over two years and a similar family history.",
+        "why": "You reported gradual thinning at the front hairline for two years, a father with similar thinning, and no scalp itching or flaking, which fits a hereditary pattern.",
+        "do": "Handle your hair gently, use a gentle shampoo and conditioner, and let it dry naturally.",
+        "avoid": "Avoid tight hairstyles, high heat, harsh chemical treatments and unverified hair-growth remedies.",
+        "seek_care": "Arrange a clinician or dermatologist visit for ongoing loss, sooner for sudden patches or a painful, inflamed scalp. I am a health assistant, not a doctor.",
+        "answer": "I am a health assistant, not a doctor. Based on what you shared, hereditary pattern hair loss is a possible explanation. The gradual thinning at your front hairline over two years, along with your father having a similar pattern, supports this. To help reduce damage, handle your hair gently, wash with a mild shampoo, and use conditioner while letting it air-dry when practical. Avoid tight hairstyles, high-heat styling, harsh chemicals, and unverified remedies. Because this is persistent, arrange a clinician or dermatologist visit for evaluation, and return sooner if you develop sudden patches, a painful scalp, or rapid worsening."
+      }
+    ],
+    "complete_assessment": true,
+    "passed_structure": true
+  },
+  {
+    "case": "emergency",
+    "language": "en-IN",
+    "lines": [
+      [
+        "caller",
+        "I have crushing chest pain and trouble breathing right now."
+      ],
+      [
+        "agent",
+        "These symptoms may be an emergency. Call 112 now for emergency help or ask someone nearby to call. Do not drive yourself or wait to see if it passes. I cannot confirm the cause on a call. Is someone with you who can help?"
+      ]
+    ],
+    "facts": {},
+    "turn_seconds": [
+      0.0
+    ],
+    "questions": 0,
+    "assessed": true,
+    "emergency": true,
+    "kb": null,
+    "question_topics": [],
+    "actions": [
+      {
+        "action": "emergency",
+        "language": "en-IN",
+        "confirmed_symptoms": "",
+        "denied_symptoms": "",
+        "topic": "",
+        "question": "",
+        "important_gap": "",
+        "facts": [],
+        "stop_quote": "",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": ""
+      }
+    ],
+    "complete_assessment": false,
+    "passed_structure": true
+  },
+  {
+    "case": "unknown",
+    "language": "en-IN",
+    "lines": [
+      [
+        "caller",
+        "I have persistent hiccups."
+      ],
+      [
+        "agent",
+        "How long have you had these hiccups?"
+      ],
+      [
+        "caller",
+        "They have been happening for two days."
+      ],
+      [
+        "agent",
+        "How severe is it right now?"
+      ],
+      [
+        "caller",
+        "I am not sure."
+      ],
+      [
+        "agent",
+        "Are there any other symptoms?"
+      ],
+      [
+        "caller",
+        "I have not noticed any other symptoms."
+      ],
+      [
+        "agent",
+        "How old is the person who is unwell?"
+      ],
+      [
+        "caller",
+        "I am 28 years old."
+      ],
+      [
+        "agent",
+        "I cannot identify a specific cause from this conversation. These symptoms can have different explanations, and an examination may be needed to distinguish them. Keep a note of when the problem occurs, how it changes, and any triggers to discuss with a clinician. Avoid unverified remedies or starting treatment on your own. Arrange medical review if it persists or worsens; get urgent help for severe symptoms. I am a health assistant, not a doctor."
+      ]
+    ],
+    "facts": {
+      "duration": "They have been happening for two days.",
+      "progression": "They keep coming back.",
+      "age": "I am 28 years old.",
+      "associated": "I have not noticed any other symptoms.",
+      "impact": "They make eating uncomfortable."
+    },
+    "turn_seconds": [
+      0.41,
+      1.03,
+      0.74,
+      0.8,
+      2.94
+    ],
+    "questions": 4,
+    "assessed": true,
+    "emergency": false,
+    "kb": null,
+    "question_topics": [
+      "duration",
+      "severity",
+      "associated",
+      "age"
+    ],
+    "actions": [
+      {
+        "action": "ask",
+        "language": "en-IN",
+        "confirmed_symptoms": "persistent hiccups",
+        "denied_symptoms": "",
+        "topic": "duration",
+        "question": "How long have you had these hiccups?",
+        "important_gap": "",
+        "facts": [
+          {
+            "topic": "presenting_complaint",
+            "value": "persistent hiccups",
+            "status": "reported",
+            "quote": "I have persistent hiccups."
+          }
+        ],
+        "stop_quote": "",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": ""
+      },
+      {
+        "action": "ask",
+        "language": "en-IN",
+        "confirmed_symptoms": "",
+        "denied_symptoms": "",
+        "topic": "severity",
+        "question": "How severe is it right now?",
+        "important_gap": "",
+        "facts": [],
+        "stop_quote": "",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": ""
+      },
+      {
+        "action": "ask",
+        "language": "en-IN",
+        "confirmed_symptoms": "",
+        "denied_symptoms": "",
+        "topic": "associated",
+        "question": "Are there any other symptoms?",
+        "important_gap": "",
+        "facts": [],
+        "stop_quote": "",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": ""
+      },
+      {
+        "action": "ask",
+        "language": "en-IN",
+        "confirmed_symptoms": "",
+        "denied_symptoms": "",
+        "topic": "age",
+        "question": "How old is the person who is unwell?",
+        "important_gap": "",
+        "facts": [],
+        "stop_quote": "",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": ""
+      },
+      {
+        "action": "assess",
+        "language": "en-IN",
+        "confirmed_symptoms": "",
+        "denied_symptoms": "",
+        "topic": "",
+        "question": "",
+        "important_gap": "",
+        "facts": [],
+        "stop_quote": "",
+        "likely": "I cannot identify a specific cause from this conversation.",
+        "why": "These symptoms can have different explanations, and an examination may be needed to distinguish them.",
+        "do": "Keep a note of when the problem occurs, how it changes, and any triggers to discuss with a clinician.",
+        "avoid": "Avoid unverified remedies or starting treatment on your own.",
+        "seek_care": "Arrange medical review if it persists or worsens; get urgent help for severe symptoms. I am a health assistant, not a doctor.",
+        "answer": ""
+      }
+    ],
+    "complete_assessment": true,
+    "passed_structure": true
+  }
+]

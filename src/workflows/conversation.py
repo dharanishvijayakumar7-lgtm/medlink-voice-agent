@@ -460,6 +460,12 @@ class ConversationAgent(MedLinkAgent):
         if self.entry and language == "en-IN":
             for index, question in enumerate(self.entry.candidate_questions):
                 topic = f"{self.entry.id}_detail_{index}"
+                if re.search(
+                    r"\bhow (?:long|many (?:days|weeks|months|years))\b|\bwhen did\b",
+                    question,
+                    re.I,
+                ):
+                    topic = "duration"
                 already = any(
                     question.casefold() == q.casefold()
                     for _, q in self.policy.questions
@@ -582,6 +588,14 @@ class ConversationAgent(MedLinkAgent):
                 # A valid model language choice also guides any offline recovery.
                 language = candidate.language
                 self._remember(candidate, callers)
+                if (
+                    self.entry is None
+                    and not candidate.confirmed_symptoms
+                    and candidate.action not in ("emergency", "close", "repeat")
+                ):
+                    raise ValueError(
+                        "missing_complaint: Supply confirmed_symptoms as an English translation of the caller's primary complaint before choosing a question"
+                    )
                 stopped = bool(
                     candidate.stop_quote
                     and _stop_requested(candidate.stop_quote, latest)
@@ -597,9 +611,9 @@ class ConversationAgent(MedLinkAgent):
                     if matched:
                         self.entry = matched
                         self.data.triage_entry_id = matched.id
-                        if candidate.action == "assess":
+                        if candidate.action in ("ask", "assess"):
                             if attempt == 0:
-                                error = "Use the newly matched reference for your assessment."
+                                error = "Use the newly matched reference for your next question or assessment."
                                 continue
                             # Never speak an assessment generated before its
                             # relevant clinical reference was available.
