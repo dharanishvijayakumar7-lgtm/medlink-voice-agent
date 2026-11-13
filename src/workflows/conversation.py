@@ -20,7 +20,11 @@ from medicine.formulary import get_formulary
 from safety.guardrails import scan_output
 from safety.redflags import detect_redflag
 from workflows.base import MedLinkAgent, _script_language, detect_language_request
-from workflows.conversation_text import GENERAL_ASSESSMENT, SERVICE_ERROR
+from workflows.conversation_text import (
+    GENERAL_ASSESSMENT,
+    IDENTITY_NOTICES,
+    SERVICE_ERROR,
+)
 
 logger = logging.getLogger("medlink.conversation")
 LANGUAGES = Literal["en-IN", "hi-IN", "ta-IN", "te-IN", "kn-IN", "ml-IN"]
@@ -122,10 +126,19 @@ class Decision(BaseModel):
         description="Exact caller quote explicitly declining more questions or ending the call; otherwise empty. Duration is not a request to stop.",
     )
     likely: str = ""
-    why: str = ""
-    do: str = ""
+    why: str = Field(
+        default="",
+        description="SPOKEN in the caller's language: one plain sentence combining the possible cause and why it fits a reported fact. This must make sense without the likely field.",
+    )
+    do: str = Field(
+        default="",
+        description="SPOKEN in the caller's language: one or two short sentences with practical next steps, without headings.",
+    )
     avoid: str = ""
-    seek_care: str = ""
+    seek_care: str = Field(
+        default="",
+        description="SPOKEN in the caller's language: a short relevant care instruction. No repeated identity disclaimer.",
+    )
     answer: str = ""
 
 
@@ -259,7 +272,12 @@ class ConversationPolicy:
             ]
             if not all(p.strip() for p in parts):
                 raise ValueError("incomplete_assessment: Include all five sections")
-            text = " ".join(parts)
+            # Keep all five fields for records and safety validation, but speak
+            # only the standalone explanation and next steps.
+            text = " ".join((decision.why, decision.do, decision.seek_care))
+            for notice in IDENTITY_NOTICES.values():
+                text = text.replace(notice, "")
+            text = " ".join(text.split())
         elif decision.action in ("answer", "close"):
             if not self.assessed or not decision.answer.strip():
                 raise ValueError(
@@ -271,7 +289,7 @@ class ConversationPolicy:
         else:
             self.assessed = True
             return EMERGENCY[decision.language]
-        if not medicine_free(text):
+        if not medicine_free(" ".join(parts) if decision.action == "assess" else text):
             raise ValueError(
                 "medicine_content: Self-care only; no medicine names or doses"
             )
@@ -282,7 +300,7 @@ class ConversationPolicy:
         return text
 
 
-INSTRUCTIONS = """You are MedLink, a warm health assistant, not a doctor.
+INSTRUCTIONS = """You are MedLink, a warm voice assistant, not a doctor.
 Return only the requested JSON action. Speak the caller's language: English,
 Hindi, Tamil, Telugu, Kannada or Malayalam. Metadata and fact values are English;
 fact quotes must be exact caller words in their original language.
@@ -296,6 +314,9 @@ useful question. Avoid generic severity questions when pattern or associated
 features are more informative (e.g. hair loss). Question topic IDs describe the
 specific fact, not broad labels like history or warning_signs. Do not bundle
 independent questions into one sentence. Use exactly one question mark.
+Use everyday spoken wording. A brief acknowledgment is welcome when it helps
+connect the caller's answer to the next question, but do not add one every turn,
+repeat their answer mechanically, or use scripted filler. Be warm and direct.
 Record facts supplied anywhere in the caller messages, including volunteered
 details, negatives and unknowns; give an exact supporting quote for each.
 Never invent an answer, infer a negative from silence, or repeat answered details.
@@ -307,14 +328,22 @@ available information and put their exact request in stop_quote. Never treat a
 long duration, a brief answer, or missing knowledge as a request to stop.
 Use repeat to translate/rephrase the last pending question when the caller asks
 to switch language or repeat it; this does not spend a new question.
-Use assess to provide five short sections: likely (possible explanation, not a
-confirmed diagnosis), why (connect it to reported facts), do (specific practical
-self-care), avoid (specific precautions), seek_care (when and why to see a doctor).
+For assess, still fill all five internal fields. Only why, do and seek_care are
+spoken. In why, combine the possible cause and ONE supporting caller detail in
+a single plain sentence, with appropriate uncertainty. It must stand alone:
+the separate likely field is stored but not spoken. Put two useful next steps
+in do and a short relevant care instruction in seek_care. Keep avoid for records;
+there is no spoken don'ts list. Any essential precaution belongs in the next
+steps. All spoken fields MUST be in the caller's language, never English metadata.
+The whole spoken closing should be three or four short sentences, about 40-70
+English words or equivalent in the caller's language. No headings, numbered
+sections, medical jargon, or recital of the full symptom history. Explain an
+unfamiliar term in everyday words or leave it out. Do not truncate care warnings.
 Use the reference for advice, conditioned on what the caller actually reported.
 Do not jump to unrelated conditions because of background history. Referral
-must accompany useful self-care, not replace it. Say you are a health assistant,
-not a doctor. Aim for 90-130 spoken words, with at least two useful self-care
-actions and two relevant precautions when the reference supports them.
+must accompany useful self-care, not replace it. The introduction already says
+you are a voice assistant, not a doctor: do not repeat that identity disclaimer
+in routine replies. Keep uncertainty about a possible cause when appropriate.
 For a complaint outside the reference library, acknowledge uncertainty about
 the cause, explain the limitation, and give low-risk practical precautions and
 a next step. Do not invent a diagnosis or unrelated disease-specific treatment.
@@ -337,7 +366,7 @@ class ConversationAgent(MedLinkAgent):
 
     async def on_enter(self):
         await self.session.say(
-            "Hello, this is MedLink. Please tell me what is troubling you."
+            "Hi, I'm MedLink, a voice assistant, not a doctor. Tell me what's been bothering you."
         )
 
     async def on_user_turn_completed(self, turn_ctx, new_message):
@@ -518,10 +547,7 @@ class ConversationAgent(MedLinkAgent):
                 if negative:
                     parts["avoid"] = " ".join(negative)
                 if medicine_free(self.entry.refer_when):
-                    parts["seek_care"] = (
-                        self.entry.refer_when
-                        + " I am a health assistant, not a doctor."
-                    )
+                    parts["seek_care"] = self.entry.refer_when
         return Decision(action="assess", language=language, **parts)
 
     async def llm_node(self, chat_ctx, tools, model_settings):

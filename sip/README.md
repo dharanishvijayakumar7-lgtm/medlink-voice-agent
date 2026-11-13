@@ -67,11 +67,13 @@ The CLI is optional for dashboard setup. To install it on Windows if needed:
 ### Current conversation policy
 
 Phone calls now start `ConversationAgent`, a shared structured-action flow for
-English, Hindi, Tamil, Telugu, Kannada, and Malayalam. It normally asks 3–6
+English, Hindi, Tamil, Telugu, Kannada, and Malayalam. It asks 4–6 routine
 focused questions across the whole conversation, with a hard ceiling of six.
-Detailed opening descriptions can need fewer; emergencies bypass questioning.
-The final response explains a possible cause, why it fits, self-care, things to
-avoid, and when to get medical help. It offers no medicine recommendations or
+Emergencies and callers explicitly declining further questions bypass the minimum.
+The greeting identifies MedLink as a voice assistant, not a doctor. The short
+closing explains why the problem may be happening and what to do next, including
+relevant care instructions. The five internal assessment fields remain available
+for records; they are not read out as separate sections. It offers no medicine recommendations or
 doses. Caller questions afterward do not start another diagnostic questionnaire.
 
 Language follows the caller automatically after the initial English greeting.

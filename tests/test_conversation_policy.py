@@ -172,7 +172,11 @@ async def test_runtime_retries_seventh_question_then_falls_back(monkeypatch):
     ctx = ChatContext()
     ctx.add_message(role="user", content="It is still mild.")
     replies = [part async for part in agent.llm_node(ctx, [], None)]
-    assert replies == [" ".join(GENERAL_ASSESSMENT["en-IN"].values())]
+    from workflows.conversation_text import IDENTITY_NOTICES
+
+    parts = GENERAL_ASSESSMENT["en-IN"]
+    expected = " ".join(parts[k] for k in ("why", "do", "seek_care"))
+    assert replies == [expected.replace(IDENTITY_NOTICES["en-IN"], "").strip()]
     assert agent.actions[-1].action == "assess"
     assert len(agent.policy.questions) == 6
 
