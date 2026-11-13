@@ -1,0 +1,429 @@
+[
+  {
+    "case": "hair_patchy",
+    "language": "kn-IN",
+    "lines": [
+      [
+        "caller",
+        "ನನಗೆ ಬೇರೆ ಬೇರೆ ಕಡೆ ಕೂದಲು ಉದುರುತ್ತಿದೆ."
+      ],
+      [
+        "agent",
+        "ಈ ಕೂದಲು ಉದುರುವಿಕೆ ನಿಮಗೆ ಎಷ್ಟು ದಿನಗಳಿಂದ ಗಮನಕ್ಕೆ ಬರುತ್ತಿದೆ?"
+      ],
+      [
+        "caller",
+        "ಸುಮಾರು ಮೂರು ವಾರಗಳು."
+      ],
+      [
+        "agent",
+        "ಕೂದಲು ಉದುರುವುದು ನಿಮ್ಮ ತಲೆಯ ಮೇಲೆಲ್ಲಾ ಹರಡಿದೆಯಾ, ಅಥವಾ ಯಾವುದಾದರೂ ನಿರ್ದಿಷ್ಟ ಜಾಗದಲ್ಲಿ ಮಾತ್ರ ಕಾಣಿಸುತ್ತಿದೆಯಾ?"
+      ],
+      [
+        "caller",
+        "ಮುಂಭಾಗದ ಹೇರ್‌ಲೈನ್‌ನಲ್ಲಿ ಕೂದಲು ತೆಳುವಾಗುವ ಬದಲು, ಎರಡು ಪ್ರತ್ಯೇಕವಾದ ದುಂಡಗಿನ ಕಲೆಗಳಿವೆ."
+      ],
+      [
+        "agent",
+        "ನಿಮ್ಮ ತಲೆಬುರುಡೆಯಲ್ಲಿ ತುರಿಕೆ ಅಥವಾ ಚರ್ಮ ಸುಲಿಯುವಂತಹ ಯಾವುದೇ ಬದಲಾವಣೆಗಳು ನಿಮಗೆ ಕಾಣಿಸುತ್ತಿವೆಯಾ?"
+      ],
+      [
+        "caller",
+        "ನನ್ನ ನೆತ್ತಿಯ ಮೇಲೆ ತುರಿಕೆ, ಚರ್ಮ ಸುಲಿಯುವುದು, ಕೆಂಪಾಗುವುದು ಅಥವಾ ನೋವು ನನಗೆ ಗಮನಕ್ಕೆ ಬಂದಿಲ್ಲ."
+      ],
+      [
+        "agent",
+        "ನಿಮ್ಮ ಕುಟುಂಬದಲ್ಲಿ ಯಾರಿಗಾದರೂ ಇದೇ ರೀತಿಯ ಕೂದಲು ತೆಳುವಾಗುವ ಸಮಸ್ಯೆ ಇದೆಯಾ?"
+      ],
+      [
+        "caller",
+        "ನನ್ನ ಕುಟುಂಬದಲ್ಲಿ ಈ ರೀತಿಯ ಕೂದಲು ಉದುರುವ ಬಗ್ಗೆ ನನಗೆ ತಿಳಿದಿಲ್ಲ."
+      ],
+      [
+        "agent",
+        "ಈ ದುಂಡಗಿನ ಕಲೆಗಳು ಮತ್ತು ತುರಿಕೆಯಿಲ್ಲದಿರುವುದು ಕೆಲವು ರೀತಿಯ ಸೋಂಕು ಅಥವಾ ಉರಿಯೂತದ ಕಾರಣವಾಗಿರಬಹುದು, ಏಕೆಂದರೆ ನೀವು ಸುಮಾರು ಮೂರು ವಾರಗಳಿಂದ ಈ ಸಮಸ್ಯೆಯನ್ನು ಎದುರಿಸುತ್ತಿದ್ದೀರಿ. ಸೌಮ್ಯವಾದ ಶಾಂಪೂ ಮತ್ತು ಕಂಡಿಷನರ್ ಬಳಸಿ ಕೂದಲನ್ನು ಸಹಜವಾಗಿ ಒಣಗಲು ಬಿಡಿ. ಕೂದಲು ಉದುರುವುದು ಮುಂದುವರಿದರೆ ವೈದ್ಯರನ್ನು ಭೇಟಿ ಮಾಡಿ; ಇದ್ದಕ್ಕಿದ್ದಂತೆ ಬೋಳು ತೇಪೆಗಳು, ತಲೆಯ ಚರ್ಮದಲ್ಲಿ ನೋವು ಅಥವಾ ಉರಿಯೂತ ಇದ್ದರೆ ಬೇಗ ತೋರಿಸಿ."
+      ]
+    ],
+    "facts": {
+      "duration": "About three weeks.",
+      "hair_pattern": "There are two separate round patches, rather than thinning at the front hairline.",
+      "scalp_changes": "I have not noticed itching, flaking, redness or pain on my scalp.",
+      "family_history": "I do not know of any similar hair loss in my family.",
+      "recent_changes": "I do not recall an illness or major health change before it started.",
+      "hair_care": "I wash gently. I do not use tight hairstyles, heat styling or chemical treatments.",
+      "age": "I am 28 years old.",
+      "progression": "I first noticed the patches suddenly three weeks ago.",
+      "impact": "I am worried about my appearance, but can do my usual daily activities."
+    },
+    "turn_seconds": [
+      0.44,
+      0.37,
+      0.43,
+      0.39,
+      2.19
+    ],
+    "questions": 4,
+    "assessed": true,
+    "emergency": false,
+    "kb": "hair_loss",
+    "question_topics": [
+      "duration",
+      "hair_pattern",
+      "scalp_changes",
+      "family_history"
+    ],
+    "actions": [
+      {
+        "action": "ask",
+        "language": "kn-IN",
+        "confirmed_symptoms": "",
+        "denied_symptoms": "",
+        "topic": "duration",
+        "question": "ಈ ಕೂದಲು ಉದುರುವಿಕೆ ನಿಮಗೆ ಎಷ್ಟು ದಿನಗಳಿಂದ ಗಮನಕ್ಕೆ ಬರುತ್ತಿದೆ?",
+        "important_gap": "",
+        "facts": [],
+        "stop_quote": "",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": ""
+      },
+      {
+        "action": "ask",
+        "language": "kn-IN",
+        "confirmed_symptoms": "",
+        "denied_symptoms": "",
+        "topic": "hair_pattern",
+        "question": "ಕೂದಲು ಉದುರುವುದು ನಿಮ್ಮ ತಲೆಯ ಮೇಲೆಲ್ಲಾ ಹರಡಿದೆಯಾ, ಅಥವಾ ಯಾವುದಾದರೂ ನಿರ್ದಿಷ್ಟ ಜಾಗದಲ್ಲಿ ಮಾತ್ರ ಕಾಣಿಸುತ್ತಿದೆಯಾ?",
+        "important_gap": "",
+        "facts": [],
+        "stop_quote": "",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": ""
+      },
+      {
+        "action": "ask",
+        "language": "kn-IN",
+        "confirmed_symptoms": "",
+        "denied_symptoms": "",
+        "topic": "scalp_changes",
+        "question": "ನಿಮ್ಮ ತಲೆಬುರುಡೆಯಲ್ಲಿ ತುರಿಕೆ ಅಥವಾ ಚರ್ಮ ಸುಲಿಯುವಂತಹ ಯಾವುದೇ ಬದಲಾವಣೆಗಳು ನಿಮಗೆ ಕಾಣಿಸುತ್ತಿವೆಯಾ?",
+        "important_gap": "",
+        "facts": [],
+        "stop_quote": "",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": ""
+      },
+      {
+        "action": "ask",
+        "language": "kn-IN",
+        "confirmed_symptoms": "",
+        "denied_symptoms": "",
+        "topic": "family_history",
+        "question": "ನಿಮ್ಮ ಕುಟುಂಬದಲ್ಲಿ ಯಾರಿಗಾದರೂ ಇದೇ ರೀತಿಯ ಕೂದಲು ತೆಳುವಾಗುವ ಸಮಸ್ಯೆ ಇದೆಯಾ?",
+        "important_gap": "",
+        "facts": [],
+        "stop_quote": "",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": ""
+      },
+      {
+        "action": "assess",
+        "language": "kn-IN",
+        "confirmed_symptoms": "two separate round patches of hair loss for about three weeks",
+        "denied_symptoms": "no itching, flaking, redness or pain on the scalp",
+        "topic": "",
+        "question": "",
+        "important_gap": "",
+        "facts": [
+          {
+            "topic": "duration",
+            "value": "about three weeks",
+            "status": "reported",
+            "quote": "ಸುಮಾರು ಮೂರು ವಾರಗಳು"
+          },
+          {
+            "topic": "hair_pattern",
+            "value": "two separate round patches",
+            "status": "reported",
+            "quote": "ಎರಡು ಪ್ರತ್ಯೇಕವಾದ ದುಂಡಗಿನ ಕಲೆಗಳಿವೆ"
+          },
+          {
+            "topic": "scalp_changes",
+            "value": "no itching, flaking, redness or pain",
+            "status": "reported",
+            "quote": "ತುರಿಕೆ, ಚರ್ಮ ಸುಲಿಯುವುದು, ಕೆಂಪಾಗುವುದು ಅಥವಾ ನೋವು ನನಗೆ ಗಮನಕ್ಕೆ ಬಂದಿಲ್ಲ"
+          },
+          {
+            "topic": "family_history",
+            "value": "unknown",
+            "status": "reported",
+            "quote": "ನನ್ನ ಕುಟುಂಬದಲ್ಲಿ ಈ ರೀತಿಯ ಕೂದಲು ಉದುರುವ ಬಗ್ಗೆ ನನಗೆ ತಿಳಿದಿಲ್ಲ"
+          }
+        ],
+        "stop_quote": "",
+        "likely": "scalp condition or non-scarring alopecia",
+        "why": "ಈ ದುಂಡಗಿನ ಕಲೆಗಳು ಮತ್ತು ತುರಿಕೆಯಿಲ್ಲದಿರುವುದು ಕೆಲವು ರೀತಿಯ ಸೋಂಕು ಅಥವಾ ಉರಿಯೂತದ ಕಾರಣವಾಗಿರಬಹುದು, ಏಕೆಂದರೆ ನೀವು ಸುಮಾರು ಮೂರು ವಾರಗಳಿಂದ ಈ ಸಮಸ್ಯೆಯನ್ನು ಎದುರಿಸುತ್ತಿದ್ದೀರಿ.",
+        "do": "ಸೌಮ್ಯವಾದ ಶಾಂಪೂ ಮತ್ತು ಕಂಡಿಷನರ್ ಬಳಸಿ ಕೂದಲನ್ನು ಸಹಜವಾಗಿ ಒಣಗಲು ಬಿಡಿ.",
+        "avoid": "ಕೂದಲನ್ನು ಬಿಗಿಯಾಗಿ ಕಟ್ಟುವುದು, ಹೆಚ್ಚು ಶಾಖ, ಕಠಿಣ ರಾಸಾಯನಿಕಗಳು ಮತ್ತು ಸಾಬೀತಾಗದ ಕೂದಲು ಬೆಳೆಯುವ ಮನೆಮದ್ದುಗಳನ್ನು ತಪ್ಪಿಸಿ.",
+        "seek_care": "ಕೂದಲು ಉದುರುವುದು ಮುಂದುವರಿದರೆ ವೈದ್ಯರನ್ನು ಭೇಟಿ ಮಾಡಿ; ಇದ್ದಕ್ಕಿದ್ದಂತೆ ಬೋಳು ತೇಪೆಗಳು, ತಲೆಯ ಚರ್ಮದಲ್ಲಿ ನೋವು ಅಥವಾ ಉರಿಯೂತ ಇದ್ದರೆ ಬೇಗ ತೋರಿಸಿ.",
+        "answer": ""
+      }
+    ],
+    "complete_assessment": true,
+    "passed_structure": true
+  },
+  {
+    "case": "hair_patchy",
+    "language": "ml-IN",
+    "lines": [
+      [
+        "caller",
+        "എനിക്ക് പലയിടത്തായി മുടി കൊഴിയുന്നുണ്ട്."
+      ],
+      [
+        "agent",
+        "ഈ മുടി കൊഴിച്ചിൽ നിങ്ങൾ എപ്പോഴാണ് ആദ്യം ശ്രദ്ധിച്ചത്?"
+      ],
+      [
+        "caller",
+        "ഏകദേശം മൂന്നാഴ്ച."
+      ],
+      [
+        "agent",
+        "മുടി കൊഴിച്ചിൽ തലയിൽ മൊത്തത്തിലാണോ, അതോ ചില പ്രത്യേക ഭാഗങ്ങളിൽ മാത്രമാണോ ഉള്ളത്?"
+      ],
+      [
+        "caller",
+        "മുൻവശത്തെ മുടിയുടെ അതിർത്തിയിൽ കട്ടി കുറയുന്നതിന് പകരം, രണ്ട് പ്രത്യേക വട്ടത്തിലുള്ള പാടുകളുണ്ട്."
+      ],
+      [
+        "agent",
+        "തലയോട്ടിയിൽ ചൊറിച്ചിലോ തൊലി പൊഴിയുന്നതോ പോലുള്ള മാറ്റങ്ങളുണ്ടോ?"
+      ],
+      [
+        "caller",
+        "എന്റെ തലയോട്ടിയിൽ ചൊറിച്ചിലോ, അടരലോ, ചുവപ്പോ വേദനയോ ഒന്നും ഞാൻ ശ്രദ്ധിച്ചിട്ടില്ല."
+      ],
+      [
+        "agent",
+        "നിങ്ങളുടെ കുടുംബത്തിൽ ആർക്കെങ്കിലും സമാനമായ രീതിയിൽ മുടി കൊഴിച്ചിൽ ഉണ്ടായിട്ടുണ്ടോ?"
+      ],
+      [
+        "caller",
+        "എന്റെ കുടുംബത്തിൽ സമാനമായ രീതിയിൽ മുടികൊഴിച്ചിൽ ഉള്ളതായി എനിക്കറിയില്ല."
+      ],
+      [
+        "agent",
+        "ഈ വട്ടത്തിലുള്ള പാടുകൾ കാരണം ഇത് പാരമ്പര്യമായി ഉണ്ടാകുന്ന മുടികൊഴിച്ചിൽ ആയിരിക്കില്ല എന്ന് തോന്നുന്നു, കാരണം ഇത് മൂന്ന് ആഴ്ചയായി തുടങ്ങിയിട്ട് തലയോട്ടിയിൽ ചൊറിച്ചിലോ മറ്റ് ബുദ്ധിമുട്ടുകളോ ഇല്ല. മൃദുവായ ഷാംപൂവും കണ്ടീഷണറും ഉപയോഗിച്ച് മുടി സ്വാഭാവികമായി ഉണങ്ങാൻ അനുവദിക്കുക. മുടി കൊഴിച്ചിൽ തുടരുകയാണെങ്കിൽ ഡോക്ടറെ കാണുക; പെട്ടെന്നുള്ള കഷണ്ടിപ്പാടുകൾ, തലയോട്ടിയിൽ വേദനയോ വീക്കമോ ഉണ്ടെങ്കിൽ നേരത്തേ കാണിക്കുക."
+      ]
+    ],
+    "facts": {
+      "duration": "About three weeks.",
+      "hair_pattern": "There are two separate round patches, rather than thinning at the front hairline.",
+      "scalp_changes": "I have not noticed itching, flaking, redness or pain on my scalp.",
+      "family_history": "I do not know of any similar hair loss in my family.",
+      "recent_changes": "I do not recall an illness or major health change before it started.",
+      "hair_care": "I wash gently. I do not use tight hairstyles, heat styling or chemical treatments.",
+      "age": "I am 28 years old.",
+      "progression": "I first noticed the patches suddenly three weeks ago.",
+      "impact": "I am worried about my appearance, but can do my usual daily activities."
+    },
+    "turn_seconds": [
+      0.46,
+      0.58,
+      1.43,
+      0.69,
+      1.35
+    ],
+    "questions": 4,
+    "assessed": true,
+    "emergency": false,
+    "kb": "hair_loss",
+    "question_topics": [
+      "duration",
+      "hair_pattern",
+      "scalp_changes",
+      "family_history"
+    ],
+    "actions": [
+      {
+        "action": "ask",
+        "language": "ml-IN",
+        "confirmed_symptoms": "hair loss in multiple places",
+        "denied_symptoms": "",
+        "topic": "duration",
+        "question": "ഈ മുടി കൊഴിച്ചിൽ നിങ്ങൾ എപ്പോഴാണ് ആദ്യം ശ്രദ്ധിച്ചത്?",
+        "important_gap": "",
+        "facts": [
+          {
+            "topic": "hair_loss",
+            "value": "hair loss in multiple places",
+            "status": "reported",
+            "quote": "എനിക്ക് പലയിടത്തായി മുടി കൊഴിയുന്നുണ്ട്"
+          }
+        ],
+        "stop_quote": "",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": ""
+      },
+      {
+        "action": "ask",
+        "language": "ml-IN",
+        "confirmed_symptoms": "hair loss in multiple places for about three weeks",
+        "denied_symptoms": "",
+        "topic": "hair_pattern",
+        "question": "മുടി കൊഴിച്ചിൽ തലയിൽ മൊത്തത്തിലാണോ, അതോ ചില പ്രത്യേക ഭാഗങ്ങളിൽ മാത്രമാണോ ഉള്ളത്?",
+        "important_gap": "",
+        "facts": [
+          {
+            "topic": "hair_loss",
+            "value": "hair loss in multiple places",
+            "status": "reported",
+            "quote": "എനിക്ക് പലയിടത്തായി മുടി കൊഴിയുന്നുണ്ട്"
+          },
+          {
+            "topic": "duration",
+            "value": "about three weeks",
+            "status": "reported",
+            "quote": "ഏകദേശം മൂന്നാഴ്ച"
+          }
+        ],
+        "stop_quote": "",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": ""
+      },
+      {
+        "action": "ask",
+        "language": "ml-IN",
+        "confirmed_symptoms": "",
+        "denied_symptoms": "",
+        "topic": "scalp_changes",
+        "question": "തലയോട്ടിയിൽ ചൊറിച്ചിലോ തൊലി പൊഴിയുന്നതോ പോലുള്ള മാറ്റങ്ങളുണ്ടോ?",
+        "important_gap": "",
+        "facts": [],
+        "stop_quote": "",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": ""
+      },
+      {
+        "action": "ask",
+        "language": "ml-IN",
+        "confirmed_symptoms": "hair loss in two separate round patches for about three weeks",
+        "denied_symptoms": "",
+        "topic": "family_history",
+        "question": "നിങ്ങളുടെ കുടുംബത്തിൽ ആർക്കെങ്കിലും സമാനമായ രീതിയിൽ മുടി കൊഴിച്ചിൽ ഉണ്ടായിട്ടുണ്ടോ?",
+        "important_gap": "",
+        "facts": [
+          {
+            "topic": "hair_loss",
+            "value": "hair loss in multiple places",
+            "status": "reported",
+            "quote": "എനിക്ക് പലയിടത്തായി മുടി കൊഴിയുന്നുണ്ട്"
+          },
+          {
+            "topic": "duration",
+            "value": "about three weeks",
+            "status": "reported",
+            "quote": "ഏകദേശം മൂന്നാഴ്ച"
+          },
+          {
+            "topic": "hair_pattern",
+            "value": "two separate round patches instead of general thinning at the hairline",
+            "status": "reported",
+            "quote": "മുൻവശത്തെ മുടിയുടെ അതിർത്തിയിൽ കട്ടി കുറയുന്നതിന് പകരം, രണ്ട് പ്രത്യേക വട്ടത്തിലുള്ള പാടുകളുണ്ട്"
+          },
+          {
+            "topic": "scalp_changes",
+            "value": "no itching, flaking, redness or pain",
+            "status": "denied",
+            "quote": "എന്റെ തലയോട്ടിയിൽ ചൊറിച്ചിലോ, അടരലോ, ചുവപ്പോ വേദനയോ ഒന്നും ഞാൻ ശ്രദ്ധിച്ചിട്ടില്ല"
+          }
+        ],
+        "stop_quote": "",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": ""
+      },
+      {
+        "action": "assess",
+        "language": "ml-IN",
+        "confirmed_symptoms": "hair loss with two separate round patches for about three weeks",
+        "denied_symptoms": "itching, flaking, redness or scalp pain",
+        "topic": "",
+        "question": "",
+        "important_gap": "",
+        "facts": [
+          {
+            "topic": "hair_loss",
+            "value": "hair loss in multiple places",
+            "status": "reported",
+            "quote": "എനിക്ക് പലയിടത്തായി മുടി കൊഴിയുന്നുണ്ട്"
+          },
+          {
+            "topic": "duration",
+            "value": "about three weeks",
+            "status": "reported",
+            "quote": "ഏകദേശം മൂന്നാഴ്ച"
+          },
+          {
+            "topic": "hair_pattern",
+            "value": "two separate round patches instead of general thinning at the hairline",
+            "status": "reported",
+            "quote": "മുൻവശത്തെ മുടിയുടെ അതിർത്തിയിൽ കട്ടി കുറയുന്നതിന് പകരം, രണ്ട് പ്രത്യേക വട്ടത്തിലുള്ള പാടുകളുണ്ട്"
+          },
+          {
+            "topic": "scalp_changes",
+            "value": "no itching, flaking, redness or pain",
+            "status": "denied",
+            "quote": "എന്റെ തലയോട്ടിയിൽ ചൊറിച്ചിലോ, അടരലോ, ചുവപ്പോ വേദനയോ ഒന്നും ഞാൻ ശ്രദ്ധിച്ചിട്ടില്ല"
+          },
+          {
+            "topic": "family_history",
+            "value": "unknown",
+            "status": "unknown",
+            "quote": "എന്റെ കുടുംബത്തിൽ സമാനമായ രീതിയിൽ മുടികൊഴിച്ചിൽ ഉള്ളതായി എനിക്കറിയില്ല"
+          }
+        ],
+        "stop_quote": "",
+        "likely": "possible patchy hair loss needing examination",
+        "why": "ഈ വട്ടത്തിലുള്ള പാടുകൾ കാരണം ഇത് പാരമ്പര്യമായി ഉണ്ടാകുന്ന മുടികൊഴിച്ചിൽ ആയിരിക്കില്ല എന്ന് തോന്നുന്നു, കാരണം ഇത് മൂന്ന് ആഴ്ചയായി തുടങ്ങിയിട്ട് തലയോട്ടിയിൽ ചൊറിച്ചിലോ മറ്റ് ബുദ്ധിമുട്ടുകളോ ഇല്ല.",
+        "do": "മൃദുവായ ഷാംപൂവും കണ്ടീഷണറും ഉപയോഗിച്ച് മുടി സ്വാഭാവികമായി ഉണങ്ങാൻ അനുവദിക്കുക.",
+        "avoid": "മുടി മുറുക്കിക്കെട്ടൽ, അമിത ചൂട്, കടുത്ത രാസവസ്തുക്കൾ, തെളിവില്ലാത്ത മുടി വളർത്തൽ വിദ്യകൾ എന്നിവ ഒഴിവാക്കുക.",
+        "seek_care": "മുടി കൊഴിച്ചിൽ തുടരുകയാണെങ്കിൽ ഡോക്ടറെ കാണുക; പെട്ടെന്നുള്ള കഷണ്ടിപ്പാടുകൾ, തലയോട്ടിയിൽ വേദനയോ വീക്കമോ ഉണ്ടെങ്കിൽ നേരത്തേ കാണിക്കുക.",
+        "answer": ""
+      }
+    ],
+    "complete_assessment": true,
+    "passed_structure": true
+  }
+]

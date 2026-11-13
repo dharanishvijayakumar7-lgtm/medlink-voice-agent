@@ -1,0 +1,229 @@
+[
+  {
+    "case": "hair_gradual",
+    "language": "ml-IN",
+    "lines": [
+      [
+        "caller",
+        "എനിക്ക് മുടി കൊഴിയുന്നുണ്ട്."
+      ],
+      [
+        "agent",
+        "ഈ മുടി കൊഴിച്ചിൽ നിങ്ങൾ എത്ര നാളായി ശ്രദ്ധിക്കുന്നു?"
+      ],
+      [
+        "caller",
+        "ഏകദേശം രണ്ടു വർഷം."
+      ],
+      [
+        "agent",
+        "മുടി കൊഴിച്ചിൽ എവിടെയാണ് കൂടുതൽ കാണുന്നത്: തലയിൽ മുഴുവൻ, ചില ഭാഗങ്ങളിൽ മാത്രമായി, അതോ മുടിയുടെ മുൻഭാഗത്താണോ?"
+      ],
+      [
+        "caller",
+        "എന്റെ നെറ്റിയുടെ മുൻവശത്തെ മുടി പതുക്കെ കൊഴിയുന്നുണ്ട്. വേറെ എവിടെയും കഷണ്ടിയൊന്നുമില്ല."
+      ],
+      [
+        "agent",
+        "നിങ്ങളുടെ തലയോട്ടിയിൽ ചൊറിച്ചിലോ തൊലി അടർന്നു പോകുന്നതോ പോലുള്ള മാറ്റങ്ങൾ എന്തെങ്കിലും ശ്രദ്ധിച്ചിട്ടുണ്ടോ?"
+      ],
+      [
+        "caller",
+        "എന്റെ തലയോട്ടിയിൽ ചൊറിച്ചിലോ, അടരുകയോ, ചുവപ്പോ, വേദനയോ ഒന്നും ഞാൻ ശ്രദ്ധിച്ചിട്ടില്ല."
+      ],
+      [
+        "agent",
+        "നിങ്ങളുടെ കുടുംബത്തിൽ ആർക്കെങ്കിലും സമാനമായ രീതിയിൽ മുടി കൊഴിച്ചിൽ ഉള്ളതായി അറിയാമോ? "
+      ],
+      [
+        "caller",
+        "എന്റെ അച്ഛനും ഇതുപോലെ മുടി കൊഴിച്ചിൽ ഉണ്ട്."
+      ],
+      [
+        "agent",
+        "This gradual thinning at your hairline, along with your father having a similar pattern, can suggest a hereditary cause. മൃദുവായ ഷാംപൂവും കണ്ടീഷണറും ഉപയോഗിച്ച് മുടി സ്വാഭാവികമായി ഉണങ്ങാൻ അനുവദിക്കുക. മുടി കൊഴിച്ചിൽ തുടരുകയാണെങ്കിൽ ഡോക്ടറെ കാണുക; പെട്ടെന്നുള്ള കഷണ്ടിപ്പാടുകൾ, തലയോട്ടിയിൽ വേദനയോ വീക്കമോ ഉണ്ടെങ്കിൽ നേരത്തേ കാണിക്കുക."
+      ]
+    ],
+    "facts": {
+      "duration": "About two years.",
+      "hair_pattern": "It is gradually thinning at my front hairline. There are no separate bald patches.",
+      "scalp_changes": "I have not noticed itching, flaking, redness or pain on my scalp.",
+      "family_history": "My father has a similar pattern of hair thinning.",
+      "recent_changes": "I do not recall an illness or major health change before it started.",
+      "hair_care": "I wash gently. I do not use tight hairstyles, heat styling or chemical treatments.",
+      "age": "I am 28 years old.",
+      "progression": "The thinning has been gradual, not sudden.",
+      "impact": "I am worried about my appearance, but can do my usual daily activities."
+    },
+    "turn_seconds": [
+      0.41,
+      1.03,
+      0.7,
+      0.79,
+      1.15
+    ],
+    "questions": 4,
+    "assessed": true,
+    "emergency": false,
+    "kb": "hair_loss",
+    "question_topics": [
+      "duration",
+      "hair_pattern",
+      "scalp_changes",
+      "family_history"
+    ],
+    "actions": [
+      {
+        "action": "ask",
+        "language": "ml-IN",
+        "confirmed_symptoms": "",
+        "denied_symptoms": "",
+        "topic": "duration",
+        "question": "ഈ മുടി കൊഴിച്ചിൽ നിങ്ങൾ എത്ര നാളായി ശ്രദ്ധിക്കുന്നു?",
+        "important_gap": "",
+        "facts": [],
+        "stop_quote": "",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": ""
+      },
+      {
+        "action": "ask",
+        "language": "ml-IN",
+        "confirmed_symptoms": "Hair loss.",
+        "denied_symptoms": "",
+        "topic": "hair_pattern",
+        "question": "മുടി കൊഴിച്ചിൽ എവിടെയാണ് കൂടുതൽ കാണുന്നത്: തലയിൽ മുഴുവൻ, ചില ഭാഗങ്ങളിൽ മാത്രമായി, അതോ മുടിയുടെ മുൻഭാഗത്താണോ?",
+        "important_gap": "",
+        "facts": [
+          {
+            "topic": "duration",
+            "value": "The caller has been noticing the hair loss for approximately two years.",
+            "status": "reported",
+            "quote": "ഏകദേശം രണ്ടു വർഷം"
+          }
+        ],
+        "stop_quote": "",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": ""
+      },
+      {
+        "action": "ask",
+        "language": "ml-IN",
+        "confirmed_symptoms": "Hair loss at the front of the forehead for about two years.",
+        "denied_symptoms": "",
+        "topic": "scalp_changes",
+        "question": "നിങ്ങളുടെ തലയോട്ടിയിൽ ചൊറിച്ചിലോ തൊലി അടർന്നു പോകുന്നതോ പോലുള്ള മാറ്റങ്ങൾ എന്തെങ്കിലും ശ്രദ്ധിച്ചിട്ടുണ്ടോ?",
+        "important_gap": "",
+        "facts": [
+          {
+            "topic": "duration",
+            "value": "The caller has been noticing the hair loss for approximately two years.",
+            "status": "reported",
+            "quote": "ഏകദേശം രണ്ടു വർഷം"
+          },
+          {
+            "topic": "hair_pattern",
+            "value": "The hair loss is mainly at the front of the forehead, with no bald patches elsewhere.",
+            "status": "reported",
+            "quote": "എന്റെ നെറ്റിയുടെ മുൻവശത്തെ മുടി പതുക്കെ കൊഴിയുന്നുണ്ട്. വേറെ എവിടെയും കഷണ്ടിയൊന്നുമില്ല."
+          }
+        ],
+        "stop_quote": "",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": ""
+      },
+      {
+        "action": "ask",
+        "language": "ml-IN",
+        "confirmed_symptoms": "Gradual hair thinning at the front of the forehead for about two years.",
+        "denied_symptoms": "No itching, flaking, redness, or pain on the scalp.",
+        "topic": "family_history",
+        "question": "നിങ്ങളുടെ കുടുംബത്തിൽ ആർക്കെങ്കിലും സമാനമായ രീതിയിൽ മുടി കൊഴിച്ചിൽ ഉള്ളതായി അറിയാമോ? ",
+        "important_gap": "",
+        "facts": [
+          {
+            "topic": "duration",
+            "value": "The caller has been noticing the hair loss for approximately two years.",
+            "status": "reported",
+            "quote": "ഏകദേശം രണ്ടു വർഷം"
+          },
+          {
+            "topic": "hair_pattern",
+            "value": "The hair loss is mainly at the front of the forehead, with no bald patches elsewhere.",
+            "status": "reported",
+            "quote": "എന്റെ നെറ്റിയുടെ മുൻവശത്തെ മുടി പതുക്കെ കൊഴിയുന്നുണ്ട്. വേറെ എവിടെയും കഷണ്ടിയൊന്നുമില്ല."
+          },
+          {
+            "topic": "scalp_changes",
+            "value": "The caller has not noticed any itching, flaking, redness, or pain on the scalp.",
+            "status": "reported",
+            "quote": "എന്റെ തലയോട്ടിയിൽ ചൊറിച്ചിലോ, അടരുകയോ, ചുവപ്പോ, വേദനയോ ഒന്നും ഞാൻ ശ്രദ്ധിച്ചിട്ടില്ല."
+          }
+        ],
+        "stop_quote": "",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": ""
+      },
+      {
+        "action": "assess",
+        "language": "ml-IN",
+        "confirmed_symptoms": "Gradual hair loss at the front of the forehead for about two years.",
+        "denied_symptoms": "No itching, flaking, redness, or pain on the scalp.",
+        "topic": "",
+        "question": "",
+        "important_gap": "",
+        "facts": [
+          {
+            "topic": "duration",
+            "value": "The caller has been noticing the hair loss for approximately two years.",
+            "status": "reported",
+            "quote": "ഏകദേശം രണ്ടു വർഷം"
+          },
+          {
+            "topic": "hair_pattern",
+            "value": "The hair loss is mainly at the front of the forehead, with no bald patches elsewhere.",
+            "status": "reported",
+            "quote": "എന്റെ നെറ്റിയുടെ മുൻവശത്തെ മുടി പതുക്കെ കൊഴിയുന്നുണ്ട്. വേറെ എവിടെയും കഷണ്ടിയൊന്നുമില്ല."
+          },
+          {
+            "topic": "scalp_changes",
+            "value": "The caller has not noticed any itching, flaking, redness, or pain on the scalp.",
+            "status": "reported",
+            "quote": "എന്റെ തലയോട്ടിയിൽ ചൊറിച്ചിലോ, അടരുകയോ, ചുവപ്പോ, വേദനയോ ഒന്നും ഞാൻ ശ്രദ്ധിച്ചിട്ടില്ല."
+          },
+          {
+            "topic": "family_history",
+            "value": "The caller's father has a similar pattern of hair loss.",
+            "status": "reported",
+            "quote": "എന്റെ അച്ഛനും ഇതുപോലെ മുടി കൊഴിച്ചിൽ ഉണ്ട്."
+          }
+        ],
+        "stop_quote": "",
+        "likely": "Hereditary pattern hair loss.",
+        "why": "This gradual thinning at your hairline, along with your father having a similar pattern, can suggest a hereditary cause.",
+        "do": "മൃദുവായ ഷാംപൂവും കണ്ടീഷണറും ഉപയോഗിച്ച് മുടി സ്വാഭാവികമായി ഉണങ്ങാൻ അനുവദിക്കുക.",
+        "avoid": "മുടി മുറുക്കിക്കെട്ടൽ, അമിത ചൂട്, കടുത്ത രാസവസ്തുക്കൾ, തെളിവില്ലാത്ത മുടി വളർത്തൽ വിദ്യകൾ എന്നിവ ഒഴിവാക്കുക.",
+        "seek_care": "മുടി കൊഴിച്ചിൽ തുടരുകയാണെങ്കിൽ ഡോക്ടറെ കാണുക; പെട്ടെന്നുള്ള കഷണ്ടിപ്പാടുകൾ, തലയോട്ടിയിൽ വേദനയോ വീക്കമോ ഉണ്ടെങ്കിൽ നേരത്തേ കാണിക്കുക.",
+        "answer": ""
+      }
+    ],
+    "complete_assessment": true,
+    "passed_structure": true
+  }
+]

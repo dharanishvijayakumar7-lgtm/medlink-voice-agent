@@ -16,6 +16,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from livekit.agents import AgentSession, llm, utils
 
+from api_diagnostics import api_error_details
 from config import SUPPORTED_LANGUAGES, settings
 from llm_factory import build_llm
 from session_state import MedLinkUserData
@@ -100,13 +101,16 @@ async def run_case(model, language, case):
     }
     data = MedLinkUserData(language=language)
     agent = ConversationAgent()
+    stage = "session_start"
     try:
         async with AgentSession(llm=model, userdata=data, vad=None) as session:
             await session.start(agent)
+            stage = "caller_translation"
             said = await translate(model, opening, language)
             for _ in range(9):
                 row["lines"].append(["caller", said])
                 started = time.monotonic()
+                stage = "agent_reply"
                 result = await asyncio.wait_for(
                     session.run(user_input=said), timeout=45
                 )
@@ -122,6 +126,7 @@ async def run_case(model, language, case):
                 topic = agent.policy.questions[-1][0] if agent.policy.questions else ""
                 # Unknown facts stay unknown. The simulated patient never invents
                 # symptoms, family history, stress, or sleep problems.
+                stage = "caller_translation"
                 said = await translate(
                     model, facts.get(topic, "I am not sure."), language
                 )
@@ -154,7 +159,12 @@ async def run_case(model, language, case):
                 else 4 <= row["questions"] <= 6 and row["complete_assessment"]
             )
     except Exception as error:
-        row.update(error=type(error).__name__, passed_structure=False)
+        row.update(
+            error=type(error).__name__,
+            error_stage=stage,
+            error_details=api_error_details(error),
+            passed_structure=False,
+        )
     return row
 
 
@@ -168,7 +178,7 @@ async def main(args):
     )
     cases = args.cases.split(",")
     results = []
-    gate = asyncio.Semaphore(2)
+    gate = asyncio.Semaphore(args.concurrency)
     output = Path(args.output)
     output.parent.mkdir(parents=True, exist_ok=True)
     async with utils.http_context.open():
@@ -212,6 +222,7 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.CRITICAL)
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--languages", default="")
+    parser.add_argument("--concurrency", type=int, choices=range(1, 5), default=1)
     parser.add_argument("--cases", default="hair_gradual,hair_patchy,hair_scalp")
     parser.add_argument("--output", default="demo_audit_out/question_quality.json")
     raise SystemExit(asyncio.run(main(parser.parse_args())))

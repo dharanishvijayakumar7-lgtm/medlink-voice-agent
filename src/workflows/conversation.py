@@ -14,6 +14,7 @@ from typing import Literal
 from livekit.agents import APIError
 from pydantic import BaseModel, ConfigDict, Field
 
+from api_diagnostics import api_error_details
 from config import SUPPORTED_LANGUAGES
 from knowledge.triage_kb import get_triage_kb
 from medicine.formulary import get_formulary
@@ -674,7 +675,7 @@ class ConversationAgent(MedLinkAgent):
                 logger.warning(
                     "conversation provider unavailable",
                     extra={
-                        "error_type": type(exc).__name__,
+                        **api_error_details(exc),
                         "question_count": len(self.policy.questions),
                     },
                 )
