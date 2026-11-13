@@ -44,7 +44,9 @@ _LANGUAGE_WORDS: dict[str, tuple[str, ...]] = {
     "kn-IN": ("kannada", "kanada"),
     "ml-IN": ("malayalam", "malyalam"),
 }
-_LANGUAGE_NAMES = {code: name.capitalize() for name, code in SUPPORTED_LANGUAGES.items()}
+_LANGUAGE_NAMES = {
+    code: name.capitalize() for name, code in SUPPORTED_LANGUAGES.items()
+}
 
 # Only an actual request aimed at the agent. "My mother speaks Tamil" must not
 # switch the call, so a bare "speaks <language>" is deliberately not enough.
@@ -73,9 +75,8 @@ def detect_language_request(text: str) -> str | None:
     return None
 
 
-# Only transcripts can trigger LiveKit's pause - the STT's own start/end of
-# speech markers are ignored unless turn detection runs on the STT, which it
-# does not here. Those are passed through untouched.
+# Filter transcript echo separately from SDK audio-based interruption detection.
+# Leave speech-boundary events intact for the recognizer's turn lifecycle.
 _TRANSCRIPT_EVENTS = frozenset(
     {
         stt.SpeechEventType.INTERIM_TRANSCRIPT,
@@ -157,6 +158,7 @@ def is_noise_turn(text: str, confidence: float | None) -> bool:
     if confidence is None:
         return False
     return len(words) <= MAX_NOISE_WORDS and confidence < settings.min_turn_confidence
+
 
 # Spoken while the caller is still on the line, in every agent's voice.
 SHARED_STYLE = """\
@@ -287,13 +289,10 @@ class MedLinkAgent(Agent):
     ) -> AsyncIterable[stt.SpeechEvent | str]:
         """What the agent hears, minus its own voice.
 
-        On speakerphone the agent's voice comes back up the line and is
-        transcribed like any caller. The session has no local VAD, so LiveKit
-        runs its interruption check on every interim transcript, and a
-        two-word echo was enough to pause the agent mid-word - over and over,
-        which is the "half a word, then nothing" a caller heard on speaker and
-        never at the earpiece. Transcripts that are the agent's own words are
-        dropped here, before LiveKit sees them.
+        On speakerphone the agent's voice can come back up the line and be
+        transcribed like a caller. Drop matching transcripts before the SDK
+        sees them. This supplements audio-based detection in adaptive mode;
+        protected replies instead discard input audio through the SDK.
 
         Overriding this node means LiveKit no longer carries the STT stream
         across agent handoffs, so there is a brief reconnect at each one. That
@@ -301,6 +300,25 @@ class MedLinkAgent(Agent):
         """
         spoken = self.data.agent_speech
         async for event in Agent.default.stt_node(self, audio, model_settings):
+            if (
+                not isinstance(event, str)
+                and event.type == stt.SpeechEventType.FINAL_TRANSCRIPT
+                and event.alternatives
+            ):
+                alternative = event.alternatives[0]
+                logger.info(
+                    "stt confidence diagnostics",
+                    extra={
+                        "call_id": self.data.call_id,
+                        # Sarvam may supply an SDK default of 1.0 when there is
+                        # no recognition score. Language confidence is a
+                        # different measurement and must not gate caller turns.
+                        "sdk_transcript_confidence": alternative.confidence,
+                        "language_confidence": (alternative.metadata or {}).get(
+                            "language_confidence"
+                        ),
+                    },
+                )
             text = _transcript_text(event)
             if text and spoken.is_echo(text):
                 logger.info(

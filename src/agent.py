@@ -25,7 +25,7 @@ from livekit.agents import (
 # plugin from the job worker thread, so the lazy `from livekit.plugins import
 # ...` inside llm_factory / speech.providers must find it already registered.
 # `sarvam` serves all three stages (STT, LLM, TTS) off SARVAM_API_KEY.
-from livekit.plugins import ai_coustics, sarvam  # noqa: F401
+from livekit.plugins import krisp, sarvam  # noqa: F401
 
 import firestore_export
 from config import settings
@@ -37,7 +37,29 @@ from workflows.intake import IntakeAgent
 
 logger = logging.getLogger("agent")
 
-server = AgentServer()
+
+def _prewarm(_proc) -> None:
+    """Resolve the compatible LLM client's lazy imports before accepting calls."""
+    import importlib
+
+    for module in (
+        "openai.resources.models",
+        "openai.resources.chat.completions.completions",
+    ):
+        importlib.import_module(module)
+
+
+server = AgentServer(setup_fnc=_prewarm)
+
+
+def _noise_cancellation(options):
+    """Select voice isolation from the actual participant, independently of ID."""
+    is_sip = options.participant.kind == rtc.ParticipantKind.PARTICIPANT_KIND_SIP
+    logger.info(
+        "selected input voice isolation",
+        extra={"audio_filter": "krisp_telephony" if is_sip else "krisp"},
+    )
+    return krisp.voice_isolation_telephony() if is_sip else krisp.voice_isolation()
 
 
 # How long to wait for the caller to appear in the room after connecting. A SIP
@@ -70,7 +92,9 @@ async def _caller_phone(ctx: JobContext) -> str | None:
                 # Must be a real string - a mocked room returns a truthy mock
                 # that would blow up downstream in normalise_phone().
                 if isinstance(number, str) and number.strip():
-                    logger.info("caller identified from SIP", extra={"room": ctx.room.name})
+                    logger.info(
+                        "caller identified from SIP", extra={"room": ctx.room.name}
+                    )
                     return number
             # Loud on purpose: a silent fallback here is what filed real phone
             # calls under the dev number with no trace in the logs.
@@ -84,11 +108,14 @@ async def _caller_phone(ctx: JobContext) -> str | None:
             )
         except asyncio.TimeoutError:
             logger.warning(
-                "no participant joined within %ss", CALLER_WAIT_TIMEOUT,
+                "no participant joined within %ss",
+                CALLER_WAIT_TIMEOUT,
                 extra={"room": ctx.room.name},
             )
         except Exception:  # never break a call over caller ID
-            logger.exception("could not read caller phone", extra={"room": ctx.room.name})
+            logger.exception(
+                "could not read caller phone", extra={"room": ctx.room.name}
+            )
 
     if settings.dev_caller_phone:
         logger.warning(
@@ -104,7 +131,7 @@ def _interruption_options() -> dict:
         # The agent always finishes its sentence. Whatever is heard meanwhile -
         # its own echo, bystanders, the caller - is dropped, so nothing can
         # chop its speech. The escape hatch for a speakerphone in a crowded room.
-        return {"enabled": False}
+        return {"enabled": False, "discard_audio_if_uninterruptible": True}
     return {
         "mode": "adaptive",
         # Phone lines carry echo and noise. On a real call, 1- and 3-character
@@ -116,6 +143,7 @@ def _interruption_options() -> dict:
         # A pause that turns out not to be the caller resumes after this. The
         # default 2.0 s left a hole in the middle of a word on speakerphone.
         "false_interruption_timeout": settings.false_interruption_timeout,
+        "resume_false_interruption": True,
     }
 
 
@@ -126,6 +154,7 @@ async def medlink_session(ctx: JobContext):
     # Connect before anything else: the SIP caller (and their phone number) is
     # only visible as a remote participant once the agent is in the room.
     await ctx.connect()
+    ctx.log_context_fields["room_id"] = await ctx.room.sid
     phone = await _caller_phone(ctx)
     # A dev fallback number is not a real phone call, so don't log it as one.
     is_sip_call = bool(phone) and phone != settings.dev_caller_phone
@@ -138,6 +167,14 @@ async def medlink_session(ctx: JobContext):
     # Look up a returning caller and open the call record before we greet, so
     # the intake agent can acknowledge prior history. Never fatal.
     await history.start_call(userdata)
+
+    logger.info(
+        "call audio policy",
+        extra={
+            "allow_barge_in": settings.allow_barge_in,
+            "discard_audio_if_uninterruptible": True,
+        },
+    )
 
     session = AgentSession[MedLinkUserData](
         userdata=userdata,
@@ -165,6 +202,29 @@ async def medlink_session(ctx: JobContext):
             preemptive_generation={"enabled": settings.preemptive_generation},
         ),
     )
+
+    @session.on("conversation_item_added")
+    def _log_speech_outcome(ev) -> None:
+        item = ev.item
+        if getattr(item, "role", None) == "assistant":
+            logger.info(
+                "agent speech committed",
+                extra={
+                    "speech_id": item.id,
+                    "interrupted": item.interrupted,
+                },
+            )
+
+    @session.on("error")
+    def _log_provider_error(ev) -> None:
+        logger.error(
+            "speech pipeline error",
+            extra={
+                "provider_source": type(ev.source).__name__,
+                "error_type": type(ev.error).__name__,
+                "recoverable": getattr(ev.error, "recoverable", None),
+            },
+        )
 
     @session.on("user_input_transcribed")
     def _log_stt_final(ev) -> None:
@@ -270,9 +330,7 @@ async def medlink_session(ctx: JobContext):
         room=ctx.room,
         room_options=room_io.RoomOptions(
             audio_input=room_io.AudioInputOptions(
-                noise_cancellation=ai_coustics.audio_enhancement(
-                    model=ai_coustics.EnhancerModel.QUAIL_VF_S
-                ),
+                noise_cancellation=_noise_cancellation,
             ),
         ),
     )

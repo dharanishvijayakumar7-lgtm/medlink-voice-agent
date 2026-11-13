@@ -8,10 +8,10 @@ talking over it. The agent then paused itself mid-word, waited, resumed, heard
 its own voice again, and paused again. On the earpiece there is almost no path
 from the speaker back to the microphone, which is why that mode was fine.
 
-The session runs without a local VAD, so every interim transcript goes through
-LiveKit's interruption check (`_interrupt_by_audio_activity`), and the only gate
-there is `min_words`. A transcript that never reaches it cannot pause anything.
-`MedLinkAgent.stt_node` drops the ones this module identifies as echo.
+`MedLinkAgent.stt_node` drops transcripts this module identifies as echo before
+they reach LiveKit. This supplements the SDK's audio-based adaptive detector;
+it cannot prevent every audio-triggered pause. Protected demo replies disable
+interruptions and discard input audio while the agent speaks.
 
 What makes something echo rather than a caller: it repeats the agent's words
 *in the order the agent said them*. Callers reuse the agent's words all the
@@ -104,7 +104,9 @@ def _vocabulary(said: list[str]) -> set[str]:
     """
     vocabulary = set(said)
     for size in (2, 3):
-        vocabulary.update("".join(said[i : i + size]) for i in range(len(said) - size + 1))
+        vocabulary.update(
+            "".join(said[i : i + size]) for i in range(len(said) - size + 1)
+        )
     return vocabulary
 
 

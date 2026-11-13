@@ -64,6 +64,38 @@ The CLI is optional for dashboard setup. To install it on Windows if needed:
 
 ## Demo verification
 
+### Protected demo audio
+
+Set `MEDLINK_ALLOW_BARGE_IN=false` in `.env.local`. The agent finishes each reply
+before accepting the next answer. Wait until it stops speaking: speech and noise
+received during a reply are discarded and will not be answered later. This is
+independent of `MEDLINK_DEMO_MODE`, which controls conversation length.
+
+Restart the existing local worker after applying these changes (stop it with
+Ctrl+C, then run `uv run src/agent.py start`). Do not start a second worker.
+Startup logs should show `allow_barge_in: false`; the input filter log should
+show `krisp_telephony` for a phone caller. The first call after a restart must
+also be checked, to catch startup-related stalls.
+
+The agent uses LiveKit Krisp VIVA voice isolation, with its telephony variant
+selected for SIP participants. It uses the existing LiveKit Cloud credentials;
+no additional Sarvam, Bhashini, or Krisp API key is needed. Voice isolation can
+incur LiveKit usage charges. See the [LiveKit audio filter documentation](https://docs.livekit.io/transport/media/noise-cancellation/).
+
+Check six calls: quiet, environmental noise, and nearby speech, each on
+speakerphone and earpiece. During each, introduce noise while the agent speaks,
+then answer after it finishes. Confirm complete audible replies, correct answers
+afterward, successful language switching and handoffs, and normal hangup.
+Inspect worker logs for `agent speech committed` with `interrupted: false`,
+`speech pipeline error`, false interruptions, and event-loop blocking warnings.
+Provider synthesis completion alone does not prove the phone played all audio.
+
+Set `MEDLINK_ALLOW_BARGE_IN=true` and restart to restore adaptive caller
+interruptions. Keep other endpointing and audio-level settings unchanged until
+real calls justify further tuning.
+
+### Call checklist
+
 1. Check remaining minutes in LiveKit's usage/billing dashboard. Published Build
    allowances are one US local number and 50 inbound minutes; this does not
    establish the project's current remaining allowance.

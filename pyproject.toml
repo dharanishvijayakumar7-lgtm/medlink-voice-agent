@@ -11,7 +11,6 @@ requires-python = ">=3.10, <3.15"
 dependencies = [
     # >=1.8.1 is the floor livekit-plugins-sarvam requires.
     "livekit-agents>=1.8.1",
-    "livekit-plugins-ai-coustics~=0.2",
     # Sarvam AI: STT + TTS + LLM, the entire pipeline on one SARVAM_API_KEY.
     "livekit-plugins-sarvam>=1.8.1",
     # Levelling the agent's spoken audio (src/audio_gain.py).
@@ -27,6 +26,7 @@ dependencies = [
     "alembic>=1.14",
     "cryptography>=44.0",
     "firebase-admin>=6.5",
+    "livekit-plugins-krisp>=0.4.1",
 ]
 
 [dependency-groups]

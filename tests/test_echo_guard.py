@@ -198,7 +198,10 @@ def test_barge_in_can_be_switched_off_without_a_code_change(monkeypatch):
     from config import settings
 
     monkeypatch.setattr(settings, "allow_barge_in", False)
-    assert agent._interruption_options() == {"enabled": False}
+    assert agent._interruption_options() == {
+        "enabled": False,
+        "discard_audio_if_uninterruptible": True,
+    }
 
 
 def test_a_false_pause_resumes_quickly(monkeypatch):
