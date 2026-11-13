@@ -33,7 +33,7 @@ from db import repository as history
 from llm_factory import build_llm
 from session_state import MedLinkUserData
 from speech import build_stt, build_tts
-from workflows.intake import IntakeAgent
+from workflows.conversation import ConversationAgent
 
 logger = logging.getLogger("agent")
 
@@ -326,7 +326,7 @@ async def medlink_session(ctx: JobContext):
     ctx.add_shutdown_callback(_on_job_shutdown)
 
     await session.start(
-        agent=IntakeAgent(),
+        agent=ConversationAgent(),
         room=ctx.room,
         room_options=room_io.RoomOptions(
             audio_input=room_io.AudioInputOptions(

@@ -1,0 +1,649 @@
+[
+  {
+    "caller": "fever",
+    "lines": [
+      [
+        "CALLER",
+        "I have a fever since yesterday evening. I also have a mild headache and body ache."
+      ],
+      [
+        "AGENT",
+        "I'm sorry you've been feeling this way, with fever and body ache. That does sound uncomfortable. Just one thing — about how old are you? Is this for yourself?"
+      ],
+      [
+        "CALLER",
+        "I am 32. Yes, it is for me."
+      ],
+      [
+        "AGENT",
+        "I understand, 32 years old. That fever since yesterday evening with headache and body ache... I can hear this is worrying you. Have you checked the temperature, or is the body just feeling very hot?"
+      ],
+      [
+        "CALLER",
+        "I have not checked the temperature. The body just feels very hot."
+      ],
+      [
+        "AGENT",
+        "Okay, got it. And how long has this been going on — just since yesterday evening, or is it getting worse today?"
+      ],
+      [
+        "CALLER",
+        "Just since yesterday evening. It is the same today."
+      ],
+      [
+        "AGENT",
+        "Alright, I understand. Before we go further, I need to ask — do you have any regular medicines you take, or any health conditions like diabetes, blood pressure, or anything else? And are you pregnant or breastfeeding? Just these few things so I can guide you safely."
+      ],
+      [
+        "CALLER",
+        "No, I do not have any of those. I am not pregnant."
+      ],
+      [
+        "AGENT",
+        "Noted, thank you. One more thing — besides the fever, headache and body ache, is there anything else worrying you? Like vomiting, loose motions, sore throat, cough, or any pain somewhere specific?"
+      ],
+      [
+        "CALLER",
+        "No, no cough, no rash, no stiff neck, and no vomiting. I am drinking water normally."
+      ],
+      [
+        "AGENT",
+        "See, from what you've told me, this sounds most likely like a viral fever or seasonal flu. I can't examine you here, so I can't say for sure, but the fever since yesterday evening with body ache and headache, without any cough or rash, does point in that direction. \n\nFor now, drink plenty of water or ORS, and rest. Eat light food. If you feel very hot, you can sponge your body with normal-temperature water. One important thing — don't cover yourself with heavy blankets, that can make the fever worse. \n\nFor the fever, you can take Paracetamol — it's sold as Crocin. Take 1 tablet of 500 mg every 4 to 6 hours as needed. But do not take more than 8 tablets in 24 hours, and use it for at most 3 days. If you have severe liver disease or are allergic to it, don't take it. And please be careful — even a little too much can harm your liver, so if you accidentally take more, go to the hospital immediately. You can get this at any pharmacy.\n\nAlong with this, make sure you're drinking enough water and resting well. \n\nNow, one thing to avoid — don't use heavy blankets. Also, if the fever doesn't come down or if you start feeling worse, that's when you need to be careful. You must see a doctor if the fever lasts more than 3 days, or if you get a rash, neck stiffness, trouble breathing, confusion, or if you're passing very little urine. \n\nI'm a health assistant, not a doctor. This is general guidance only. Please see a qualified doctor if you are worried, if things get worse, or if you do not feel better soon. \n\nDo you have any questions about this?"
+      ],
+      [
+        "CALLER",
+        "Can I still go to work in the field tomorrow?"
+      ],
+      [
+        "AGENT",
+        "I understand you have work, but with fever and body ache, your body needs rest right now. Going to the field tomorrow will likely make you feel worse and slow down your recovery. If you can, take a day off and rest at home. Drink fluids and keep an eye on the fever. \n\nIf you absolutely must go, do only light work and stop immediately if you feel dizzy or more tired. But honestly, rest is better for you right now. \n\nDo you have any other questions?"
+      ]
+    ],
+    "tools": [
+      "record_complaint",
+      "record_answer",
+      "record_answer",
+      "record_patient_context",
+      "record_answer",
+      "finish_questions"
+    ],
+    "stages": [
+      "IntakeAgent",
+      "TriageAgent",
+      "RecommendAgent"
+    ],
+    "finish_refused": 0,
+    "multi_question_turns": 0,
+    "questions": 3,
+    "kb_entry": "fever",
+    "urgency": "clinic",
+    "medicines": [
+      "Paracetamol"
+    ],
+    "mode": "normal",
+    "elapsed_s": 7.27
+  },
+  {
+    "caller": "child_diarrhoea",
+    "lines": [
+      [
+        "CALLER",
+        "She has had loose motions since this morning, about five times, but there is no blood, no vomiting, and no fever. She is drinking water and passing urine normally, and I am worried but trying to stay calm."
+      ],
+      [
+        "AGENT",
+        "I'm sorry you're dealing with this, it must be worrying. Just to make sure I understand — this is for a woman, and how old is she, do you know?"
+      ],
+      [
+        "CALLER",
+        "She is six years old."
+      ],
+      [
+        "AGENT",
+        "Five times since morning without fever, vomiting, or blood — and she's still drinking and passing urine, that's a good sign. Does she have any stomach pain along with the loose motions?"
+      ],
+      [
+        "CALLER",
+        "No, she doesn't have any stomach pain."
+      ],
+      [
+        "AGENT",
+        "It sounds like a mild stomach infection, maybe from something she ate. I can't examine her myself, but five loose motions since morning without fever, vomiting, or blood usually points to that. The most important thing right now is keeping her from getting dehydrated. Give her Oral Rehydration Salts, ORS-L. One sachet in one full litre of clean water, and after every loose motion, let her sip a little — for a six-year-old, about 100 to 200 mL. She should keep eating her normal food, don't stop feeding her to rest her stomach. Also, you can give Zinc sulfate, Zinctek. One 20 mg tablet, dissolved in a little clean water or breast milk, once daily for 14 days. Give it together with the ORS, not instead of it. You can get both at any pharmacy. Now, please don't give her any medicine to stop the motions, and don't give plain sugar water — that's not the same as ORS. Also, don't stop her food or fluids. I'm a health assistant, not a doctor. This is general guidance only. Please see a qualified doctor if you are worried, if things get worse, or if you do not feel better soon. You must take her to a doctor if you see blood in the stool, if she stops passing urine, her eyes look sunken, she becomes very weak, she vomits everything, or if there's no improvement in two days. Do you have any questions for me?"
+      ],
+      [
+        "CALLER",
+        "Should I stop giving her food until it settles?"
+      ],
+      [
+        "AGENT",
+        "No, please don't stop her food. Keep giving her her normal meals — rice, dal, roti, whatever she usually eats. Food helps her body recover. Only stop if she starts vomiting after eating, then wait a little and try again. Do you have any other questions?"
+      ]
+    ],
+    "tools": [
+      "record_complaint",
+      "record_answer",
+      "record_answer",
+      "record_answer",
+      "finish_questions"
+    ],
+    "stages": [
+      "IntakeAgent",
+      "TriageAgent",
+      "RecommendAgent"
+    ],
+    "finish_refused": 0,
+    "multi_question_turns": 0,
+    "questions": 3,
+    "kb_entry": "diarrhoea",
+    "urgency": "self_care",
+    "medicines": [
+      "Oral Rehydration Salts (WHO low-osmolarity)",
+      "Zinc sulfate (dispersible)"
+    ],
+    "mode": "normal",
+    "elapsed_s": 4.04
+  },
+  {
+    "caller": "acidity",
+    "lines": [
+      [
+        "CALLER",
+        "Yeah, it's been about a week now, and it gets worse when I eat spicy food. I don't have any trouble swallowing or anything like that."
+      ],
+      [
+        "AGENT",
+        "That sounds uncomfortable, especially when the food makes it worse. I'm sorry you've been dealing with this for a week. Is this for you, and about how old are you?"
+      ],
+      [
+        "CALLER",
+        "Yeah, it's for me. I'm 40 years old."
+      ],
+      [
+        "AGENT",
+        "Okay. Does this burning come only after you eat, or does it also happen when you walk or do work?"
+      ],
+      [
+        "CALLER",
+        "It only happens after I eat, not when I'm walking or working."
+      ],
+      [
+        "AGENT",
+        "I see. Is the burning mostly in your chest, or more in your throat?"
+      ],
+      [
+        "CALLER",
+        "It's mostly in my chest."
+      ],
+      [
+        "AGENT",
+        "Got it. Do you have any regular medicines you take, or any health problems like diabetes or blood pressure?"
+      ],
+      [
+        "CALLER",
+        "No, I don't take any regular medicines and I don't have diabetes or blood pressure."
+      ],
+      [
+        "AGENT",
+        "Alright. Is there anything else that worries you about this, like pain spreading to your arm, or vomiting, or losing weight?"
+      ],
+      [
+        "CALLER",
+        "No, I haven't thrown up any blood, and my stools are normal too."
+      ],
+      [
+        "AGENT",
+        "I understand. Before I tell you what this might be, I need to know one more thing. How bad is the burning right now — is it mild, moderate, or severe?"
+      ],
+      [
+        "CALLER",
+        "It's moderate, I'd say."
+      ],
+      [
+        "AGENT",
+        "So, what you're describing sounds most like acid from your stomach coming back up into your chest, or maybe some irritation in your stomach lining. I can't examine you myself, so I can't be completely certain, but the fact that it starts after spicy food and stays in your chest fits this very well.\n\nFor relief, you can take Antacid suspension — that's Gelusil MPS. Take 10 mL after your meals and again at bedtime when it bothers you. Shake it well before using. You can take it up to 4 times a day, but only for a short time, not more than 14 days. Just don't use it if you have severe kidney disease, because the magnesium and aluminium can build up in your body. You can get this at any medical store.\n\nThe other option is Calcium carbonate chewable tablets — Digene chewable. When the burning happens, chew 1 to 2 tablets. Don't go above the limit on the pack, usually about 7 tablets a day, and don't use it for more than 2 weeks without advice. Avoid this if you have high blood calcium or calcium kidney stones. This is also available at any pharmacy.\n\nAt home, try eating smaller meals and don't lie down for two hours after eating. Cut down on very spicy, oily, and sour food, and avoid tea on an empty stomach and tobacco. If you can, raise the head end of your bed a little bit.\n\nPlease don't ignore this completely, but also don't worry too much. See a doctor urgently if the burning starts when you walk or work, if you see black stools, vomit blood, have trouble swallowing, lose weight, or if this goes on for more than two weeks.\n\nI'm a health assistant, not a doctor. This is general guidance only. Please see a qualified doctor if you are worried, if things get worse, or if you do not feel better soon.\n\nDo you have any questions for me?"
+      ],
+      [
+        "CALLER",
+        "Can I still drink tea in the morning?"
+      ],
+      [
+        "AGENT",
+        "You can have tea, but try to have it with some food, not on an empty stomach. Empty stomach tea can make the burning worse. If it bothers you, switch to plain water or buttermilk in the morning instead. Does that help?"
+      ],
+      [
+        "CALLER",
+        "My father has the same problem, can he take the same thing?"
+      ],
+      [
+        "AGENT",
+        "I understand, but I would need to ask your father some questions first before suggesting anything for him. His age, other health problems, and what exactly he feels all matter. Medicines for you are not always safe for him, so please don't pass this on. Ask him to speak to a doctor or pharmacist, or you can call us back for him. Anything else on your mind?"
+      ]
+    ],
+    "tools": [
+      "record_complaint",
+      "record_answer",
+      "record_answer",
+      "record_answer",
+      "record_answer",
+      "record_patient_context",
+      "record_answer",
+      "finish_questions",
+      "record_answer",
+      "finish_questions"
+    ],
+    "stages": [
+      "IntakeAgent",
+      "TriageAgent",
+      "RecommendAgent"
+    ],
+    "finish_refused": 1,
+    "multi_question_turns": 0,
+    "questions": 4,
+    "kb_entry": "acidity",
+    "urgency": "self_care",
+    "medicines": [
+      "Antacid suspension (magnesium + aluminium hydroxide with simethicone)",
+      "Calcium carbonate (chewable antacid)"
+    ],
+    "mode": "normal",
+    "elapsed_s": 9.31
+  },
+  {
+    "caller": "hindi_headache",
+    "lines": [
+      [
+        "CALLER",
+        "मुझे दो दिन से हल्का सिरदर्द है, जो धीरे-धीरे शुरू हुआ था। मुझे बुखार, उल्टी या आंखों में कोई परेशानी नहीं है।"
+      ],
+      [
+        "AGENT",
+        "सिरदर्द होना दो दिन से, वो भी धीरे-धीरे... मैं समझ सकती हूँ, ये परेशान करने वाला होता है। अच्छा, ये आपके लिए ही है ना? और आपकी उम्र कितनी है?"
+      ],
+      [
+        "CALLER",
+        "जी, मेरे लिए ही है। मेरी उम्र 35 साल है।"
+      ],
+      [
+        "AGENT",
+        "देखिये, आप जो बता रही हैं ना, उससे लग रहा है कि ये tension या stress का सिरदर्द है, या फिर शायद पानी कम पीने या खाना छोड़ देने से भी हो सकता है। कभी-कभी बिना बुखार के भी हल्का viral infection शुरू हो रहा हो तो ऐसा हो जाता है। मैं आपको देख तो नहीं सकती, इसलिए पक्के तौर पर कुछ नहीं कह सकती, पर जो आपने बताया है उसके हिसाब से ये सबसे मुमकिन वजह है। आराम करने के लिए आप किसी शांत और कम रोशनी वाले कमरे में लेट जाइए। थोड़ा पानी पीते रहिए, और समय पर खाना खाइए। अगर नींद पूरी नहीं हो रही है तो उसे ठीक कीजिए। अगर दर्द ज़्यादा हो तो आप Paracetamol ले सकती हैं, जिसे Crocin भी कहते हैं। एक tablet, 500 mg की, हर 4 से 6 घंटे में ज़रूरत पड़ने पर। दिन में 8 tablets से ज़्यादा मत लीजिएगा, यानी 4 ग्राम से ज़्यादा नहीं। और इसे बस 3 दिन तक ही लीजिए। अगर आपको liver की कोई गंभीर बीमारी है या Paracetamol से एलर्जी है, तो इसे मत लीजिएगा। अगर गलती से ज़्यादा खा लिया है तो तुरंत अस्पताल जाइए। और एक बात, हफ्ते में ज़्यादातर दिन painkillers मत लीजिएगा, उससे अपना अलग सिरदर्द शुरू हो जाता है। packet पर जो dose लिखी है उससे ज़्यादा मत लीजिएगा। अगर सिरदर्द अचानक बहुत तेज़ हो जाए, बुखार और गर्दन अकड़ जाए, शरीर में कमजोरी लगे, बोलने या देखने में दिक्कत हो, सिर पर चोट लगी हो, या सिरदर्द लगातार बढ़ता जाए, तो आपको तुरंत डॉक्टर को दिखाना होगा। क्या आपको इसमें कुछ और पूछना है?"
+      ],
+      [
+        "CALLER",
+        "क्या मैं चाय पी सकती हूँ?"
+      ],
+      [
+        "AGENT",
+        "हाँ, आप चाय पी सकती हैं। बस ये ध्यान रखियेगा कि उसमें चीनी और दूध ज़्यादा न हो, क्योंकि कभी-कभी उससे सिरदर्द बढ़ सकता है। और दिन भर में पानी भी अच्छे से पीती रहिएगा। क्या और कुछ जानना चाहती हैं आप?"
+      ]
+    ],
+    "tools": [
+      "record_complaint",
+      "record_answer",
+      "record_answer",
+      "record_answer",
+      "finish_questions"
+    ],
+    "stages": [
+      "IntakeAgent",
+      "TriageAgent",
+      "RecommendAgent"
+    ],
+    "finish_refused": 0,
+    "multi_question_turns": 0,
+    "questions": 3,
+    "kb_entry": "headache",
+    "urgency": "self_care",
+    "medicines": [
+      "Paracetamol"
+    ],
+    "mode": "normal",
+    "elapsed_s": 4.1
+  },
+  {
+    "caller": "fever",
+    "lines": [
+      [
+        "CALLER",
+        "I got fever yesterday evening. I also have a mild headache and body ache."
+      ],
+      [
+        "AGENT",
+        "That sounds really uncomfortable, having fever along with headache and body ache. I'm sorry you've been dealing with this. Has the fever been going on since yesterday evening, or has it changed at all?"
+      ],
+      [
+        "CALLER",
+        "It has been the same since yesterday evening."
+      ],
+      [
+        "AGENT",
+        "I understand. And how would you describe the fever — is it high, or more mild? And is the headache and body ache bothering you a lot, or just a little?"
+      ],
+      [
+        "CALLER",
+        "It is mild. Just a little bother."
+      ],
+      [
+        "AGENT",
+        "Okay, that's good to know. Before I suggest anything, I need to ask — do you have any other worrying signs along with this, like vomiting, loose motions, a rash, or trouble breathing? Or is this for someone who is pregnant, very young, or very old?"
+      ],
+      [
+        "CALLER",
+        "No, no vomiting or loose motions. No rash, no stiff neck. I am drinking water normally. No one else is sick."
+      ],
+      [
+        "AGENT",
+        "This looks like a simple viral fever, like the common cold. You can take one Paracetamol 500 mg tablet every 4 to 6 hours if needed, but do not take more than 8 tablets in a full day. Do not cover yourself with heavy blankets. See a doctor if the fever stays for more than 3 days or does not settle. I'm a health assistant, not a doctor. This is general guidance only. Please see a qualified doctor if you are worried, if things get worse, or if you do not feel better soon."
+      ],
+      [
+        "AGENT",
+        "Take care of yourself."
+      ],
+      [
+        "CALLER",
+        "Can I still go to work in the field tomorrow?"
+      ],
+      [
+        "AGENT",
+        "If you feel up to it and can manage the work, you can go, but take it easy and rest when you can. Take care."
+      ]
+    ],
+    "tools": [
+      "record_complaint",
+      "record_answer",
+      "record_answer",
+      "record_answer",
+      "finish_questions",
+      "end_call",
+      "end_call",
+      "end_call",
+      "end_call",
+      "end_call"
+    ],
+    "stages": [
+      "IntakeAgent",
+      "TriageAgent",
+      "RecommendAgent"
+    ],
+    "finish_refused": 0,
+    "multi_question_turns": 0,
+    "questions": 3,
+    "kb_entry": "fever",
+    "urgency": "self_care",
+    "medicines": [
+      "Paracetamol"
+    ],
+    "mode": "demo",
+    "elapsed_s": 6.49
+  },
+  {
+    "caller": "child_diarrhoea",
+    "lines": [
+      [
+        "CALLER",
+        "No blood, no vomiting, and no fever. She is drinking water and passing urine normally, but has had loose motions about five times since this morning."
+      ],
+      [
+        "AGENT",
+        "I'm sorry she's been going through this since this morning. That must be worrying for you. You said no blood, no vomiting, and no fever — that's helpful. How long has this been going on, roughly?"
+      ],
+      [
+        "CALLER",
+        "It started this morning, so it has been about five or six hours now. She is still active and seems fine otherwise."
+      ],
+      [
+        "AGENT",
+        "Okay, five or six hours since this morning. And how bad is it — is she able to keep fluids down, or is she feeling very weak?"
+      ],
+      [
+        "CALLER",
+        "She is drinking water normally and hasn't felt weak at all."
+      ],
+      [
+        "AGENT",
+        "This looks like a mild stomach infection, probably from something she ate. Give her ORS after every loose motion, and if she is under six months, give 10 mg of Zinctek once daily for 14 days; if over six months, give 20 mg once daily for 14 days. Do not give any medicine to stop the motions. If she does not improve in two days, or if blood, vomiting, or weakness appears, please see a doctor. I'm a health assistant, not a doctor. This is general guidance only. Please see a qualified doctor if you are worried, if things get worse, or if you do not feel better soon."
+      ],
+      [
+        "AGENT",
+        "Take care, and I hope she feels better soon."
+      ],
+      [
+        "CALLER",
+        "Should I stop giving her food until it settles?"
+      ],
+      [
+        "AGENT",
+        "No, keep giving her normal food like khichdi or whatever she usually eats. Just make sure she keeps drinking enough water and ORS. Take care, and I hope she feels better soon."
+      ]
+    ],
+    "tools": [
+      "record_complaint",
+      "record_answer",
+      "record_answer",
+      "record_answer",
+      "finish_questions",
+      "end_call"
+    ],
+    "stages": [
+      "IntakeAgent",
+      "TriageAgent",
+      "RecommendAgent"
+    ],
+    "finish_refused": 0,
+    "multi_question_turns": 0,
+    "questions": 3,
+    "kb_entry": "diarrhoea",
+    "urgency": "self_care",
+    "medicines": [
+      "Zinc sulfate (dispersible)",
+      "Oral Rehydration Salts (WHO low-osmolarity)"
+    ],
+    "mode": "demo",
+    "elapsed_s": 3.54
+  },
+  {
+    "caller": "acidity",
+    "lines": [
+      [
+        "CALLER",
+        "Yeah, it’s been about a week now. It really flares up after I eat spicy food."
+      ],
+      [
+        "AGENT",
+        "That sounds really uncomfortable, especially when the food you enjoy makes it worse. I'm sorry you've been dealing with this for a week. Let me just note this down for you.\n\nTo help me understand better, is this about you, or is it for someone else? And how old are you, if you don't mind me asking? Also, did you mention your name earlier, or should I just use whatever you prefer?"
+      ],
+      [
+        "CALLER",
+        "It's about me, I'm forty. You can just call me Suresh."
+      ],
+      [
+        "AGENT",
+        "Thank you, Suresh. I understand this has been bothering you for about a week now. How bad is it at the moment — would you say it's mild, moderate, or quite severe?"
+      ],
+      [
+        "CALLER",
+        "It's moderate, I guess. It's a burning feeling in my chest after meals."
+      ],
+      [
+        "AGENT",
+        "I see, a burning feeling in your chest after eating, and it gets worse with spicy food. Before I suggest anything, I need to ask — are you noticing anything else along with this? Like vomiting, trouble swallowing, weight loss, or blood anywhere?"
+      ],
+      [
+        "CALLER",
+        "No, none of that. No vomiting, no trouble swallowing, no weight loss, and no blood."
+      ],
+      [
+        "AGENT",
+        "Suresh, this looks most likely like acid reflux or irritation from spicy food. Take small sips of ORS-L, one sachet in one litre of clean water, after each loose stool. Rest and avoid oily and spicy food for now. Do not lie down flat right after eating. See a doctor if you cannot keep fluids down, have severe pain, or do not feel better soon. I'm a health assistant, not a doctor. This is general guidance only. Please see a qualified doctor if you are worried, if things get worse, or if you do not feel better soon."
+      ],
+      [
+        "AGENT",
+        "Take care, Suresh. I hope you feel better soon."
+      ],
+      [
+        "CALLER",
+        "Can I still drink tea in the morning?"
+      ],
+      [
+        "AGENT",
+        "Suresh, it's better to avoid strong tea for now, especially on an empty stomach. Just take care of yourself."
+      ],
+      [
+        "AGENT",
+        "Take care, Suresh. Wishing you a quick recovery."
+      ],
+      [
+        "CALLER",
+        "My father has the same problem, can he take the same thing?"
+      ],
+      [
+        "AGENT",
+        "Suresh, I cannot safely say whether your father can take the same thing, because I don't know his age or other health details. Please ask a doctor or pharmacist for him. I'm a health assistant, not a doctor. This is general guidance only. Please see a qualified doctor if you are worried, if things get worse, or if you do not feel better soon."
+      ],
+      [
+        "AGENT",
+        "Take care, Suresh. Please do get your father checked by a doctor."
+      ]
+    ],
+    "tools": [
+      "record_complaint",
+      "record_caller_identity",
+      "record_answer",
+      "record_answer",
+      "record_answer",
+      "finish_questions",
+      "end_call",
+      "end_call",
+      "get_medicine_guidance",
+      "end_call"
+    ],
+    "stages": [
+      "IntakeAgent",
+      "TriageAgent",
+      "RecommendAgent"
+    ],
+    "finish_refused": 0,
+    "multi_question_turns": 1,
+    "questions": 3,
+    "kb_entry": "vomiting",
+    "urgency": "self_care",
+    "medicines": [],
+    "mode": "demo",
+    "elapsed_s": 8.74
+  },
+  {
+    "caller": "hindi_headache",
+    "lines": [
+      [
+        "CALLER",
+        "मुझे दो दिन से सिर में दर्द है, जो धीरे-धीरे शुरू हुआ था। मुझे बुखार, उल्टी या आँखों में कोई परेशानी नहीं है।"
+      ],
+      [
+        "AGENT",
+        "दो दिन से सिर में दर्द होना, वो भी धीरे-धीरे शुरू हुआ... मैं समझ सकती हूँ कि ये कितना परेशान करने वाला होता है। आपने बताया कि बुखार या उल्टी नहीं है, ये अच्छी बात है। अभी ये दर्द कितना तेज़ है, हल्का, मध्यम या बहुत ज़्यादा?"
+      ],
+      [
+        "CALLER",
+        "दर्द मध्यम है।"
+      ],
+      [
+        "AGENT",
+        "ये शायद तनाव या थकान से होने वाला सिरदर्द लग रहा है। आप एक शांत और कम रोशनी वाले कमरे में आराम करें और पानी पीते रहें। ज़रूरत पड़ने पर आप Paracetamol, यानी Crocin की एक गोली 500 mg ले सकते हैं, हर 4 से 6 घंटे में एक बार, 24 घंटे में 8 से ज़्यादा नहीं। हफ्ते में ज़्यादातर दिन पेनकिलर मत लीजिए। अगर ये ठीक नहीं होता या बढ़ता है, तो डॉक्टर को दिखाइए। मैं एक हेल्थ असिस्टेंट हूँ, डॉक्टर नहीं। ये सिर्फ सामान्य सलाह है। अगर आपको चिंता हो, हालत बिगड़े, या जल्दी आराम न मिले तो किसी योग्य डॉक्टर को ज़रूर दिखाइए।"
+      ],
+      [
+        "AGENT",
+        "अपना ख्याल रखिएगा।"
+      ],
+      [
+        "CALLER",
+        "क्या मैं चाय पी सकती हूँ?"
+      ],
+      [
+        "AGENT",
+        "हाँ, एक कप चाय से आराम मिल सकता है, बस उसमें चीनी कम रखिएगा। अपना ध्यान रखिए।"
+      ],
+      [
+        "AGENT",
+        "अपना ख्याल रखिएगा।"
+      ]
+    ],
+    "tools": [
+      "record_complaint",
+      "record_answer",
+      "record_answer",
+      "record_answer",
+      "finish_questions",
+      "end_call",
+      "end_call"
+    ],
+    "stages": [
+      "IntakeAgent",
+      "TriageAgent",
+      "RecommendAgent"
+    ],
+    "finish_refused": 0,
+    "multi_question_turns": 0,
+    "questions": 3,
+    "kb_entry": "headache",
+    "urgency": "self_care",
+    "medicines": [
+      "Paracetamol"
+    ],
+    "mode": "demo",
+    "elapsed_s": 13.77
+  },
+  {
+    "caller": "urgent_chest_pain",
+    "lines": [
+      [
+        "CALLER",
+        "I have crushing chest pain right now, sweating, and trouble breathing. It started 20 minutes ago."
+      ],
+      [
+        "AGENT",
+        "That sounds really frightening. I'm sorry you're going through this right now. Is the pain severe at this moment, or can you bear it?"
+      ],
+      [
+        "CALLER",
+        "It's severe. I can't bear it."
+      ],
+      [
+        "AGENT",
+        "I understand. This is serious, and we need to be careful. Are you seeing any other worrying signs — like pain spreading to your arm or jaw, feeling faint, or vomiting?"
+      ],
+      [
+        "CALLER",
+        "No, none of that. Just the chest pain, sweating, and trouble breathing."
+      ],
+      [
+        "AGENT",
+        "I hear you — you said it's severe and you can't bear it. I also need to know, is the pain spreading anywhere — to your arm, jaw, or back?"
+      ],
+      [
+        "CALLER",
+        "No, it's staying right in my chest. Just that."
+      ],
+      [
+        "AGENT",
+        "I'm a health assistant, not a doctor, so I can't be certain what's happening inside you. But this kind of pain with sweating and breathlessness needs to be seen by a doctor right away — we should not wait to see if it passes. Can you tell me, how far is your nearest clinic or hospital? And is there someone with you right now who can help?"
+      ]
+    ],
+    "tools": [
+      "record_complaint",
+      "finish_questions",
+      "finish_questions"
+    ],
+    "stages": [
+      "IntakeAgent",
+      "TriageAgent",
+      "EscalateAgent"
+    ],
+    "finish_refused": 1,
+    "multi_question_turns": 0,
+    "questions": 0,
+    "kb_entry": "chest_pain",
+    "urgency": "urgent",
+    "medicines": [],
+    "mode": "demo",
+    "elapsed_s": 18.07
+  }
+]

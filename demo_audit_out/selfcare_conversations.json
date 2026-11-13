@@ -1,0 +1,333 @@
+[
+  {
+    "language": "en-IN",
+    "case": "diarrhoea",
+    "lines": [
+      [
+        "caller",
+        "My daughter has diarrhea."
+      ],
+      [
+        "agent",
+        "How old is your daughter, and how many loose stools has she had today?"
+      ],
+      [
+        "caller",
+        "She is six years old, and she has had five loose stools since this morning."
+      ],
+      [
+        "agent",
+        "Is she showing any signs of dehydration, such as dry mouth, fewer wet diapers, or unusual sleepiness?"
+      ],
+      [
+        "caller",
+        "She's drinking and passing urine normally, so no, she's not showing any signs of dehydration."
+      ],
+      [
+        "agent",
+        "How long has she been having these loose stools?"
+      ],
+      [
+        "caller",
+        "Since this morning."
+      ],
+      [
+        "agent",
+        "This may be a simple stomach upset or viral gastroenteritis. Your six-year-old daughter has had five loose stools since this morning, but she is drinking normally and passing urine normally, which is reassuring. Keep offering her fluids and regular food; continue breastfeeding if applicable. Wash hands frequently with soap. A clinician or pharmacist must advise on any medicines. Do not stop fluids or food to rest the stomach, and do not give any medicine to stop the motions. Seek care urgently if you notice blood in the stool, no urine passed, sunken eyes, extreme weakness, vomiting everything, or no improvement in 2 days. I am not a doctor."
+      ]
+    ],
+    "questions": 3,
+    "assessed": true,
+    "emergency": false,
+    "kb": "diarrhoea",
+    "actions": [
+      {
+        "action": "ask",
+        "language": "en-IN",
+        "confirmed_symptoms": "diarrhea",
+        "denied_symptoms": "",
+        "topic": "history",
+        "question": "How old is your daughter, and how many loose stools has she had today?",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": "",
+        "opening_complete": false
+      },
+      {
+        "action": "ask",
+        "language": "en-IN",
+        "confirmed_symptoms": "Diarrhea.",
+        "denied_symptoms": "",
+        "topic": "severity",
+        "question": "Is she showing any signs of dehydration, such as dry mouth, fewer wet diapers, or unusual sleepiness?",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": "",
+        "opening_complete": false
+      },
+      {
+        "action": "ask",
+        "language": "en-IN",
+        "confirmed_symptoms": "",
+        "denied_symptoms": "",
+        "topic": "duration",
+        "question": "How long has she been having these loose stools?",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": "",
+        "opening_complete": false
+      },
+      {
+        "action": "assess",
+        "language": "en-IN",
+        "confirmed_symptoms": "Loose stools",
+        "denied_symptoms": "Dehydration signs such as dry mouth, reduced urine output, or unusual sleepiness",
+        "topic": "diarrhoea",
+        "question": "",
+        "likely": "This may be a simple stomach upset or viral gastroenteritis.",
+        "why": "Your six-year-old daughter has had five loose stools since this morning, but she is drinking normally and passing urine normally, which is reassuring.",
+        "do": "Keep offering her fluids and regular food; continue breastfeeding if applicable. Wash hands frequently with soap. A clinician or pharmacist must advise on any medicines.",
+        "avoid": "Do not stop fluids or food to rest the stomach, and do not give any medicine to stop the motions.",
+        "seek_care": "Seek care urgently if you notice blood in the stool, no urine passed, sunken eyes, extreme weakness, vomiting everything, or no improvement in 2 days. I am not a doctor.",
+        "answer": "",
+        "opening_complete": false
+      }
+    ]
+  },
+  {
+    "language": "en-IN",
+    "case": "reflux",
+    "lines": [
+      [
+        "caller",
+        "I get a burning sensation in my chest after eating."
+      ],
+      [
+        "agent",
+        "Does this burning happen right in the center of your chest, behind the breastbone?"
+      ],
+      [
+        "caller",
+        "Yes, that's exactly where it is."
+      ],
+      [
+        "agent",
+        "How long have you been experiencing this burning sensation after meals?"
+      ],
+      [
+        "caller",
+        "For a week."
+      ],
+      [
+        "agent",
+        "On a scale of mild to severe, how intense is the burning sensation?"
+      ],
+      [
+        "caller",
+        "It's mild."
+      ],
+      [
+        "agent",
+        "This may be acidity or heartburn after meals. You described a mild, central chest burning that began a week ago and occurs specifically after eating. Eat smaller meals and do not lie down for two hours after eating. Raise the head end of your bed slightly. Avoid very spicy, oily and sour foods, tea on an empty stomach, and tobacco. Please seek care if the burning happens during walking or exertion, if you notice black stools, vomiting blood, difficulty swallowing, weight loss, or if it continues for more than two weeks."
+      ]
+    ],
+    "questions": 3,
+    "assessed": true,
+    "emergency": false,
+    "kb": "acidity",
+    "actions": [
+      {
+        "action": "ask",
+        "language": "en-IN",
+        "confirmed_symptoms": "burning sensation in the chest after eating",
+        "denied_symptoms": "",
+        "topic": "location",
+        "question": "Does this burning happen right in the center of your chest, behind the breastbone?",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": "",
+        "opening_complete": false
+      },
+      {
+        "action": "ask",
+        "language": "en-IN",
+        "confirmed_symptoms": "",
+        "denied_symptoms": "",
+        "topic": "duration",
+        "question": "How long have you been experiencing this burning sensation after meals?",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": "",
+        "opening_complete": false
+      },
+      {
+        "action": "ask",
+        "language": "en-IN",
+        "confirmed_symptoms": "Burning sensation in the chest after eating.",
+        "denied_symptoms": "",
+        "topic": "severity",
+        "question": "On a scale of mild to severe, how intense is the burning sensation?",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": "",
+        "opening_complete": false
+      },
+      {
+        "action": "assess",
+        "language": "en-IN",
+        "confirmed_symptoms": "Burning sensation in the chest after eating",
+        "denied_symptoms": "",
+        "topic": "history",
+        "question": "",
+        "likely": "This may be acidity or heartburn after meals.",
+        "why": "You described a mild, central chest burning that began a week ago and occurs specifically after eating.",
+        "do": "Eat smaller meals and do not lie down for two hours after eating. Raise the head end of your bed slightly.",
+        "avoid": "Avoid very spicy, oily and sour foods, tea on an empty stomach, and tobacco.",
+        "seek_care": "Please seek care if the burning happens during walking or exertion, if you notice black stools, vomiting blood, difficulty swallowing, weight loss, or if it continues for more than two weeks.",
+        "answer": "",
+        "opening_complete": false
+      }
+    ]
+  },
+  {
+    "language": "en-IN",
+    "case": "headache",
+    "lines": [
+      [
+        "caller",
+        "I have a headache."
+      ],
+      [
+        "agent",
+        "How long have you had this headache, and how strong is it on a scale of 1 to 10?"
+      ],
+      [
+        "caller",
+        "It's been two days, and it's about a 4 or 5."
+      ],
+      [
+        "agent",
+        "Where exactly is the headache, and do you have any fever, vomiting, or blurred vision?"
+      ],
+      [
+        "caller",
+        "It's a moderate headache, kind of all over, and I don't have a fever, vomiting, or blurred vision."
+      ],
+      [
+        "agent",
+        "Have you had any recent stress, changes in sleep, or head injury?"
+      ],
+      [
+        "caller",
+        "I haven't had any head injury, but I have had some stress recently and my sleep has been a bit off."
+      ],
+      [
+        "agent",
+        "This may be a tension-type or stress-related headache. You have had a mild to moderate headache for two days, felt all over, along with recent stress and poor sleep, and you have no fever, vomiting, or vision changes. Rest in a quiet, dim room. Drink water and try to eat on time. Aim for regular sleep. Avoid taking painkillers most days of the week, as that can cause its own headaches. See a clinician promptly if the headache becomes sudden and severe, worsens over days, or is followed by weakness, speech trouble, or vision change."
+      ]
+    ],
+    "questions": 3,
+    "assessed": true,
+    "emergency": false,
+    "kb": "headache",
+    "actions": [
+      {
+        "action": "ask",
+        "language": "en-IN",
+        "confirmed_symptoms": "headache",
+        "denied_symptoms": "",
+        "topic": "headache",
+        "question": "How long have you had this headache, and how strong is it on a scale of 1 to 10?",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": "",
+        "opening_complete": false
+      },
+      {
+        "action": "ask",
+        "language": "en-IN",
+        "confirmed_symptoms": "",
+        "denied_symptoms": "",
+        "topic": "location",
+        "question": "Where exactly is the headache, and do you have any fever, vomiting, or blurred vision?",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": "",
+        "opening_complete": false
+      },
+      {
+        "action": "ask",
+        "language": "en-IN",
+        "confirmed_symptoms": "",
+        "denied_symptoms": "",
+        "topic": "history",
+        "question": "Have you had any recent stress, changes in sleep, or head injury?",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": "",
+        "opening_complete": false
+      },
+      {
+        "action": "assess",
+        "language": "en-IN",
+        "confirmed_symptoms": "headache",
+        "denied_symptoms": "fever, vomiting, blurred vision, head injury",
+        "topic": "headache",
+        "question": "",
+        "likely": "This may be a tension-type or stress-related headache.",
+        "why": "You have had a mild to moderate headache for two days, felt all over, along with recent stress and poor sleep, and you have no fever, vomiting, or vision changes.",
+        "do": "Rest in a quiet, dim room. Drink water and try to eat on time. Aim for regular sleep.",
+        "avoid": "Avoid taking painkillers most days of the week, as that can cause its own headaches.",
+        "seek_care": "See a clinician promptly if the headache becomes sudden and severe, worsens over days, or is followed by weakness, speech trouble, or vision change.",
+        "answer": "",
+        "opening_complete": false
+      }
+    ]
+  },
+  {
+    "language": "en-IN",
+    "case": "emergency",
+    "lines": [
+      [
+        "caller",
+        "I have crushing chest pain right now, along with sweating and trouble breathing. It started 20 minutes ago. I'm 55."
+      ],
+      [
+        "agent",
+        "These symptoms may be an emergency. Call 112 now for emergency help or ask someone nearby to call. Do not drive yourself or wait to see if it passes. I cannot confirm the cause on a call. Is someone with you who can help?"
+      ]
+    ],
+    "questions": 0,
+    "assessed": true,
+    "emergency": true,
+    "kb": null,
+    "actions": []
+  }
+]

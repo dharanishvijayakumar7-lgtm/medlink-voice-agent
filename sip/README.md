@@ -64,12 +64,34 @@ The CLI is optional for dashboard setup. To install it on Windows if needed:
 
 ## Demo verification
 
-### Protected demo audio
+### Current conversation policy
+
+Phone calls now start `ConversationAgent`, a shared structured-action flow for
+English, Hindi, Tamil, Telugu, Kannada, and Malayalam. It normally asks 3–6
+focused questions across the whole conversation, with a hard ceiling of six.
+Detailed opening descriptions can need fewer; emergencies bypass questioning.
+The final response explains a possible cause, why it fits, self-care, things to
+avoid, and when to get medical help. It offers no medicine recommendations or
+doses. Caller questions afterward do not start another diagnostic questionnaire.
+
+Language follows the caller automatically after the initial English greeting.
+The existing Sarvam models and protected-reply audio policy are unchanged.
+The legacy four-agent/medicine workflow and its settings remain in the repository
+for compatibility, but are not the active phone entrypoint. `MEDLINK_DEMO_MODE`
+does not shorten this new flow or force an early farewell.
+
+Run `uv run python scripts/audit_selfcare.py` for synthetic conversations covering
+four routine complaints and an emergency in every language. Results are saved
+in `demo_audit_out/selfcare_conversations.json`; no phone calls are placed and
+database/Firestore writes are disabled for the audit. These simulations are not
+a substitute for native-speaker review or testing audio on the actual phone.
+
+### Audio setup
 
 Set `MEDLINK_ALLOW_BARGE_IN=false` in `.env.local`. The agent finishes each reply
 before accepting the next answer. Wait until it stops speaking: speech and noise
 received during a reply are discarded and will not be answered later. This is
-independent of `MEDLINK_DEMO_MODE`, which controls conversation length.
+independent of `MEDLINK_DEMO_MODE`; that setting does not shorten the active flow.
 
 Restart the existing local worker after applying these changes (stop it with
 Ctrl+C, then run `uv run src/agent.py start`). Do not start a second worker.

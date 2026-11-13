@@ -1,0 +1,626 @@
+[
+  {
+    "language": "en-IN",
+    "case": "fever",
+    "lines": [
+      [
+        "caller",
+        "I have a fever."
+      ],
+      [
+        "agent",
+        "How many days have you had the fever?"
+      ],
+      [
+        "caller",
+        "Since yesterday evening, so just one day."
+      ],
+      [
+        "agent",
+        "How high is the fever and do you feel generally unwell, such as with chills or body aches?"
+      ],
+      [
+        "caller",
+        "I don't know the exact temperature. I do feel generally unwell with body aches."
+      ],
+      [
+        "agent",
+        "How old are you?"
+      ],
+      [
+        "caller",
+        "I'm 32."
+      ],
+      [
+        "agent",
+        "This could be a simple viral fever, but I cannot be certain. You have had a fever since yesterday evening and feel generally unwell with body aches. Drink plenty of water, rest, and eat light food. If you feel very hot, sponge your body with normal-temperature water. Do not cover yourself with heavy blankets. Avoid heavy blankets and strenuous activity. Please seek care if the fever lasts more than 3 days, if you develop a rash, neck stiffness, breathing difficulty, confusion, or very little urine."
+      ]
+    ],
+    "questions": 3,
+    "assessed": true,
+    "emergency": false,
+    "kb": "fever",
+    "actions": [
+      {
+        "action": "ask",
+        "language": "en-IN",
+        "confirmed_symptoms": "fever",
+        "denied_symptoms": "",
+        "topic": "history",
+        "question": "How many days have you had the fever?",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": "",
+        "opening_complete": false
+      },
+      {
+        "action": "ask",
+        "language": "en-IN",
+        "confirmed_symptoms": "",
+        "denied_symptoms": "",
+        "topic": "severity",
+        "question": "How high is the fever and do you feel generally unwell, such as with chills or body aches?",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": "",
+        "opening_complete": false
+      },
+      {
+        "action": "ask",
+        "language": "en-IN",
+        "confirmed_symptoms": "",
+        "denied_symptoms": "",
+        "topic": "age",
+        "question": "How old are you?",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": "",
+        "opening_complete": false
+      },
+      {
+        "action": "assess",
+        "language": "en-IN",
+        "confirmed_symptoms": "Fever for one day, body aches, feeling generally unwell.",
+        "denied_symptoms": "",
+        "topic": "fever",
+        "question": "",
+        "likely": "This could be a simple viral fever, but I cannot be certain.",
+        "why": "You have had a fever since yesterday evening and feel generally unwell with body aches.",
+        "do": "Drink plenty of water, rest, and eat light food. If you feel very hot, sponge your body with normal-temperature water. Do not cover yourself with heavy blankets.",
+        "avoid": "Avoid heavy blankets and strenuous activity.",
+        "seek_care": "Please seek care if the fever lasts more than 3 days, if you develop a rash, neck stiffness, breathing difficulty, confusion, or very little urine.",
+        "answer": "",
+        "opening_complete": false
+      }
+    ]
+  },
+  {
+    "language": "hi-IN",
+    "case": "fever",
+    "lines": [
+      [
+        "caller",
+        "मुझे बुखार है।"
+      ],
+      [
+        "agent",
+        "यह बुखार आपको कितने समय से है?"
+      ],
+      [
+        "caller",
+        "कल शाम से।"
+      ],
+      [
+        "agent",
+        "क्या आपको बुखार के साथ ठंड लग रही है, सिरदर्द है, या शरीर में दर्द है?"
+      ],
+      [
+        "caller",
+        "हाँ, कल शाम से मुझे बुखार, हल्का सिरदर्द और शरीर में दर्द है। बाकी मुझे कुछ और नहीं है।"
+      ],
+      [
+        "agent",
+        "आपकी उम्र क्या है?"
+      ],
+      [
+        "caller",
+        "मेरी उम्र 32 साल है।"
+      ],
+      [
+        "agent",
+        "यह वायरल इन्फेक्शन हो सकता है। आपने कल शाम से बुखार, हल्का सिरदर्द और शरीर में दर्द बताया है। बहुत सारा पानी पिएं, आराम करें, और हल्का खाना खाएं। भारी कंबल से न ढकें। अगर बुखार 3 दिन से ज्यादा रहे, रैश हो, गर्दन में अकड़न हो, सांस लेने में तकलीफ हो, या पेशाब बहुत कम आए, तो डॉक्टर को दिखाएं।"
+      ]
+    ],
+    "questions": 3,
+    "assessed": true,
+    "emergency": false,
+    "kb": "fever",
+    "actions": [
+      {
+        "action": "ask",
+        "language": "hi-IN",
+        "confirmed_symptoms": "fever",
+        "denied_symptoms": "",
+        "topic": "duration",
+        "question": "यह बुखार आपको कितने समय से है?",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": "",
+        "opening_complete": false
+      },
+      {
+        "action": "ask",
+        "language": "hi-IN",
+        "confirmed_symptoms": "fever",
+        "denied_symptoms": "",
+        "topic": "severity",
+        "question": "क्या आपको बुखार के साथ ठंड लग रही है, सिरदर्द है, या शरीर में दर्द है?",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": "",
+        "opening_complete": false
+      },
+      {
+        "action": "ask",
+        "language": "hi-IN",
+        "confirmed_symptoms": "fever, mild headache, body ache",
+        "denied_symptoms": "",
+        "topic": "age",
+        "question": "आपकी उम्र क्या है?",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": "",
+        "opening_complete": false
+      },
+      {
+        "action": "assess",
+        "language": "hi-IN",
+        "confirmed_symptoms": "Fever, mild headache, and body ache.",
+        "denied_symptoms": "",
+        "topic": "severity",
+        "question": "",
+        "likely": "यह वायरल इन्फेक्शन हो सकता है।",
+        "why": "आपने कल शाम से बुखार, हल्का सिरदर्द और शरीर में दर्द बताया है।",
+        "do": "बहुत सारा पानी पिएं, आराम करें, और हल्का खाना खाएं।",
+        "avoid": "भारी कंबल से न ढकें।",
+        "seek_care": "अगर बुखार 3 दिन से ज्यादा रहे, रैश हो, गर्दन में अकड़न हो, सांस लेने में तकलीफ हो, या पेशाब बहुत कम आए, तो डॉक्टर को दिखाएं।",
+        "answer": "",
+        "opening_complete": false
+      }
+    ]
+  },
+  {
+    "language": "ta-IN",
+    "case": "fever",
+    "lines": [
+      [
+        "caller",
+        "எனக்கு காய்ச்சல் இருக்கு."
+      ],
+      [
+        "agent",
+        "இந்த காய்ச்சல் எத்தனை நாட்களாக இருக்கிறது?"
+      ],
+      [
+        "caller",
+        "நேற்று மாலைல இருந்துதான் காய்ச்சல் இருக்கு."
+      ],
+      [
+        "agent",
+        "இப்போது தொந்தரவு எவ்வளவு கடுமையாக உள்ளது?"
+      ],
+      [
+        "caller",
+        "மிதமான தலைவலியும் உடல் வலியும் தான் இருக்கு. ரொம்ப கடுமையான தொந்தரவு இல்லை."
+      ],
+      [
+        "agent",
+        "உங்களுக்கு வயது என்ன?"
+      ],
+      [
+        "caller",
+        "எனக்கு 32 வயசு."
+      ],
+      [
+        "agent",
+        "இது சாதாரண வைரஸ் காய்ச்சலாக இருக்கலாம். ஏனென்றால் நேற்று மாலை முதல் உங்களுக்கு காய்ச்சல், லேசான தலைவலி மற்றும் உடல் வலி உள்ளது, ஆனால் தொந்தரவு மிதமாக உள்ளது. நிறைய தண்ணீர் குடியுங்கள், நன்றாக ஓய்வெடுங்கள், லேசான உணவை சாப்பிடுங்கள். மிகவும் சூடாக இருந்தால் சாதாரண தண்ணீர் கொண்டு உடலை துடைத்து விடுங்கள். கனமான போர்வைகளால் உங்களை மூடிக்கொள்ள வேண்டாம். காய்ச்சல் 3 நாட்களுக்கு மேல் இருந்தால், தடிப்புகள் வந்தால், கழுத்து விறைப்பு, மூச்சுத்திணறல், குழப்பம் அல்லது சிறுநீர் மிக குறைவாக இருந்தால் உடனடியாக மருத்துவரை அணுகுங்கள். நான் ஒரு மருத்துவர் அல்ல என்பதை நினைவில் கொள்ளுங்கள்."
+      ]
+    ],
+    "questions": 3,
+    "assessed": true,
+    "emergency": false,
+    "kb": "fever",
+    "actions": [
+      {
+        "action": "ask",
+        "language": "ta-IN",
+        "confirmed_symptoms": "fever",
+        "denied_symptoms": "",
+        "topic": "duration",
+        "question": "இந்த காய்ச்சல் எத்தனை நாட்களாக இருக்கிறது?",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": "",
+        "opening_complete": false
+      },
+      {
+        "action": "ask",
+        "language": "ta-IN",
+        "confirmed_symptoms": "",
+        "denied_symptoms": "",
+        "topic": "severity",
+        "question": "இப்போது தொந்தரவு எவ்வளவு கடுமையாக உள்ளது?",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": "",
+        "opening_complete": false
+      },
+      {
+        "action": "ask",
+        "language": "ta-IN",
+        "confirmed_symptoms": "fever, mild headache, body ache",
+        "denied_symptoms": "",
+        "topic": "age",
+        "question": "உங்களுக்கு வயது என்ன?",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": "",
+        "opening_complete": false
+      },
+      {
+        "action": "assess",
+        "language": "ta-IN",
+        "confirmed_symptoms": "fever, mild headache, body ache",
+        "denied_symptoms": "",
+        "topic": "fever",
+        "question": "",
+        "likely": "இது சாதாரண வைரஸ் காய்ச்சலாக இருக்கலாம்.",
+        "why": "ஏனென்றால் நேற்று மாலை முதல் உங்களுக்கு காய்ச்சல், லேசான தலைவலி மற்றும் உடல் வலி உள்ளது, ஆனால் தொந்தரவு மிதமாக உள்ளது.",
+        "do": "நிறைய தண்ணீர் குடியுங்கள், நன்றாக ஓய்வெடுங்கள், லேசான உணவை சாப்பிடுங்கள். மிகவும் சூடாக இருந்தால் சாதாரண தண்ணீர் கொண்டு உடலை துடைத்து விடுங்கள்.",
+        "avoid": "கனமான போர்வைகளால் உங்களை மூடிக்கொள்ள வேண்டாம்.",
+        "seek_care": "காய்ச்சல் 3 நாட்களுக்கு மேல் இருந்தால், தடிப்புகள் வந்தால், கழுத்து விறைப்பு, மூச்சுத்திணறல், குழப்பம் அல்லது சிறுநீர் மிக குறைவாக இருந்தால் உடனடியாக மருத்துவரை அணுகுங்கள். நான் ஒரு மருத்துவர் அல்ல என்பதை நினைவில் கொள்ளுங்கள்.",
+        "answer": "",
+        "opening_complete": false
+      }
+    ]
+  },
+  {
+    "language": "te-IN",
+    "case": "fever",
+    "lines": [
+      [
+        "caller",
+        "నాకు జ్వరం వచ్చింది."
+      ],
+      [
+        "agent",
+        "ఈ జ్వరం మీకు ఎన్ని రోజుల నుంచి ఉంది?"
+      ],
+      [
+        "caller",
+        "నిన్న సాయంత్రం నుంచి ఉంది."
+      ],
+      [
+        "agent",
+        "ఇప్పుడు సమస్య ఎంత తీవ్రంగా ఉంది?"
+      ],
+      [
+        "caller",
+        "పెద్దగా లేదు, కొంచెం జ్వరం, తలనొప్పి, ఒళ్లు నొప్పులు ఉన్నాయి అంతే."
+      ],
+      [
+        "agent",
+        "మీకు ఎంత వయసు?"
+      ],
+      [
+        "caller",
+        "నాకు 32 ఏళ్లు."
+      ],
+      [
+        "agent",
+        "ఇది వైరల్ ఇన్ఫెక్షన్ వల్ల వచ్చిన జ్వరం కావచ్చు. నిన్న సాయంత్రం నుంచి మీకు జ్వరం, తలనొప్పి, ఒళ్లు నొప్పులు ఉన్నాయి, కానీ తీవ్రత పెద్దగా లేదు. తగినంత నీరు తాగండి, విశ్రాంతి తీసుకోండి, తేలికపాటి ఆహారం తినండి. చాలా వేడిగా ఉంటే సాధారణ ఉష్ణోగ్రత ఉన్న నీటితో స్పాంజ్ చేసుకోండి. భారీ దుప్పట్లతో కప్పుకోకండి. జ్వరం 3 రోజుల కంటే ఎక్కువ ఉంటే, దద్దుర్లు, మెడ బిగుసుకుపోవడం, శ్వాస తీసుకోవడంలో ఇబ్బంది, గందరగోళం లేదా చాలా తక్కువ మూత్రం వస్తే వెంటనే వైద్యుడిని సంప్రదించండి. నేను డాక్టర్ని కాదు."
+      ]
+    ],
+    "questions": 3,
+    "assessed": true,
+    "emergency": false,
+    "kb": "fever",
+    "actions": [
+      {
+        "action": "ask",
+        "language": "te-IN",
+        "confirmed_symptoms": "fever",
+        "denied_symptoms": "",
+        "topic": "duration",
+        "question": "ఈ జ్వరం మీకు ఎన్ని రోజుల నుంచి ఉంది?",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": "",
+        "opening_complete": false
+      },
+      {
+        "action": "ask",
+        "language": "te-IN",
+        "confirmed_symptoms": "",
+        "denied_symptoms": "",
+        "topic": "severity",
+        "question": "ఇప్పుడు సమస్య ఎంత తీవ్రంగా ఉంది?",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": "",
+        "opening_complete": false
+      },
+      {
+        "action": "ask",
+        "language": "te-IN",
+        "confirmed_symptoms": "",
+        "denied_symptoms": "",
+        "topic": "age",
+        "question": "మీకు ఎంత వయసు?",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": "",
+        "opening_complete": false
+      },
+      {
+        "action": "assess",
+        "language": "te-IN",
+        "confirmed_symptoms": "fever, headache, body aches",
+        "denied_symptoms": "",
+        "topic": "fever",
+        "question": "",
+        "likely": "ఇది వైరల్ ఇన్ఫెక్షన్ వల్ల వచ్చిన జ్వరం కావచ్చు.",
+        "why": "నిన్న సాయంత్రం నుంచి మీకు జ్వరం, తలనొప్పి, ఒళ్లు నొప్పులు ఉన్నాయి, కానీ తీవ్రత పెద్దగా లేదు.",
+        "do": "తగినంత నీరు తాగండి, విశ్రాంతి తీసుకోండి, తేలికపాటి ఆహారం తినండి. చాలా వేడిగా ఉంటే సాధారణ ఉష్ణోగ్రత ఉన్న నీటితో స్పాంజ్ చేసుకోండి.",
+        "avoid": "భారీ దుప్పట్లతో కప్పుకోకండి.",
+        "seek_care": "జ్వరం 3 రోజుల కంటే ఎక్కువ ఉంటే, దద్దుర్లు, మెడ బిగుసుకుపోవడం, శ్వాస తీసుకోవడంలో ఇబ్బంది, గందరగోళం లేదా చాలా తక్కువ మూత్రం వస్తే వెంటనే వైద్యుడిని సంప్రదించండి. నేను డాక్టర్ని కాదు.",
+        "answer": "",
+        "opening_complete": false
+      }
+    ]
+  },
+  {
+    "language": "kn-IN",
+    "case": "fever",
+    "lines": [
+      [
+        "caller",
+        "ನನಗೆ ಜ್ವರ ಇದೆ."
+      ],
+      [
+        "agent",
+        "ನಿಮಗೆ ಈ ಜ್ವರ ಎಷ್ಟು ದಿನಗಳಿಂದ ಇದೆ?"
+      ],
+      [
+        "caller",
+        "ನಿನ್ನೆ ಸಂಜೆಯಿಂದ ಇದೆ."
+      ],
+      [
+        "agent",
+        "ಈಗ ತೊಂದರೆ ಎಷ್ಟು ತೀವ್ರವಾಗಿದೆ?"
+      ],
+      [
+        "caller",
+        "ತೊಂದರೆ ಸಾಧಾರಣವಾಗಿದೆ. ಜ್ವರ, ತಲೆನೋವು ಮತ್ತು ಮೈಕೈ ನೋವು ಇದೆ."
+      ],
+      [
+        "agent",
+        "ನಿಮ್ಮ ವಯಸ್ಸು ಎಷ್ಟು?"
+      ],
+      [
+        "caller",
+        "ನನಗೆ ೩೨ ವರ್ಷ."
+      ],
+      [
+        "agent",
+        "ಇದು ವೈರಲ್ ಇನ್ಫೆಕ್ಷನ್ ಆಗಿರಬಹುದು. ನಿಮಗೆ ನಿನ್ನೆ ಸಂಜೆಯಿಂದ ಜ್ವರ, ತಲೆನೋವು ಮತ್ತು ಮೈಕೈ ನೋವು ಇದೆ, ಮತ್ತು ತೊಂದರೆ ಸಾಧಾರಣವಾಗಿದೆ. ತುಂಬಾ ನೀರು ಕುಡಿಯಿರಿ, ವಿಶ್ರಾಂತಿ ಪಡೆಯಿರಿ, ಮತ್ತು ಹಗುರವಾದ ಆಹಾರ ಸೇವಿಸಿ. ಭಾರವಾದ ಹೊದಿಕೆಗಳಿಂದ ಮುಚ್ಚಿಕೊಳ್ಳಬೇಡಿ. ಮೂರು ದಿನಗಳಿಗಿಂತ ಹೆಚ್ಚು ಜ್ವರ ಇದ್ದರೆ, ಅಥವಾ ದದ್ದು, ಕುತ್ತಿಗೆ ಬಿಗಿತ, ಉಸಿರಾಟದ ತೊಂದರೆ, ಗೊಂದಲ, ಅಥವಾ ತುಂಬಾ ಕಡಿಮೆ ಮೂತ್ರ ವಿಸರ್ಜನೆ ಇದ್ದರೆ ತಕ್ಷಣ ವೈದ್ಯರನ್ನು ಸಂಪರ್ಕಿಸಿ. ನಾನು ವೈದ್ಯನಲ್ಲ."
+      ]
+    ],
+    "questions": 3,
+    "assessed": true,
+    "emergency": false,
+    "kb": "fever",
+    "actions": [
+      {
+        "action": "ask",
+        "language": "kn-IN",
+        "confirmed_symptoms": "fever",
+        "denied_symptoms": "",
+        "topic": "duration",
+        "question": "ನಿಮಗೆ ಈ ಜ್ವರ ಎಷ್ಟು ದಿನಗಳಿಂದ ಇದೆ?",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": "",
+        "opening_complete": false
+      },
+      {
+        "action": "ask",
+        "language": "kn-IN",
+        "confirmed_symptoms": "",
+        "denied_symptoms": "",
+        "topic": "severity",
+        "question": "ಈಗ ತೊಂದರೆ ಎಷ್ಟು ತೀವ್ರವಾಗಿದೆ?",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": "",
+        "opening_complete": false
+      },
+      {
+        "action": "ask",
+        "language": "kn-IN",
+        "confirmed_symptoms": "fever, headache, body ache",
+        "denied_symptoms": "",
+        "topic": "age",
+        "question": "ನಿಮ್ಮ ವಯಸ್ಸು ಎಷ್ಟು?",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": "",
+        "opening_complete": false
+      },
+      {
+        "action": "assess",
+        "language": "kn-IN",
+        "confirmed_symptoms": "Fever, headache, body ache",
+        "denied_symptoms": "",
+        "topic": "duration",
+        "question": "",
+        "likely": "ಇದು ವೈರಲ್ ಇನ್ಫೆಕ್ಷನ್ ಆಗಿರಬಹುದು.",
+        "why": "ನಿಮಗೆ ನಿನ್ನೆ ಸಂಜೆಯಿಂದ ಜ್ವರ, ತಲೆನೋವು ಮತ್ತು ಮೈಕೈ ನೋವು ಇದೆ, ಮತ್ತು ತೊಂದರೆ ಸಾಧಾರಣವಾಗಿದೆ.",
+        "do": "ತುಂಬಾ ನೀರು ಕುಡಿಯಿರಿ, ವಿಶ್ರಾಂತಿ ಪಡೆಯಿರಿ, ಮತ್ತು ಹಗುರವಾದ ಆಹಾರ ಸೇವಿಸಿ.",
+        "avoid": "ಭಾರವಾದ ಹೊದಿಕೆಗಳಿಂದ ಮುಚ್ಚಿಕೊಳ್ಳಬೇಡಿ.",
+        "seek_care": "ಮೂರು ದಿನಗಳಿಗಿಂತ ಹೆಚ್ಚು ಜ್ವರ ಇದ್ದರೆ, ಅಥವಾ ದದ್ದು, ಕುತ್ತಿಗೆ ಬಿಗಿತ, ಉಸಿರಾಟದ ತೊಂದರೆ, ಗೊಂದಲ, ಅಥವಾ ತುಂಬಾ ಕಡಿಮೆ ಮೂತ್ರ ವಿಸರ್ಜನೆ ಇದ್ದರೆ ತಕ್ಷಣ ವೈದ್ಯರನ್ನು ಸಂಪರ್ಕಿಸಿ. ನಾನು ವೈದ್ಯನಲ್ಲ.",
+        "answer": "",
+        "opening_complete": false
+      }
+    ]
+  },
+  {
+    "language": "ml-IN",
+    "case": "fever",
+    "lines": [
+      [
+        "caller",
+        "എനിക്ക് പനിയാണ്."
+      ],
+      [
+        "agent",
+        "നിങ്ങൾക്ക് എത്ര വയസ്സായി?"
+      ],
+      [
+        "caller",
+        "എനിക്ക് 32 വയസ്സായി."
+      ],
+      [
+        "agent",
+        "നിങ്ങൾക്ക് എത്ര ദിവസമായി പനിയുണ്ട്?"
+      ],
+      [
+        "caller",
+        "ഇന്നലെ വൈകുന്നേരം മുതൽ."
+      ],
+      [
+        "agent",
+        "പനിക്ക് നല്ല കടുത്ത വേദനയുണ്ടോ, അതോ സാധാരണ പോലെ മാത്രമാണോ?"
+      ],
+      [
+        "caller",
+        "സാധാരണ പോലെ മാത്രമാണ്. വലിയ കടുത്ത വേദന ഒന്നുമില്ല."
+      ],
+      [
+        "agent",
+        "സാധാരണ അണുബാധ കാരണമാകാം പനി വരുന്നത്. നിങ്ങൾ ഇന്നലെ വൈകുന്നേരം മുതൽ പനി ഉണ്ടെന്ന് പറഞ്ഞു, എന്നാൽ കടുത്ത വേദനയോ മറ്റ് ബുദ്ധിമുട്ടുകളോ ഇല്ല. ധാരാളം വെള്ളം കുടിക്കുക, വിശ്രമിക്കുക, ലഘുവായ ഭക്ഷണം കഴിക്കുക. ശരീരത്തിന് നല്ല ചൂടുണ്ടെങ്കിൽ സാധാരണ താപനിലയിലുള്ള വെള്ളം ഉപയോഗിച്ച് തുടയ്ക്കുക. ശരീരം മൂടിവെച്ച് ചൂട് കൂട്ടരുത്. പനി 3 ദിവസത്തിൽ കൂടുതൽ നീണ്ടുനിൽക്കുകയോ, ശരീരത്തിൽ പാടുകൾ കാണുകയോ, കഴുത്ത് വേദന, ശ്വാസംമുട്ടൽ, ആശയക്കുഴപ്പം, അല്ലെങ്കിൽ വളരെ കുറച്ച് മൂത്രം പോവുകയോ ചെയ്താൽ ഉടൻ ഡോക്ടറെ കാണുക."
+      ]
+    ],
+    "questions": 3,
+    "assessed": true,
+    "emergency": false,
+    "kb": "fever",
+    "actions": [
+      {
+        "action": "ask",
+        "language": "ml-IN",
+        "confirmed_symptoms": "fever",
+        "denied_symptoms": "",
+        "topic": "age",
+        "question": "നിങ്ങൾക്ക് എത്ര വയസ്സായി?",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": "",
+        "opening_complete": false
+      },
+      {
+        "action": "ask",
+        "language": "ml-IN",
+        "confirmed_symptoms": "",
+        "denied_symptoms": "",
+        "topic": "duration",
+        "question": "നിങ്ങൾക്ക് എത്ര ദിവസമായി പനിയുണ്ട്?",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": "",
+        "opening_complete": false
+      },
+      {
+        "action": "ask",
+        "language": "ml-IN",
+        "confirmed_symptoms": "",
+        "denied_symptoms": "",
+        "topic": "severity",
+        "question": "പനിക്ക് നല്ല കടുത്ത വേദനയുണ്ടോ, അതോ സാധാരണ പോലെ മാത്രമാണോ?",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": "",
+        "opening_complete": false
+      },
+      {
+        "action": "assess",
+        "language": "ml-IN",
+        "confirmed_symptoms": "Fever",
+        "denied_symptoms": "",
+        "topic": "fever",
+        "question": "",
+        "likely": "സാധാരണ അണുബാധ കാരണമാകാം പനി വരുന്നത്.",
+        "why": "നിങ്ങൾ ഇന്നലെ വൈകുന്നേരം മുതൽ പനി ഉണ്ടെന്ന് പറഞ്ഞു, എന്നാൽ കടുത്ത വേദനയോ മറ്റ് ബുദ്ധിമുട്ടുകളോ ഇല്ല.",
+        "do": "ധാരാളം വെള്ളം കുടിക്കുക, വിശ്രമിക്കുക, ലഘുവായ ഭക്ഷണം കഴിക്കുക. ശരീരത്തിന് നല്ല ചൂടുണ്ടെങ്കിൽ സാധാരണ താപനിലയിലുള്ള വെള്ളം ഉപയോഗിച്ച് തുടയ്ക്കുക.",
+        "avoid": "ശരീരം മൂടിവെച്ച് ചൂട് കൂട്ടരുത്.",
+        "seek_care": "പനി 3 ദിവസത്തിൽ കൂടുതൽ നീണ്ടുനിൽക്കുകയോ, ശരീരത്തിൽ പാടുകൾ കാണുകയോ, കഴുത്ത് വേദന, ശ്വാസംമുട്ടൽ, ആശയക്കുഴപ്പം, അല്ലെങ്കിൽ വളരെ കുറച്ച് മൂത്രം പോവുകയോ ചെയ്താൽ ഉടൻ ഡോക്ടറെ കാണുക.",
+        "answer": "",
+        "opening_complete": false
+      }
+    ]
+  }
+]

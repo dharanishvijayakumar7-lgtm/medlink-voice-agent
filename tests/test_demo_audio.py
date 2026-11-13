@@ -51,7 +51,7 @@ def test_worker_preloads_llm_resources():
 @pytest.mark.parametrize(
     "agent_cls",
     [
-        agent.IntakeAgent,
+        agent.ConversationAgent,
         pytest.param("TriageAgent"),
         pytest.param("RecommendAgent"),
         pytest.param("EscalateAgent"),
