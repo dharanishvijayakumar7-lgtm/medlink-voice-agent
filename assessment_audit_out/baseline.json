@@ -1,0 +1,2271 @@
+[
+  {
+    "language": "en-IN",
+    "case": "hair_gradual",
+    "input": "I am 28. My hair has gradually thinned at the front hairline for two years. My father has similar thinning. I have no scalp itching, flaking or pain.",
+    "proposals": [
+      {
+        "action": "ask",
+        "language": "en-IN",
+        "confirmed_symptoms": "Gradual thinning at the front hairline for two years.",
+        "denied_symptoms": "Scalp itching, flaking, and pain.",
+        "topic": "progression",
+        "question": "Has the thinning been gradual, or has it changed suddenly?",
+        "important_gap": "",
+        "facts": [
+          {
+            "topic": "age",
+            "value": "28 years old",
+            "status": "reported",
+            "quote": "I am 28."
+          },
+          {
+            "topic": "hair_pattern",
+            "value": "Thinning at the front hairline",
+            "status": "reported",
+            "quote": "My hair has gradually thinned at the front hairline"
+          },
+          {
+            "topic": "duration",
+            "value": "Two years",
+            "status": "reported",
+            "quote": "for two years"
+          },
+          {
+            "topic": "family_history",
+            "value": "Father has similar thinning",
+            "status": "reported",
+            "quote": "My father has similar thinning"
+          },
+          {
+            "topic": "scalp_changes",
+            "value": "No scalp itching, flaking or pain",
+            "status": "reported",
+            "quote": "I have no scalp itching, flaking or pain"
+          }
+        ],
+        "stop_quote": "",
+        "likely": "",
+        "why": "This gradual thinning at the front hairline with a family pattern could be hereditary pattern hair loss.",
+        "do": "Handle your hair gently and wash with a gentle shampoo. Let it dry naturally when you can.",
+        "avoid": "",
+        "seek_care": "Please arrange to see a clinician or dermatologist for a proper examination.",
+        "answer": ""
+      },
+      {
+        "action": "ask",
+        "language": "en-IN",
+        "confirmed_symptoms": "Gradual thinning at the front hairline for two years.",
+        "denied_symptoms": "No scalp itching, flaking or pain.",
+        "topic": "progression",
+        "question": "Has the thinning been gradual, or has it changed suddenly?",
+        "important_gap": "",
+        "facts": [
+          {
+            "topic": "age",
+            "value": "28 years old",
+            "status": "reported",
+            "quote": "I am 28."
+          },
+          {
+            "topic": "hair_pattern",
+            "value": "Thinning at the front hairline",
+            "status": "reported",
+            "quote": "My hair has gradually thinned at the front hairline"
+          },
+          {
+            "topic": "duration",
+            "value": "Two years",
+            "status": "reported",
+            "quote": "for two years"
+          },
+          {
+            "topic": "family_history",
+            "value": "Father has similar thinning",
+            "status": "reported",
+            "quote": "My father has similar thinning"
+          },
+          {
+            "topic": "scalp_changes",
+            "value": "No scalp itching, flaking or pain",
+            "status": "reported",
+            "quote": "I have no scalp itching, flaking or pain"
+          }
+        ],
+        "stop_quote": "",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": ""
+      }
+    ],
+    "spoken": [
+      "Hair loss can have different causes, and I cannot tell which applies without an examination. Use a gentle shampoo and conditioner, and let your hair dry naturally. Book a visit for ongoing loss; get checked sooner for sudden patches or a painful, inflamed scalp."
+    ],
+    "kb": "hair_loss",
+    "actions": [
+      {
+        "action": "assess",
+        "language": "en-IN",
+        "confirmed_symptoms": "",
+        "denied_symptoms": "",
+        "topic": "",
+        "question": "",
+        "important_gap": "",
+        "facts": [],
+        "stop_quote": "",
+        "likely": "Hair loss can have several causes; I cannot confirm which one applies on this call.",
+        "why": "Hair loss can have different causes, and I cannot tell which applies without an examination.",
+        "do": "Use a gentle shampoo and conditioner, and let your hair dry naturally.",
+        "avoid": "Avoid tight hairstyles, high heat, harsh chemical treatments and unverified hair-growth remedies.",
+        "seek_care": "Book a visit for ongoing loss; get checked sooner for sudden patches or a painful, inflamed scalp.",
+        "answer": ""
+      }
+    ],
+    "assessed": true
+  },
+  {
+    "language": "en-IN",
+    "case": "fever",
+    "input": "I am 32. I have had mild fever and body aches since yesterday. I can drink and pass urine normally. There is no breathing difficulty, stiff neck, rash or confusion. The cause is unknown.",
+    "proposals": [
+      {
+        "action": "ask",
+        "language": "en-IN",
+        "confirmed_symptoms": "mild fever and body aches",
+        "denied_symptoms": "breathing difficulty, stiff neck, rash, confusion",
+        "topic": "fever_measurement",
+        "question": "Have you measured your temperature, or does your body feel very hot?",
+        "important_gap": "",
+        "facts": [
+          {
+            "topic": "age",
+            "value": "32",
+            "status": "reported",
+            "quote": "I am 32."
+          },
+          {
+            "topic": "fever_duration",
+            "value": "since yesterday",
+            "status": "reported",
+            "quote": "since yesterday"
+          },
+          {
+            "topic": "fever_severity",
+            "value": "mild",
+            "status": "reported",
+            "quote": "mild fever"
+          },
+          {
+            "topic": "associated_symptoms",
+            "value": "body aches",
+            "status": "reported",
+            "quote": "body aches"
+          },
+          {
+            "topic": "hydration",
+            "value": "normal",
+            "status": "reported",
+            "quote": "I can drink and pass urine normally."
+          },
+          {
+            "topic": "breathing_difficulty",
+            "value": "denied",
+            "status": "reported",
+            "quote": "There is no breathing difficulty"
+          },
+          {
+            "topic": "neck_stiffness",
+            "value": "denied",
+            "status": "reported",
+            "quote": "no stiff neck"
+          },
+          {
+            "topic": "rash",
+            "value": "denied",
+            "status": "reported",
+            "quote": "no rash"
+          },
+          {
+            "topic": "confusion",
+            "value": "denied",
+            "status": "reported",
+            "quote": "no confusion"
+          },
+          {
+            "topic": "cause",
+            "value": "unknown",
+            "status": "reported",
+            "quote": "The cause is unknown."
+          }
+        ],
+        "stop_quote": "",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": ""
+      },
+      {
+        "action": "ask",
+        "language": "en-IN",
+        "confirmed_symptoms": "Mild fever and body aches since yesterday",
+        "denied_symptoms": "Breathing difficulty, stiff neck, rash, confusion",
+        "topic": "fever_duration",
+        "question": "How many days have you had the fever?",
+        "important_gap": "",
+        "facts": [
+          {
+            "topic": "fever_present",
+            "value": "Mild fever since yesterday",
+            "status": "reported",
+            "quote": "I have had mild fever and body aches since yesterday"
+          },
+          {
+            "topic": "body_aches_present",
+            "value": "Body aches since yesterday",
+            "status": "reported",
+            "quote": "I have had mild fever and body aches since yesterday"
+          },
+          {
+            "topic": "hydration_normal",
+            "value": "Normal",
+            "status": "reported",
+            "quote": "I can drink and pass urine normally"
+          },
+          {
+            "topic": "breathing_difficulty_denied",
+            "value": "No",
+            "status": "reported",
+            "quote": "There is no breathing difficulty"
+          },
+          {
+            "topic": "neck_stiffness_denied",
+            "value": "No",
+            "status": "reported",
+            "quote": "There is no breathing difficulty, stiff neck, rash or confusion"
+          },
+          {
+            "topic": "rash_denied",
+            "value": "No",
+            "status": "reported",
+            "quote": "There is no breathing difficulty, stiff neck, rash or confusion"
+          },
+          {
+            "topic": "confusion_denied",
+            "value": "No",
+            "status": "reported",
+            "quote": "There is no breathing difficulty, stiff neck, rash or confusion"
+          },
+          {
+            "topic": "cause_unknown",
+            "value": "Unknown",
+            "status": "reported",
+            "quote": "The cause is unknown"
+          }
+        ],
+        "stop_quote": "",
+        "likely": "",
+        "why": "This could be a simple viral fever, which fits with the mild fever and body aches you mentioned.",
+        "do": "Keep drinking fluids and get plenty of rest. Sponge with normal-temperature water if you feel very hot.",
+        "avoid": "",
+        "seek_care": "If the fever lasts more than 3 days or you develop a rash, stiff neck, breathing trouble, or confusion, please seek care promptly.",
+        "answer": ""
+      }
+    ],
+    "spoken": [
+      "The concern you described matches the guidance for fever, but an examination may be needed to identify its cause. Drink plenty of water or ORS. Rest. Sponge the body with normal-temperature water if very hot. Eat light food. Fever lasting more than 3 days, fever in a child under 5, fever with a rash, neck stiffness, breathing difficulty, confusion, or very little urine."
+    ],
+    "kb": "fever",
+    "actions": [
+      {
+        "action": "assess",
+        "language": "en-IN",
+        "confirmed_symptoms": "",
+        "denied_symptoms": "",
+        "topic": "",
+        "question": "",
+        "important_gap": "",
+        "facts": [],
+        "stop_quote": "",
+        "likely": "I cannot identify a specific cause from this conversation.",
+        "why": "The concern you described matches the guidance for fever, but an examination may be needed to identify its cause.",
+        "do": "Drink plenty of water or ORS. Rest. Sponge the body with normal-temperature water if very hot. Eat light food.",
+        "avoid": "Do not cover with heavy blankets.",
+        "seek_care": "Fever lasting more than 3 days, fever in a child under 5, fever with a rash, neck stiffness, breathing difficulty, confusion, or very little urine.",
+        "answer": ""
+      }
+    ],
+    "assessed": true
+  },
+  {
+    "language": "en-IN",
+    "case": "headache",
+    "input": "I am 35. I have had a moderate headache for two days. It started gradually after long hours looking at a screen. No injury, fever, stiff neck, weakness or vision changes. I do not know the cause.",
+    "proposals": [
+      {
+        "action": "ask",
+        "language": "en-IN",
+        "confirmed_symptoms": "moderate headache for two days",
+        "denied_symptoms": "injury, fever, stiff neck, weakness, vision changes",
+        "topic": "headache_frequency",
+        "question": "Do you get this kind of headache often?",
+        "important_gap": "",
+        "facts": [
+          {
+            "topic": "headache_duration",
+            "value": "moderate headache for two days",
+            "status": "reported",
+            "quote": "I have had a moderate headache for two days"
+          },
+          {
+            "topic": "headache_onset",
+            "value": "gradual onset after long hours looking at a screen",
+            "status": "reported",
+            "quote": "It started gradually after long hours looking at a screen"
+          },
+          {
+            "topic": "associated_symptoms_denied",
+            "value": "no injury, fever, stiff neck, weakness, or vision changes",
+            "status": "reported",
+            "quote": "No injury, fever, stiff neck, weakness or vision changes"
+          },
+          {
+            "topic": "headache_cause_unknown",
+            "value": "unknown",
+            "status": "reported",
+            "quote": "I do not know the cause"
+          }
+        ],
+        "stop_quote": "",
+        "likely": "",
+        "why": "This may be a tension-type headache from screen strain, since you mentioned it started after long hours looking at a screen.",
+        "do": "Rest in a quiet, dim room and drink water. If it happens often, try taking regular breaks from the screen.",
+        "avoid": "",
+        "seek_care": "See a clinician if it becomes sudden and severe, or if you develop fever, neck stiffness, weakness, speech trouble, or vision changes.",
+        "answer": ""
+      },
+      {
+        "action": "ask",
+        "language": "en-IN",
+        "confirmed_symptoms": "moderate headache for two days",
+        "denied_symptoms": "injury, fever, stiff neck, weakness, vision changes",
+        "topic": "headache_frequency",
+        "question": "Do you get this kind of headache often?",
+        "important_gap": "",
+        "facts": [
+          {
+            "topic": "duration",
+            "value": "moderate headache for two days",
+            "status": "reported",
+            "quote": "I have had a moderate headache for two days"
+          },
+          {
+            "topic": "headache_onset",
+            "value": "gradual onset after long hours looking at a screen",
+            "status": "reported",
+            "quote": "It started gradually after long hours looking at a screen"
+          },
+          {
+            "topic": "associated_symptoms_denied",
+            "value": "no injury, fever, stiff neck, weakness, or vision changes",
+            "status": "reported",
+            "quote": "No injury, fever, stiff neck, weakness or vision changes"
+          },
+          {
+            "topic": "headache_cause_unknown",
+            "value": "unknown",
+            "status": "reported",
+            "quote": "I do not know the cause"
+          }
+        ],
+        "stop_quote": "",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": ""
+      }
+    ],
+    "spoken": [
+      "The concern you described matches the guidance for headache, but an examination may be needed to identify its cause. Rest in a quiet, dim room. Drink water - headaches are often from not drinking enough or skipping meals. Regular sleep helps. A sudden very severe headache, headache with fever and a stiff neck, any weakness or speech or vision change, headache after a head injury, or a headache that keeps getting worse over days."
+    ],
+    "kb": "headache",
+    "actions": [
+      {
+        "action": "assess",
+        "language": "en-IN",
+        "confirmed_symptoms": "",
+        "denied_symptoms": "",
+        "topic": "",
+        "question": "",
+        "important_gap": "",
+        "facts": [],
+        "stop_quote": "",
+        "likely": "I cannot identify a specific cause from this conversation.",
+        "why": "The concern you described matches the guidance for headache, but an examination may be needed to identify its cause.",
+        "do": "Rest in a quiet, dim room. Drink water - headaches are often from not drinking enough or skipping meals. Regular sleep helps.",
+        "avoid": "Do not take painkillers most days of the week - that causes headaches of its own. Do not exceed the dose on the packet, and do not wait at home with a headache that came on suddenly and severely.",
+        "seek_care": "A sudden very severe headache, headache with fever and a stiff neck, any weakness or speech or vision change, headache after a head injury, or a headache that keeps getting worse over days.",
+        "answer": ""
+      }
+    ],
+    "assessed": true
+  },
+  {
+    "language": "en-IN",
+    "case": "unknown",
+    "input": "I am 28. I have had hiccups on and off for two days. They make eating uncomfortable. I do not know a trigger and have no other symptoms to report.",
+    "proposals": [
+      {
+        "action": "ask",
+        "language": "en-IN",
+        "confirmed_symptoms": "",
+        "denied_symptoms": "",
+        "topic": "associated_features",
+        "question": "Do you feel any burning in your chest or throat along with the hiccups?",
+        "important_gap": "",
+        "facts": [],
+        "stop_quote": "",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": ""
+      },
+      {
+        "action": "ask",
+        "language": "en-IN",
+        "confirmed_symptoms": "Hiccups on and off for two days that make eating uncomfortable",
+        "denied_symptoms": "",
+        "topic": "hiccups_pattern",
+        "question": "Do these hiccups come in sudden bursts or do they happen one by one continuously?",
+        "important_gap": "",
+        "facts": [
+          {
+            "topic": "hiccups_duration",
+            "value": "Two days",
+            "status": "reported",
+            "quote": "I have had hiccups on and off for two days"
+          },
+          {
+            "topic": "hiccups_impact",
+            "value": "Makes eating uncomfortable",
+            "status": "reported",
+            "quote": "They make eating uncomfortable"
+          },
+          {
+            "topic": "hiccups_triggers",
+            "value": "Unknown",
+            "status": "reported",
+            "quote": "I do not know a trigger"
+          },
+          {
+            "topic": "hiccups_associated_symptoms",
+            "value": "None reported",
+            "status": "reported",
+            "quote": "I have no other symptoms to report"
+          }
+        ],
+        "stop_quote": "",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": ""
+      }
+    ],
+    "spoken": [
+      "The concern you described matches the guidance for acidity / heartburn / indigestion, but an examination may be needed to identify its cause. Cut down on very spicy, oily and sour food, tea on an empty stomach, and tobacco. Raise the head end of the bed slightly. Burning brought on by walking or exertion (this can be the heart, not the stomach), black stools, vomiting blood, difficulty swallowing, weight loss, or symptoms lasting more than two weeks."
+    ],
+    "kb": "acidity",
+    "actions": [
+      {
+        "action": "assess",
+        "language": "en-IN",
+        "confirmed_symptoms": "",
+        "denied_symptoms": "",
+        "topic": "",
+        "question": "",
+        "important_gap": "",
+        "facts": [],
+        "stop_quote": "",
+        "likely": "I cannot identify a specific cause from this conversation.",
+        "why": "The concern you described matches the guidance for acidity / heartburn / indigestion, but an examination may be needed to identify its cause.",
+        "do": "Cut down on very spicy, oily and sour food, tea on an empty stomach, and tobacco. Raise the head end of the bed slightly.",
+        "avoid": "Eat smaller meals and do not lie down for two hours after eating.",
+        "seek_care": "Burning brought on by walking or exertion (this can be the heart, not the stomach), black stools, vomiting blood, difficulty swallowing, weight loss, or symptoms lasting more than two weeks.",
+        "answer": ""
+      }
+    ],
+    "assessed": true
+  },
+  {
+    "language": "hi-IN",
+    "case": "hair_gradual",
+    "input": "मेरी उम्र 28 साल है। दो साल से आगे की तरफ बाल धीरे-धीरे कम हो रहे हैं। मेरे पिता के बाल भी ऐसे ही कम हुए हैं। सिर में खुजली, पपड़ी या दर्द नहीं है।",
+    "proposals": [
+      {
+        "action": "ask",
+        "language": "hi-IN",
+        "confirmed_symptoms": "Gradual hair thinning at the front over two years with a family history of similar pattern and no scalp symptoms.",
+        "denied_symptoms": "",
+        "topic": "progression",
+        "question": "क्या यह पतलापन धीरे-धीरे बढ़ा है, या अचानक से शुरू हुआ?",
+        "important_gap": "",
+        "facts": [
+          {
+            "topic": "age",
+            "value": "28 years old",
+            "status": "reported",
+            "quote": "मेरी उम्र 28 साल है"
+          },
+          {
+            "topic": "duration",
+            "value": "two years",
+            "status": "reported",
+            "quote": "दो साल से आगे की तरफ बाल धीरे-धीरे कम हो रहे हैं"
+          },
+          {
+            "topic": "family_history",
+            "value": "father had similar hair loss",
+            "status": "reported",
+            "quote": "मेरे पिता के बाल भी ऐसे ही कम हुए हैं"
+          },
+          {
+            "topic": "scalp_changes",
+            "value": "no itching, no scaling, no pain",
+            "status": "reported",
+            "quote": "सिर में खुजली, पपड़ी या दर्द नहीं है"
+          }
+        ],
+        "stop_quote": "",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": ""
+      },
+      {
+        "action": "ask",
+        "language": "hi-IN",
+        "confirmed_symptoms": "Gradual hair thinning for two years",
+        "denied_symptoms": "No scalp itching, scaling, or pain",
+        "topic": "hair_pattern",
+        "question": "बालों का पतलापन कहाँ ज़्यादा दिख रहा है, जैसे पूरी सिर पर, अलग-अलग जगहों पर, या मुख्य रूप से आगे की लाइन में?",
+        "important_gap": "",
+        "facts": [
+          {
+            "topic": "age",
+            "value": "28 years old",
+            "status": "reported",
+            "quote": "मेरी उम्र 28 साल है"
+          },
+          {
+            "topic": "duration",
+            "value": "two years",
+            "status": "reported",
+            "quote": "दो साल से आगे की तरफ बाल धीरे-धीरे कम हो रहे हैं"
+          },
+          {
+            "topic": "family_history",
+            "value": "father had similar hair loss",
+            "status": "reported",
+            "quote": "मेरे पिता के बाल भी ऐसे ही कम हुए हैं"
+          },
+          {
+            "topic": "scalp_changes",
+            "value": "no itching, no scaling, no pain",
+            "status": "reported",
+            "quote": "सिर में खुजली, पपड़ी या दर्द नहीं है"
+          }
+        ],
+        "stop_quote": "",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": ""
+      }
+    ],
+    "spoken": [
+      "बाल झड़ने की अलग-अलग वजहें हो सकती हैं; जाँच के बिना आपकी वजह पक्की नहीं बता सकती। हल्के शैम्पू और कंडीशनर से बालों को धीरे धोएँ और हवा में सूखने दें। बाल लगातार झड़ें तो डॉक्टर से मिलें; अचानक चकत्ते, दर्द या सूजन हो तो जल्दी दिखाएँ।"
+    ],
+    "kb": "hair_loss",
+    "actions": [
+      {
+        "action": "assess",
+        "language": "hi-IN",
+        "confirmed_symptoms": "",
+        "denied_symptoms": "",
+        "topic": "",
+        "question": "",
+        "important_gap": "",
+        "facts": [],
+        "stop_quote": "",
+        "likely": "बाल झड़ने की कई वजहें हो सकती हैं; फोन पर पक्की वजह नहीं बता सकती।",
+        "why": "बाल झड़ने की अलग-अलग वजहें हो सकती हैं; जाँच के बिना आपकी वजह पक्की नहीं बता सकती।",
+        "do": "हल्के शैम्पू और कंडीशनर से बालों को धीरे धोएँ और हवा में सूखने दें।",
+        "avoid": "बाल कसकर बाँधने, तेज गर्मी, कठोर केमिकल और बिना प्रमाण वाले बाल उगाने के नुस्खों से बचें।",
+        "seek_care": "बाल लगातार झड़ें तो डॉक्टर से मिलें; अचानक चकत्ते, दर्द या सूजन हो तो जल्दी दिखाएँ।",
+        "answer": ""
+      }
+    ],
+    "assessed": true
+  },
+  {
+    "language": "hi-IN",
+    "case": "fever",
+    "input": "मेरी उम्र 32 साल है। कल से हल्का बुखार और बदन दर्द है। पानी पी रही हूँ और पेशाब सामान्य है। साँस लेने में परेशानी, गर्दन में अकड़न, दाने या उलझन नहीं है। वजह नहीं पता।",
+    "proposals": [
+      {
+        "action": "ask",
+        "language": "hi-IN",
+        "confirmed_symptoms": "Mild fever since yesterday and body ache.",
+        "denied_symptoms": "No breathing difficulty, no neck stiffness, no rash, no confusion.",
+        "topic": "fever_duration",
+        "question": "आपको यह बुखार कितने दिनों से है?",
+        "important_gap": "",
+        "facts": [
+          {
+            "topic": "age",
+            "value": "32 years old",
+            "status": "reported",
+            "quote": "मेरी उम्र 32 साल है"
+          },
+          {
+            "topic": "fever",
+            "value": "mild fever since yesterday",
+            "status": "reported",
+            "quote": "कल से हल्का बुखार"
+          },
+          {
+            "topic": "body_ache",
+            "value": "body ache",
+            "status": "reported",
+            "quote": "बदन दर्द"
+          },
+          {
+            "topic": "hydration",
+            "value": "drinking water, normal urine",
+            "status": "reported",
+            "quote": "पानी पी रही हूँ और पेशाब सामान्य है"
+          },
+          {
+            "topic": "breathing",
+            "value": "no breathing difficulty",
+            "status": "denied",
+            "quote": "साँस लेने में परेशानी"
+          },
+          {
+            "topic": "neck_stiffness",
+            "value": "no neck stiffness",
+            "status": "denied",
+            "quote": "गर्दन में अकड़न"
+          },
+          {
+            "topic": "rash",
+            "value": "no rash",
+            "status": "denied",
+            "quote": "दाने"
+          },
+          {
+            "topic": "confusion",
+            "value": "no confusion",
+            "status": "denied",
+            "quote": "उलझन नहीं है"
+          }
+        ],
+        "stop_quote": "",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": ""
+      },
+      {
+        "action": "ask",
+        "language": "hi-IN",
+        "confirmed_symptoms": "mild fever since yesterday, body ache",
+        "denied_symptoms": "breathing difficulty, neck stiffness, rash, confusion",
+        "topic": "fever_duration",
+        "question": "आपको यह बुखार कितने दिनों से है?",
+        "important_gap": "",
+        "facts": [
+          {
+            "topic": "age",
+            "value": "32 years old",
+            "status": "reported",
+            "quote": "मेरी उम्र 32 साल है"
+          },
+          {
+            "topic": "fever",
+            "value": "mild fever since yesterday",
+            "status": "reported",
+            "quote": "कल से हल्का बुखार"
+          },
+          {
+            "topic": "body_ache",
+            "value": "body ache",
+            "status": "reported",
+            "quote": "बदन दर्द"
+          },
+          {
+            "topic": "hydration",
+            "value": "drinking water, normal urine",
+            "status": "reported",
+            "quote": "पानी पी रही हूँ और पेशाब सामान्य है"
+          },
+          {
+            "topic": "breathing",
+            "value": "no breathing difficulty",
+            "status": "denied",
+            "quote": "साँस लेने में परेशानी"
+          },
+          {
+            "topic": "neck_stiffness",
+            "value": "no neck stiffness",
+            "status": "denied",
+            "quote": "गर्दन में अकड़न"
+          },
+          {
+            "topic": "rash",
+            "value": "no rash",
+            "status": "denied",
+            "quote": "दाने"
+          },
+          {
+            "topic": "confusion",
+            "value": "no confusion",
+            "status": "denied",
+            "quote": "उलझन नहीं है"
+          }
+        ],
+        "stop_quote": "",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": ""
+      }
+    ],
+    "spoken": [
+      "जवाब देने वाली सेवा में कनेक्शन की समस्या है। आपका आकलन अभी पूरा नहीं हुआ है। कृपया थोड़ी देर में फिर कोशिश करें।"
+    ],
+    "kb": "fever",
+    "actions": [],
+    "assessed": false
+  },
+  {
+    "language": "hi-IN",
+    "case": "headache",
+    "input": "मेरी उम्र 35 साल है। दो दिन से मध्यम सिरदर्द है। लंबे समय तक स्क्रीन देखने के बाद धीरे-धीरे शुरू हुआ। चोट, बुखार, गर्दन में अकड़न, कमजोरी या नज़र में बदलाव नहीं है। वजह नहीं पता।",
+    "proposals": [
+      {
+        "action": "ask",
+        "language": "hi-IN",
+        "confirmed_symptoms": "moderate headache for two days",
+        "denied_symptoms": "injury, fever, neck stiffness, weakness, vision changes",
+        "topic": "associated_features_0",
+        "question": "क्या आपको स्क्रीन पर काम करते समय बार-बार आँखें सूखने या सिर के किसी खास हिस्से में दर्द महसूस होता है?",
+        "important_gap": "",
+        "facts": [
+          {
+            "topic": "age",
+            "value": "35 years old",
+            "status": "reported",
+            "quote": "मेरी उम्र 35 साल है"
+          },
+          {
+            "topic": "symptom_0",
+            "value": "moderate headache for two days",
+            "status": "reported",
+            "quote": "दो दिन से मध्यम सिरदर्द है"
+          },
+          {
+            "topic": "timing_0",
+            "value": "started gradually after prolonged screen use",
+            "status": "reported",
+            "quote": "लंबे समय तक स्क्रीन देखने के बाद धीरे-धीरे शुरू हुआ"
+          },
+          {
+            "topic": "denied_0",
+            "value": "no injury, fever, neck stiffness, weakness, or vision changes",
+            "status": "reported",
+            "quote": "चोट, बुखार, गर्दन में अकड़न, कमजोरी या नज़र में बदलाव नहीं है"
+          }
+        ],
+        "stop_quote": "",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": ""
+      },
+      {
+        "action": "ask",
+        "language": "hi-IN",
+        "confirmed_symptoms": "moderate headache for two days",
+        "denied_symptoms": "no injury, fever, neck stiffness, weakness, or vision changes",
+        "topic": "headache_frequency",
+        "question": "क्या आपको यह सिरदर्द अक्सर होता है?",
+        "important_gap": "",
+        "facts": [
+          {
+            "topic": "age",
+            "value": "35 years old",
+            "status": "reported",
+            "quote": "मेरी उम्र 35 साल है"
+          },
+          {
+            "topic": "symptom_0",
+            "value": "moderate headache for two days",
+            "status": "reported",
+            "quote": "दो दिन से मध्यम सिरदर्द है"
+          },
+          {
+            "topic": "timing_0",
+            "value": "started gradually after prolonged screen use",
+            "status": "reported",
+            "quote": "लंबे समय तक स्क्रीन देखने के बाद धीरे-धीरे शुरू हुआ"
+          },
+          {
+            "topic": "denied_0",
+            "value": "no injury, fever, neck stiffness, weakness, or vision changes",
+            "status": "reported",
+            "quote": "चोट, बुखार, गर्दन में अकड़न, कमजोरी या नज़र में बदलाव नहीं है"
+          }
+        ],
+        "stop_quote": "",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": ""
+      }
+    ],
+    "spoken": [
+      "जवाब देने वाली सेवा में कनेक्शन की समस्या है। आपका आकलन अभी पूरा नहीं हुआ है। कृपया थोड़ी देर में फिर कोशिश करें।"
+    ],
+    "kb": "headache",
+    "actions": [],
+    "assessed": false
+  },
+  {
+    "language": "hi-IN",
+    "case": "unknown",
+    "input": "मेरी उम्र 28 साल है। दो दिन से रुक-रुककर हिचकियाँ आ रही हैं। खाने में परेशानी होती है। वजह नहीं पता और कोई दूसरा लक्षण नहीं है।",
+    "proposals": [
+      {
+        "action": "ask",
+        "language": "hi-IN",
+        "confirmed_symptoms": "",
+        "denied_symptoms": "",
+        "topic": "associated_feature_heartburn",
+        "question": "क्या हिचकी आने के साथ आपको सीने में जलन या खट्टी डकार भी महसूस हो रही है?",
+        "important_gap": "",
+        "facts": [],
+        "stop_quote": "",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": ""
+      },
+      {
+        "action": "ask",
+        "language": "hi-IN",
+        "confirmed_symptoms": "",
+        "denied_symptoms": "",
+        "topic": "recent_food_intake",
+        "question": "क्या हिचकी आने से पहले आपने कुछ बहुत गरम, तीखा या बहुत जल्दी-जल्दी खाया था?",
+        "important_gap": "",
+        "facts": [],
+        "stop_quote": "",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": ""
+      }
+    ],
+    "spoken": [
+      "जवाब देने वाली सेवा में कनेक्शन की समस्या है। आपका आकलन अभी पूरा नहीं हुआ है। कृपया थोड़ी देर में फिर कोशिश करें।"
+    ],
+    "kb": "constipation",
+    "actions": [],
+    "assessed": false
+  },
+  {
+    "language": "ta-IN",
+    "case": "hair_gradual",
+    "input": "எனக்கு வயது 28. இரண்டு ஆண்டுகளாக முன்பகுதியில் முடி மெதுவாகக் குறைகிறது. என் அப்பாவுக்கும் இதேபோல் முடி குறைந்துள்ளது. தலைத்தோலில் அரிப்போ செதில்களோ வலியோ இல்லை.",
+    "proposals": [
+      {
+        "action": "ask",
+        "language": "ta-IN",
+        "confirmed_symptoms": "Slow hair thinning at the front for two years.",
+        "denied_symptoms": "Itching, scaling, and scalp pain are absent.",
+        "topic": "pattern_0",
+        "question": "இந்த முடி மெலிவு உங்கள் தலையின் முன்புறம் முழுவதும் ஒரே மாதிரி இருக்கிறதா, அல்லது சில குறிப்பிட்ட இடங்களில் மட்டும் இருக்கிறதா? ",
+        "important_gap": "",
+        "facts": [
+          {
+            "topic": "onset_0",
+            "value": "Hair thinning in the front has been slowly happening for two years.",
+            "status": "reported",
+            "quote": "இரண்டு ஆண்டுகளாக முன்பகுதியில் முடி மெதுவாகக் குறைகிறது"
+          },
+          {
+            "topic": "family_history_0",
+            "value": "Father has similar hair thinning.",
+            "status": "reported",
+            "quote": "என் அப்பாவுக்கும் இதேபோல் முடி குறைந்துள்ளது"
+          },
+          {
+            "topic": "associated_features_0",
+            "value": "No itching, scaling, or pain on the scalp.",
+            "status": "reported",
+            "quote": "தலைத்தோலில் அரிப்போ செதில்களோ வலியோ இல்லை"
+          }
+        ],
+        "stop_quote": "",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": ""
+      },
+      {
+        "action": "ask",
+        "language": "ta-IN",
+        "confirmed_symptoms": "Gradual hair thinning at the front for two years.",
+        "denied_symptoms": "Itching, scaling, and scalp pain.",
+        "topic": "progression",
+        "question": "இந்த முடி மெலிதல் மெதுவாகத்தான் குறைகிறதா, அல்லது சமீபத்தில் திடீரென்று அதிகமாகிவிட்டதா?",
+        "important_gap": "",
+        "facts": [
+          {
+            "topic": "onset_0",
+            "value": "Hair thinning in the front has been slowly happening for two years.",
+            "status": "reported",
+            "quote": "இரண்டு ஆண்டுகளாக முன்பகுதியில் முடி மெதுவாகக் குறைகிறது"
+          },
+          {
+            "topic": "family_history_0",
+            "value": "Father has similar hair thinning.",
+            "status": "reported",
+            "quote": "என் அப்பாவுக்கும் இதேபோல் முடி குறைந்துள்ளது"
+          },
+          {
+            "topic": "associated_features_0",
+            "value": "No itching, scaling, or pain on the scalp.",
+            "status": "reported",
+            "quote": "தலைத்தோலில் அரிப்போ செதில்களோ வலியோ இல்லை"
+          }
+        ],
+        "stop_quote": "",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": ""
+      }
+    ],
+    "spoken": [
+      "முடி உதிர்வதற்குப் பல காரணங்கள் இருக்கலாம்; பரிசோதனை இல்லாமல் உங்கள் காரணத்தை உறுதியாகச் சொல்ல முடியாது. மென்மையான ஷாம்பூவும் கண்டிஷனரும் பயன்படுத்தி முடியை இயற்கையாக உலரவிடுங்கள். தொடர்ந்து முடி உதிர்ந்தால் மருத்துவரைப் பாருங்கள்; திடீர் வழுக்கைத் திட்டுகள், தலைத்தோலில் வலி அல்லது வீக்கம் இருந்தால் விரைவில் காட்டுங்கள்."
+    ],
+    "kb": "hair_loss",
+    "actions": [
+      {
+        "action": "assess",
+        "language": "ta-IN",
+        "confirmed_symptoms": "",
+        "denied_symptoms": "",
+        "topic": "",
+        "question": "",
+        "important_gap": "",
+        "facts": [],
+        "stop_quote": "",
+        "likely": "முடி உதிர்வதற்குப் பல காரணங்கள் இருக்கலாம்; தொலைபேசியில் காரணத்தை உறுதி செய்ய முடியாது.",
+        "why": "முடி உதிர்வதற்குப் பல காரணங்கள் இருக்கலாம்; பரிசோதனை இல்லாமல் உங்கள் காரணத்தை உறுதியாகச் சொல்ல முடியாது.",
+        "do": "மென்மையான ஷாம்பூவும் கண்டிஷனரும் பயன்படுத்தி முடியை இயற்கையாக உலரவிடுங்கள்.",
+        "avoid": "முடியை இறுக்கமாகக் கட்டுதல், அதிக வெப்பம், கடுமையான ரசாயனங்கள் மற்றும் நிரூபிக்கப்படாத முடி வளர்க்கும் முறைகளைத் தவிர்க்கவும்.",
+        "seek_care": "தொடர்ந்து முடி உதிர்ந்தால் மருத்துவரைப் பாருங்கள்; திடீர் வழுக்கைத் திட்டுகள், தலைத்தோலில் வலி அல்லது வீக்கம் இருந்தால் விரைவில் காட்டுங்கள்.",
+        "answer": ""
+      }
+    ],
+    "assessed": true
+  },
+  {
+    "language": "ta-IN",
+    "case": "fever",
+    "input": "எனக்கு வயது 32. நேற்று முதல் லேசான காய்ச்சலும் உடல்வலியும் உள்ளன. தண்ணீர் குடிக்க முடிகிறது, சிறுநீர் வழக்கம்போல் வருகிறது. மூச்சுத்திணறல், கழுத்து விறைப்பு, தோல் தடிப்பு அல்லது குழப்பம் இல்லை. காரணம் தெரியவில்லை.",
+    "proposals": [
+      {
+        "action": "ask",
+        "language": "ta-IN",
+        "confirmed_symptoms": "mild fever and body ache",
+        "denied_symptoms": "shortness of breath, neck stiffness, skin rash, confusion",
+        "topic": "duration_of_symptoms",
+        "question": "இந்த காய்ச்சல் மற்றும் உடல்வலி எவ்வளவு காலமாக இருக்கிறது? நேற்று முதல் என்று சொன்னீர்கள், இன்று எத்தனை மணி நேரமாக இருக்கிறது என்று சொல்ல முடியுமா?",
+        "important_gap": "",
+        "facts": [
+          {
+            "topic": "age",
+            "value": "32 years old",
+            "status": "reported",
+            "quote": "எனக்கு வயது 32"
+          },
+          {
+            "topic": "fever_and_body_ache",
+            "value": "mild fever and body ache since yesterday",
+            "status": "reported",
+            "quote": "நேற்று முதல் லேசான காய்ச்சலும் உடல்வலியும் உள்ளன"
+          },
+          {
+            "topic": "hydration_and_urination",
+            "value": "able to drink water and urine is normal",
+            "status": "reported",
+            "quote": "தண்ணீர் குடிக்க முடிகிறது, சிறுநீர் வழக்கம்போல் வருகிறது"
+          },
+          {
+            "topic": "absence_of_red_flags",
+            "value": "no shortness of breath, no neck stiffness, no skin rash, no confusion",
+            "status": "reported",
+            "quote": "மூச்சுத்திணறல், கழுத்து விறைப்பு, தோல் தடிப்பு அல்லது குழப்பம் இல்லை"
+          }
+        ],
+        "stop_quote": "",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": ""
+      },
+      {
+        "action": "ask",
+        "language": "ta-IN",
+        "confirmed_symptoms": "mild fever and body ache since yesterday",
+        "denied_symptoms": "shortness of breath, neck stiffness, skin rash, confusion",
+        "topic": "associated_symptoms",
+        "question": "காய்ச்சலோடு இருமல், வயிற்றுப்போக்கு அல்லது சிறுநீர் எரியும் உணர்வு இருக்கிறதா?",
+        "important_gap": "",
+        "facts": [
+          {
+            "topic": "age",
+            "value": "32 years old",
+            "status": "reported",
+            "quote": "எனக்கு வயது 32"
+          },
+          {
+            "topic": "fever_and_body_ache",
+            "value": "mild fever and body ache since yesterday",
+            "status": "reported",
+            "quote": "நேற்று முதல் லேசான காய்ச்சலும் உடல்வலியும் உள்ளன"
+          },
+          {
+            "topic": "hydration_and_urination",
+            "value": "able to drink water and urine is normal",
+            "status": "reported",
+            "quote": "தண்ணீர் குடிக்க முடிகிறது, சிறுநீர் வழக்கம்போல் வருகிறது"
+          },
+          {
+            "topic": "absence_of_red_flags",
+            "value": "no shortness of breath, no neck stiffness, no skin rash, no confusion",
+            "status": "reported",
+            "quote": "மூச்சுத்திணறல், கழுத்து விறைப்பு, தோல் தடிப்பு அல்லது குழப்பம் இல்லை"
+          }
+        ],
+        "stop_quote": "",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": ""
+      }
+    ],
+    "spoken": [
+      "பதில் சேவையில் இணைப்புச் சிக்கல் உள்ளது. உங்கள் மதிப்பீடு இன்னும் முடியவில்லை. சிறிது நேரத்தில் மீண்டும் முயற்சிக்கவும்."
+    ],
+    "kb": "fever",
+    "actions": [],
+    "assessed": false
+  },
+  {
+    "language": "ta-IN",
+    "case": "headache",
+    "input": "எனக்கு வயது 35. இரண்டு நாட்களாக மிதமான தலைவலி உள்ளது. நீண்ட நேரம் திரையைப் பார்த்த பிறகு மெதுவாகத் தொடங்கியது. காயம், காய்ச்சல், கழுத்து விறைப்பு, பலவீனம் அல்லது பார்வை மாற்றம் இல்லை. காரணம் தெரியவில்லை.",
+    "proposals": [
+      {
+        "action": "ask",
+        "language": "ta-IN",
+        "confirmed_symptoms": "Moderate headache for two days",
+        "denied_symptoms": "Injury, fever, neck stiffness, weakness, vision change",
+        "topic": "headache_location",
+        "question": "இந்த தலைவலி உங்கள் தலையின் எந்தப் பகுதியில் இருக்கிறது?",
+        "important_gap": "",
+        "facts": [
+          {
+            "topic": "headache_duration",
+            "value": "Moderate headache for two days",
+            "status": "reported",
+            "quote": "இரண்டு நாட்களாக மிதமான தலைவலி உள்ளது"
+          },
+          {
+            "topic": "headache_onset",
+            "value": "Started slowly after prolonged screen use",
+            "status": "reported",
+            "quote": "நீண்ட நேரம் திரையைப் பார்த்த பிறகு மெதுவாகத் தொடங்கியது"
+          },
+          {
+            "topic": "associated_symptoms_denied",
+            "value": "No injury, fever, neck stiffness, weakness, or vision change",
+            "status": "reported",
+            "quote": "காயம், காய்ச்சல், கழுத்து விறைப்பு, பலவீனம் அல்லது பார்வை மாற்றம் இல்லை"
+          }
+        ],
+        "stop_quote": "",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": ""
+      },
+      {
+        "action": "ask",
+        "language": "ta-IN",
+        "confirmed_symptoms": "Moderate headache for two days, started slowly after prolonged screen use.",
+        "denied_symptoms": "No injury, fever, neck stiffness, weakness, or vision change.",
+        "topic": "associated_symptoms_nausea_vomiting",
+        "question": "இந்த தலைவலி வரும்போது உங்களுக்கு குமட்டல் அல்லது வாந்தி வருகிறதா?",
+        "important_gap": "",
+        "facts": [
+          {
+            "topic": "duration",
+            "value": "Moderate headache for two days",
+            "status": "reported",
+            "quote": "இரண்டு நாட்களாக மிதமான தலைவலி உள்ளது"
+          },
+          {
+            "topic": "headache_onset",
+            "value": "Started slowly after prolonged screen use",
+            "status": "reported",
+            "quote": "நீண்ட நேரம் திரையைப் பார்த்த பிறகு மெதுவாகத் தொடங்கியது"
+          },
+          {
+            "topic": "associated_symptoms_denied",
+            "value": "No injury, fever, neck stiffness, weakness, or vision change",
+            "status": "reported",
+            "quote": "காயம், காய்ச்சல், கழுத்து விறைப்பு, பலவீனம் அல்லது பார்வை மாற்றம் இல்லை"
+          }
+        ],
+        "stop_quote": "",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": ""
+      }
+    ],
+    "spoken": [
+      "பதில் சேவையில் இணைப்புச் சிக்கல் உள்ளது. உங்கள் மதிப்பீடு இன்னும் முடியவில்லை. சிறிது நேரத்தில் மீண்டும் முயற்சிக்கவும்."
+    ],
+    "kb": "headache",
+    "actions": [],
+    "assessed": false
+  },
+  {
+    "language": "ta-IN",
+    "case": "unknown",
+    "input": "எனக்கு வயது 28. இரண்டு நாட்களாக விக்கல் விட்டுவிட்டு வருகிறது. சாப்பிடச் சிரமமாக உள்ளது. எதனால் வருகிறது என்று தெரியவில்லை, வேறு அறிகுறிகள் இல்லை.",
+    "proposals": [
+      {
+        "action": "ask",
+        "language": "ta-IN",
+        "confirmed_symptoms": "",
+        "denied_symptoms": "",
+        "topic": "associated_symptoms",
+        "question": "இந்த விக்கல் வரும்போது உங்கள் வயிற்றில் ஏதாவது வலி அல்லது நெஞ்செரிச்சல் இருக்கிறதா?",
+        "important_gap": "",
+        "facts": [],
+        "stop_quote": "",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": ""
+      },
+      {
+        "action": "ask",
+        "language": "ta-IN",
+        "confirmed_symptoms": "intermittent hiccups for two days and difficulty eating",
+        "denied_symptoms": "",
+        "topic": "associated_pain_location",
+        "question": "விக்கல் வரும்போது உங்கள் தொண்டை அல்லது நெஞ்சுப் பகுதியில் வலி ஏதேனும் உணர்கிறீர்களா?",
+        "important_gap": "",
+        "facts": [
+          {
+            "topic": "age",
+            "value": "28 years old",
+            "status": "reported",
+            "quote": "எனக்கு வயது 28"
+          },
+          {
+            "topic": "symptom_duration",
+            "value": "intermittent hiccups for two days",
+            "status": "reported",
+            "quote": "இரண்டு நாட்களாக விக்கல் விட்டுவிட்டு வருகிறது"
+          },
+          {
+            "topic": "symptom_impact",
+            "value": "difficulty eating",
+            "status": "reported",
+            "quote": "சாப்பிடச் சிரமமாக உள்ளது"
+          },
+          {
+            "topic": "symptom_context",
+            "value": "no other symptoms reported",
+            "status": "reported",
+            "quote": "வேறு அறிகுறிகள் இல்லை"
+          }
+        ],
+        "stop_quote": "",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": ""
+      }
+    ],
+    "spoken": [
+      "பதில் சேவையில் இணைப்புச் சிக்கல் உள்ளது. உங்கள் மதிப்பீடு இன்னும் முடியவில்லை. சிறிது நேரத்தில் மீண்டும் முயற்சிக்கவும்."
+    ],
+    "kb": "wound_cut",
+    "actions": [],
+    "assessed": false
+  },
+  {
+    "language": "te-IN",
+    "case": "hair_gradual",
+    "input": "నా వయసు 28. రెండు సంవత్సరాలుగా ముందు భాగంలో జుట్టు నెమ్మదిగా తగ్గుతోంది. మా నాన్నకు కూడా ఇలాగే జుట్టు తగ్గింది. తల చర్మంలో దురద, పొట్టు లేదా నొప్పి లేదు.",
+    "proposals": [
+      {
+        "action": "ask",
+        "language": "te-IN",
+        "confirmed_symptoms": "Gradual hair thinning at the front of the scalp over two years.",
+        "denied_symptoms": "",
+        "topic": "pattern_change",
+        "question": "జుట్టు తగ్గుతున్న చోట కొత్తగా చిన్న చిన్న మచ్చలు లేదా మచ్చలు ఏమైనా కనిపిస్తున్నాయా?",
+        "important_gap": "",
+        "facts": [
+          {
+            "topic": "age",
+            "value": "28 years old",
+            "status": "reported",
+            "quote": "నా వయసు 28"
+          },
+          {
+            "topic": "duration",
+            "value": "two years",
+            "status": "reported",
+            "quote": "రెండు సంవత్సరాలుగా"
+          },
+          {
+            "topic": "location",
+            "value": "front part of the scalp",
+            "status": "reported",
+            "quote": "ముందు భాగంలో జుట్టు"
+          },
+          {
+            "topic": "family_history",
+            "value": "father had similar hair loss",
+            "status": "reported",
+            "quote": "మా నాన్నకు కూడా ఇలాగే జుట్టు తగ్గింది"
+          },
+          {
+            "topic": "associated_features",
+            "value": "no itching, no dandruff, no pain",
+            "status": "reported",
+            "quote": "తల చర్మంలో దురద, పొట్టు లేదా నొప్పి లేదు"
+          }
+        ],
+        "stop_quote": "",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": ""
+      },
+      {
+        "action": "ask",
+        "language": "te-IN",
+        "confirmed_symptoms": "Gradual hair thinning at the front of the scalp for two years.",
+        "denied_symptoms": "No itching, no dandruff, no pain.",
+        "topic": "pattern_of_loss",
+        "question": "జుట్టు రాలడం ఎంత మందంగా ఉంది, అంటే వెంట్రుకలు పల్చబడుతున్నాయా లేదా గుత్తులుగా రాలుతున్నాయా?",
+        "important_gap": "",
+        "facts": [
+          {
+            "topic": "age",
+            "value": "28 years old",
+            "status": "reported",
+            "quote": "నా వయసు 28"
+          },
+          {
+            "topic": "duration",
+            "value": "two years",
+            "status": "reported",
+            "quote": "రెండు సంవత్సరాలుగా"
+          },
+          {
+            "topic": "location",
+            "value": "front part of the scalp",
+            "status": "reported",
+            "quote": "ముందు భాగంలో జుట్టు"
+          },
+          {
+            "topic": "family_history",
+            "value": "father had similar hair loss",
+            "status": "reported",
+            "quote": "మా నాన్నకు కూడా ఇలాగే జుట్టు తగ్గింది"
+          },
+          {
+            "topic": "associated_features",
+            "value": "no itching, no dandruff, no pain",
+            "status": "reported",
+            "quote": "తల చర్మంలో దురద, పొట్టు లేదా నొప్పి లేదు"
+          }
+        ],
+        "stop_quote": "",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": ""
+      }
+    ],
+    "spoken": [
+      "సమాధాన సేవలో కనెక్షన్ సమస్య ఉంది. మీ అంచనా ఇంకా పూర్తి కాలేదు. దయచేసి కాసేపటి తర్వాత మళ్లీ ప్రయత్నించండి."
+    ],
+    "kb": "skin_rash_itch",
+    "actions": [],
+    "assessed": false
+  },
+  {
+    "language": "te-IN",
+    "case": "fever",
+    "input": "నా వయసు 32. నిన్నటి నుంచి తేలికపాటి జ్వరం, ఒళ్లు నొప్పులు ఉన్నాయి. నీళ్లు తాగగలుగుతున్నాను, మూత్రం మామూలుగానే వస్తోంది. ఊపిరి తీసుకోవడంలో ఇబ్బంది, మెడ బిగుసుకుపోవడం, దద్దుర్లు లేదా అయోమయం లేవు. కారణం తెలియదు.",
+    "proposals": [
+      {
+        "action": "ask",
+        "language": "te-IN",
+        "confirmed_symptoms": "",
+        "denied_symptoms": "",
+        "topic": "fever_duration",
+        "question": "మీకు జ్వరం ఎన్ని రోజుల నుంచి ఉంది?",
+        "important_gap": "",
+        "facts": [],
+        "stop_quote": "",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": ""
+      },
+      {
+        "action": "ask",
+        "language": "te-IN",
+        "confirmed_symptoms": "",
+        "denied_symptoms": "",
+        "topic": "fever_duration",
+        "question": "ఈ జ్వరం, ఒళ్లు నొప్పులు ఎప్పటి నుంచి ఉన్నాయి?",
+        "important_gap": "",
+        "facts": [],
+        "stop_quote": "",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": ""
+      }
+    ],
+    "spoken": [
+      "సమాధాన సేవలో కనెక్షన్ సమస్య ఉంది. మీ అంచనా ఇంకా పూర్తి కాలేదు. దయచేసి కాసేపటి తర్వాత మళ్లీ ప్రయత్నించండి."
+    ],
+    "kb": "fever",
+    "actions": [],
+    "assessed": false
+  },
+  {
+    "language": "te-IN",
+    "case": "headache",
+    "input": "నా వయసు 35. రెండు రోజులుగా మోస్తరు తలనొప్పి ఉంది. ఎక్కువసేపు తెరను చూసిన తర్వాత నెమ్మదిగా మొదలైంది. గాయం, జ్వరం, మెడ బిగుసుకుపోవడం, బలహీనత లేదా చూపులో మార్పులు లేవు. కారణం తెలియదు.",
+    "proposals": [
+      {
+        "action": "ask",
+        "language": "te-IN",
+        "confirmed_symptoms": "moderate headache for two days, starts slowly after prolonged screen viewing",
+        "denied_symptoms": "injury, fever, neck stiffness, weakness, vision changes",
+        "topic": "impact_on_daily_activities",
+        "question": "ఈ తలనొప్పి మీ రోజువారీ పనులకు ఆటంకం కలిగిస్తోందా?",
+        "important_gap": "",
+        "facts": [
+          {
+            "topic": "age",
+            "value": "35 years old",
+            "status": "reported",
+            "quote": "నా వయసు 35"
+          },
+          {
+            "topic": "headache_duration",
+            "value": "moderate headache for two days",
+            "status": "reported",
+            "quote": "రెండు రోజులుగా మోస్తరు తలనొప్పి ఉంది"
+          },
+          {
+            "topic": "headache_trigger",
+            "value": "starts slowly after prolonged screen viewing",
+            "status": "reported",
+            "quote": "ఎక్కువసేపు తెరను చూసిన తర్వాత నెమ్మదిగా మొదలైంది"
+          },
+          {
+            "topic": "associated_symptoms_denied",
+            "value": "no injury, fever, neck stiffness, weakness, or vision changes",
+            "status": "reported",
+            "quote": "గాయం, జ్వరం, మెడ బిగుసుకుపోవడం, బలహీనత లేదా చూపులో మార్పులు లేవు"
+          }
+        ],
+        "stop_quote": "",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": ""
+      },
+      {
+        "action": "ask",
+        "language": "te-IN",
+        "confirmed_symptoms": "moderate headache for two days",
+        "denied_symptoms": "no injury, fever, neck stiffness, weakness, or vision changes",
+        "topic": "headache_frequency",
+        "question": "మీకు ఇలాంటి తలనొప్పి తరచుగా వస్తుందా?",
+        "important_gap": "",
+        "facts": [
+          {
+            "topic": "age",
+            "value": "35 years old",
+            "status": "reported",
+            "quote": "నా వయసు 35"
+          },
+          {
+            "topic": "duration",
+            "value": "moderate headache for two days",
+            "status": "reported",
+            "quote": "రెండు రోజులుగా మోస్తరు తలనొప్పి ఉంది"
+          },
+          {
+            "topic": "headache_trigger",
+            "value": "starts slowly after prolonged screen viewing",
+            "status": "reported",
+            "quote": "ఎక్కువసేపు తెరను చూసిన తర్వాత నెమ్మదిగా మొదలైంది"
+          },
+          {
+            "topic": "associated_symptoms_denied",
+            "value": "no injury, fever, neck stiffness, weakness, or vision changes",
+            "status": "reported",
+            "quote": "గాయం, జ్వరం, మెడ బిగుసుకుపోవడం, బలహీనత లేదా చూపులో మార్పులు లేవు"
+          }
+        ],
+        "stop_quote": "",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": ""
+      }
+    ],
+    "spoken": [
+      "సమాధాన సేవలో కనెక్షన్ సమస్య ఉంది. మీ అంచనా ఇంకా పూర్తి కాలేదు. దయచేసి కాసేపటి తర్వాత మళ్లీ ప్రయత్నించండి."
+    ],
+    "kb": "headache",
+    "actions": [],
+    "assessed": false
+  },
+  {
+    "language": "te-IN",
+    "case": "unknown",
+    "input": "నా వయసు 28. రెండు రోజులుగా ఎక్కిళ్లు వస్తూ పోతూ ఉన్నాయి. తినడానికి ఇబ్బందిగా ఉంది. దేనివల్ల వస్తున్నాయో తెలియదు, వేరే లక్షణాలు లేవు.",
+    "proposals": [
+      {
+        "action": "ask",
+        "language": "te-IN",
+        "confirmed_symptoms": "",
+        "denied_symptoms": "",
+        "topic": "trigger_drinks",
+        "question": "ఈ ఎక్కిళ్లు మొదలయ్యే ముందు మీరు ఏదైనా వేడిగా లేదా చల్లగా ఉన్న పానీయాలు తాగారా?",
+        "important_gap": "",
+        "facts": [],
+        "stop_quote": "",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": ""
+      },
+      {
+        "action": "ask",
+        "language": "te-IN",
+        "confirmed_symptoms": "Intermittent hiccups for two days and difficulty eating.",
+        "denied_symptoms": "",
+        "topic": "associated_features_0",
+        "question": "మీకు ఎక్కిళ్లు వచ్చినప్పుడు కడుపులో మంట లేదా గ్యాస్ సమస్య ఏమైనా అనిపిస్తోందా?",
+        "important_gap": "",
+        "facts": [
+          {
+            "topic": "age",
+            "value": "28 years old",
+            "status": "reported",
+            "quote": "నా వయసు 28."
+          },
+          {
+            "topic": "symptom_duration",
+            "value": "Intermittent hiccups for two days",
+            "status": "reported",
+            "quote": "రెండు రోజులుగా ఎక్కిళ్లు వస్తూ పోతూ ఉన్నాయి."
+          },
+          {
+            "topic": "symptom_impact",
+            "value": "Difficulty eating",
+            "status": "reported",
+            "quote": "తినడానికి ఇబ్బందిగా ఉంది."
+          },
+          {
+            "topic": "associated_symptoms",
+            "value": "No other symptoms reported",
+            "status": "reported",
+            "quote": "వేరే లక్షణాలు లేవు."
+          }
+        ],
+        "stop_quote": "",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": ""
+      }
+    ],
+    "spoken": [
+      "సమాధాన సేవలో కనెక్షన్ సమస్య ఉంది. మీ అంచనా ఇంకా పూర్తి కాలేదు. దయచేసి కాసేపటి తర్వాత మళ్లీ ప్రయత్నించండి."
+    ],
+    "kb": "breathlessness",
+    "actions": [],
+    "assessed": false
+  },
+  {
+    "language": "kn-IN",
+    "case": "hair_gradual",
+    "input": "ನನಗೆ 28 ವರ್ಷ. ಎರಡು ವರ್ಷಗಳಿಂದ ಮುಂಭಾಗದಲ್ಲಿ ಕೂದಲು ನಿಧಾನವಾಗಿ ತೆಳುವಾಗುತ್ತಿದೆ. ನನ್ನ ತಂದೆಗೂ ಇದೇ ರೀತಿ ಕೂದಲು ತೆಳುವಾಗಿದೆ. ತಲೆಯ ಚರ್ಮದಲ್ಲಿ ತುರಿಕೆ, ಹೊಟ್ಟು ಅಥವಾ ನೋವು ಇಲ್ಲ.",
+    "proposals": [
+      {
+        "action": "ask",
+        "language": "kn-IN",
+        "confirmed_symptoms": "",
+        "denied_symptoms": "",
+        "topic": "pattern_0",
+        "question": "ಕೂದಲು ಯಾವ ಭಾಗದಲ್ಲಿ ಹೆಚ್ಚು ತೆಳುವಾಗುತ್ತಿದೆ, ಅಂದರೆ ಮಧ್ಯದಲ್ಲಿ ಅಥವಾ ಹಣೆಯ ಮೇಲ್ಭಾಗದಲ್ಲಿನಾ?",
+        "important_gap": "",
+        "facts": [],
+        "stop_quote": "",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": ""
+      },
+      {
+        "action": "ask",
+        "language": "kn-IN",
+        "confirmed_symptoms": "Frontal hair thinning for two years.",
+        "denied_symptoms": "",
+        "topic": "pattern_0",
+        "question": "ಕೂದಲು ಯಾವ ಆಕಾರದಲ್ಲಿ ಅಥವಾ ಯಾವ ಭಾಗದಲ್ಲಿ ಹೆಚ್ಚು ತೆಳುವಾಗಿದೆ, ಉದಾಹರಣೆಗೆ ಮಧ್ಯದಲ್ಲಿ ಅಥವಾ ಹಣೆಯ ಮೇಲ್ಭಾಗದಲ್ಲಿ?",
+        "important_gap": "",
+        "facts": [
+          {
+            "topic": "demographics_0",
+            "value": "28 years old",
+            "status": "reported",
+            "quote": "ನನಗೆ 28 ವರ್ಷ."
+          },
+          {
+            "topic": "duration_0",
+            "value": "two years",
+            "status": "reported",
+            "quote": "ಎರಡು ವರ್ಷಗಳಿಂದ"
+          },
+          {
+            "topic": "location_0",
+            "value": "front of the head",
+            "status": "reported",
+            "quote": "ಮುಂಭಾಗದಲ್ಲಿ"
+          },
+          {
+            "topic": "family_history_0",
+            "value": "father has similar thinning",
+            "status": "reported",
+            "quote": "ನನ್ನ ತಂದೆಗೂ ಇದೇ ರೀತಿ ಕೂದಲು ತೆಳುವಾಗಿದೆ"
+          },
+          {
+            "topic": "associated_features_0",
+            "value": "no itching, no dandruff, no pain on scalp",
+            "status": "reported",
+            "quote": "ತಲೆಯ ಚರ್ಮದಲ್ಲಿ ತುರಿಕೆ, ಹೊಟ್ಟು ಅಥವಾ ನೋವು ಇಲ್ಲ"
+          }
+        ],
+        "stop_quote": "",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": ""
+      }
+    ],
+    "spoken": [
+      "ಉತ್ತರ ಸೇವೆಯಲ್ಲಿ ಸಂಪರ್ಕದ ಸಮಸ್ಯೆ ಇದೆ. ನಿಮ್ಮ ಮೌಲ್ಯಮಾಪನ ಇನ್ನೂ ಮುಗಿದಿಲ್ಲ. ದಯವಿಟ್ಟು ಸ್ವಲ್ಪ ಸಮಯದ ನಂತರ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ."
+    ],
+    "kb": "skin_rash_itch",
+    "actions": [],
+    "assessed": false
+  },
+  {
+    "language": "kn-IN",
+    "case": "fever",
+    "input": "ನನಗೆ 32 ವರ್ಷ. ನಿನ್ನೆಯಿಂದ ಸ್ವಲ್ಪ ಜ್ವರ ಮತ್ತು ಮೈ ನೋವು ಇದೆ. ನೀರು ಕುಡಿಯಲು ಸಾಧ್ಯವಾಗುತ್ತಿದೆ, ಮೂತ್ರ ಸಹಜವಾಗಿ ಬರುತ್ತಿದೆ. ಉಸಿರಾಟದ ತೊಂದರೆ, ಕುತ್ತಿಗೆ ಬಿಗಿತ, ದದ್ದು ಅಥವಾ ಗೊಂದಲ ಇಲ್ಲ. ಕಾರಣ ಗೊತ್ತಿಲ್ಲ.",
+    "proposals": [
+      {
+        "action": "ask",
+        "language": "kn-IN",
+        "confirmed_symptoms": "",
+        "denied_symptoms": "",
+        "topic": "fever_duration_and_pattern",
+        "question": "ಜ್ವರ ಎಷ್ಟು ಸಮಯದಿಂದ ಇದೆ ಮತ್ತು ಅದು ದಿನವಿಡೀ ಒಂದೇ ಸಮನೆ ಇದೆಯಾ ಅಥವಾ ಮಧ್ಯ ಮಧ್ಯ ಕಡಿಮೆಯಾಗುತ್ತಿದೆಯಾ?",
+        "important_gap": "",
+        "facts": [],
+        "stop_quote": "",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": ""
+      },
+      {
+        "action": "ask",
+        "language": "kn-IN",
+        "confirmed_symptoms": "",
+        "denied_symptoms": "",
+        "topic": "fever_duration",
+        "question": "ಜ್ವರ ಎಷ್ಟು ಸಮಯದಿಂದ ಇದೆ?",
+        "important_gap": "",
+        "facts": [],
+        "stop_quote": "",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": ""
+      }
+    ],
+    "spoken": [
+      "ಉತ್ತರ ಸೇವೆಯಲ್ಲಿ ಸಂಪರ್ಕದ ಸಮಸ್ಯೆ ಇದೆ. ನಿಮ್ಮ ಮೌಲ್ಯಮಾಪನ ಇನ್ನೂ ಮುಗಿದಿಲ್ಲ. ದಯವಿಟ್ಟು ಸ್ವಲ್ಪ ಸಮಯದ ನಂತರ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ."
+    ],
+    "kb": "breathlessness",
+    "actions": [],
+    "assessed": false
+  },
+  {
+    "language": "kn-IN",
+    "case": "headache",
+    "input": "ನನಗೆ 35 ವರ್ಷ. ಎರಡು ದಿನಗಳಿಂದ ಮಧ್ಯಮ ತಲೆನೋವು ಇದೆ. ಬಹಳ ಹೊತ್ತು ಪರದೆ ನೋಡಿದ ನಂತರ ನಿಧಾನವಾಗಿ ಶುರುವಾಯಿತು. ಗಾಯ, ಜ್ವರ, ಕುತ್ತಿಗೆ ಬಿಗಿತ, ದೌರ್ಬಲ್ಯ ಅಥವಾ ದೃಷ್ಟಿ ಬದಲಾವಣೆ ಇಲ್ಲ. ಕಾರಣ ಗೊತ್ತಿಲ್ಲ.",
+    "proposals": [
+      {
+        "action": "ask",
+        "language": "kn-IN",
+        "confirmed_symptoms": "Moderate headache for two days after prolonged screen use",
+        "denied_symptoms": "",
+        "topic": "headache_duration_pattern",
+        "question": "ಈ ತಲೆನೋವು ಎಷ್ಟು ಹೊತ್ತು ಇರುತ್ತೆ, ಅಂದ್ರೆ ಕೆಲವು ನಿಮಿಷ ಮಾತ್ರನಾ ಅಥವಾ ಇಡೀ ದಿನ ಇರುತ್ತಾ?",
+        "important_gap": "",
+        "facts": [
+          {
+            "topic": "headache_duration",
+            "value": "Two days",
+            "status": "reported",
+            "quote": "ಎರಡು ದಿನಗಳಿಂದ"
+          },
+          {
+            "topic": "headache_trigger",
+            "value": "Prolonged screen viewing",
+            "status": "reported",
+            "quote": "ಬಹಳ ಹೊತ್ತು ಪರದೆ ನೋಡಿದ ನಂತರ"
+          },
+          {
+            "topic": "associated_symptoms_denied",
+            "value": "No injury, no fever, no neck stiffness, no weakness, no vision changes",
+            "status": "reported",
+            "quote": "ಗಾಯ, ಜ್ವರ, ಕುತ್ತಿಗೆ ಬಿಗಿತ, ದೌರ್ಬಲ್ಯ ಅಥವಾ ದೃಷ್ಟಿ ಬದಲಾವಣೆ ಇಲ್ಲ"
+          }
+        ],
+        "stop_quote": "",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": ""
+      },
+      {
+        "action": "ask",
+        "language": "kn-IN",
+        "confirmed_symptoms": "Moderate headache for two days after prolonged screen viewing.",
+        "denied_symptoms": "No injury, fever, neck stiffness, weakness, or vision changes.",
+        "topic": "headache_pattern",
+        "question": "ಈ ತಲೆನೋವು ಪ್ರತಿ ಬಾರಿ ಪರದೆ ನೋಡುವಾಗ ಬರುತ್ತದೆಯೇ ಅಥವಾ ಈಗಷ್ಟೇ ಶುರುವಾಗಿದೆಯಾ?",
+        "important_gap": "",
+        "facts": [
+          {
+            "topic": "duration",
+            "value": "Two days",
+            "status": "reported",
+            "quote": "ಎರಡು ದಿನಗಳಿಂದ"
+          },
+          {
+            "topic": "headache_trigger",
+            "value": "Prolonged screen viewing",
+            "status": "reported",
+            "quote": "ಬಹಳ ಹೊತ್ತು ಪರದೆ ನೋಡಿದ ನಂತರ"
+          },
+          {
+            "topic": "associated_symptoms_denied",
+            "value": "No injury, no fever, no neck stiffness, no weakness, no vision changes",
+            "status": "reported",
+            "quote": "ಗಾಯ, ಜ್ವರ, ಕುತ್ತಿಗೆ ಬಿಗಿತ, ದೌರ್ಬಲ್ಯ ಅಥವಾ ದೃಷ್ಟಿ ಬದಲಾವಣೆ ಇಲ್ಲ"
+          }
+        ],
+        "stop_quote": "",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": ""
+      }
+    ],
+    "spoken": [
+      "ಉತ್ತರ ಸೇವೆಯಲ್ಲಿ ಸಂಪರ್ಕದ ಸಮಸ್ಯೆ ಇದೆ. ನಿಮ್ಮ ಮೌಲ್ಯಮಾಪನ ಇನ್ನೂ ಮುಗಿದಿಲ್ಲ. ದಯವಿಟ್ಟು ಸ್ವಲ್ಪ ಸಮಯದ ನಂತರ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ."
+    ],
+    "kb": "headache",
+    "actions": [],
+    "assessed": false
+  },
+  {
+    "language": "kn-IN",
+    "case": "unknown",
+    "input": "ನನಗೆ 28 ವರ್ಷ. ಎರಡು ದಿನಗಳಿಂದ ಬಿಕ್ಕಳಿಕೆ ಬರುತ್ತಾ ಹೋಗುತ್ತಾ ಇದೆ. ತಿನ್ನಲು ಕಷ್ಟವಾಗುತ್ತಿದೆ. ಕಾರಣ ಗೊತ್ತಿಲ್ಲ, ಬೇರೆ ಲಕ್ಷಣಗಳಿಲ್ಲ.",
+    "proposals": [
+      {
+        "action": "ask",
+        "language": "kn-IN",
+        "confirmed_symptoms": "",
+        "denied_symptoms": "",
+        "topic": "associated_features_0",
+        "question": "ನಿಮಗೆ ಬಿಕ್ಕಳಿಕೆ ಬರುವಾಗ ಎದೆ ಉರಿ, ವಾಕರಿಕೆ ಅಥವಾ ಗಂಟಲಲ್ಲಿ ಏನಾದರೂ ಸಿಲುಕಿದ ಹಾಗೆ ಆಗುತ್ತದಾ?",
+        "important_gap": "",
+        "facts": [],
+        "stop_quote": "",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": ""
+      },
+      {
+        "action": "ask",
+        "language": "kn-IN",
+        "confirmed_symptoms": "Intermittent hiccups for two days and difficulty eating",
+        "denied_symptoms": "",
+        "topic": "recent_intake",
+        "question": "ನಿಮಗೆ ಈ ಬಿಕ್ಕಳಿಕೆ ಶುರುವಾಗುವ ಮೊದಲು ಏನಾದರೂ ಬಿಸಿ ಅಥವಾ ತಂಪು ಪಾನೀಯಗಳನ್ನು ಕುಡಿದಿದ್ದೀರಾ?",
+        "important_gap": "",
+        "facts": [
+          {
+            "topic": "age",
+            "value": "28 years old",
+            "status": "reported",
+            "quote": "ನನಗೆ 28 ವರ್ಷ."
+          },
+          {
+            "topic": "symptom_duration",
+            "value": "Intermittent hiccups for two days",
+            "status": "reported",
+            "quote": "ಎರಡು ದಿನಗಳಿಂದ ಬಿಕ್ಕಳಿಕೆ ಬರುತ್ತಾ ಹೋಗುತ್ತಾ ಇದೆ."
+          },
+          {
+            "topic": "symptom_impact",
+            "value": "Difficulty eating",
+            "status": "reported",
+            "quote": "ತಿನ್ನಲು ಕಷ್ಟವಾಗುತ್ತಿದೆ."
+          },
+          {
+            "topic": "associated_symptoms",
+            "value": "No other symptoms",
+            "status": "reported",
+            "quote": "ಬೇರೆ ಲಕ್ಷಣಗಳಿಲ್ಲ."
+          }
+        ],
+        "stop_quote": "",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": ""
+      }
+    ],
+    "spoken": [
+      "ಉತ್ತರ ಸೇವೆಯಲ್ಲಿ ಸಂಪರ್ಕದ ಸಮಸ್ಯೆ ಇದೆ. ನಿಮ್ಮ ಮೌಲ್ಯಮಾಪನ ಇನ್ನೂ ಮುಗಿದಿಲ್ಲ. ದಯವಿಟ್ಟು ಸ್ವಲ್ಪ ಸಮಯದ ನಂತರ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ."
+    ],
+    "kb": "breathlessness",
+    "actions": [],
+    "assessed": false
+  },
+  {
+    "language": "ml-IN",
+    "case": "hair_gradual",
+    "input": "എനിക്ക് 28 വയസ്സാണ്. രണ്ടു വർഷമായി മുൻഭാഗത്തെ മുടി ക്രമേണ കുറയുന്നു. അച്ഛനും ഇതുപോലെ മുടി കുറഞ്ഞിട്ടുണ്ട്. തലയോട്ടിയിൽ ചൊറിച്ചിലോ താരനോ വേദനയോ ഇല്ല.",
+    "proposals": [
+      {
+        "action": "ask",
+        "language": "ml-IN",
+        "confirmed_symptoms": "gradual hair thinning at the front of the scalp for two years",
+        "denied_symptoms": "",
+        "topic": "family_history_pattern",
+        "question": "ഈ മുടി കൊഴിച്ചിൽ നിങ്ങളുടെ കുടുംബത്തിൽ അമ്മയുടെ ഭാഗത്തോ മറ്റെന്തെങ്കിലും ബന്ധുക്കളുടെ ഭാഗത്തോ ഉണ്ടോ?",
+        "important_gap": "",
+        "facts": [
+          {
+            "topic": "age",
+            "value": "28 years old",
+            "status": "reported",
+            "quote": "എനിക്ക് 28 വയസ്സാണ്"
+          },
+          {
+            "topic": "duration",
+            "value": "two years",
+            "status": "reported",
+            "quote": "രണ്ടു വർഷമായി"
+          },
+          {
+            "topic": "location",
+            "value": "front part of the scalp",
+            "status": "reported",
+            "quote": "മുൻഭാഗത്തെ മുടി"
+          },
+          {
+            "topic": "associated_features",
+            "value": "no itching, no dandruff, no pain",
+            "status": "reported",
+            "quote": "തലയോട്ടിയിൽ ചൊറിച്ചിലോ താരനോ വേദനയോ ഇല്ല"
+          }
+        ],
+        "stop_quote": "",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": ""
+      },
+      {
+        "action": "ask",
+        "language": "ml-IN",
+        "confirmed_symptoms": "Gradual hair thinning at the front of the scalp for two years.",
+        "denied_symptoms": "",
+        "topic": "hair_pattern",
+        "question": "മുടി കൊഴിച്ചിൽ തലമുഴുവനാണോ, അല്ലെങ്കിൽ പ്രത്യേക ഭാഗങ്ങളിലാണോ, അതോ പ്രധാനമായും മുൻവശത്തെ മുടിയാണോ കുറയുന്നത്?",
+        "important_gap": "",
+        "facts": [
+          {
+            "topic": "age",
+            "value": "28 years old",
+            "status": "reported",
+            "quote": "എനിക്ക് 28 വയസ്സാണ്"
+          },
+          {
+            "topic": "duration",
+            "value": "two years",
+            "status": "reported",
+            "quote": "രണ്ടു വർഷമായി"
+          },
+          {
+            "topic": "location",
+            "value": "front part of the scalp",
+            "status": "reported",
+            "quote": "മുൻഭാഗത്തെ മുടി"
+          },
+          {
+            "topic": "associated_features",
+            "value": "no itching, no dandruff, no pain",
+            "status": "reported",
+            "quote": "തലയോട്ടിയിൽ ചൊറിച്ചിലോ താരനോ വേദനയോ ഇല്ല"
+          }
+        ],
+        "stop_quote": "",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": ""
+      }
+    ],
+    "spoken": [
+      "മുടി കൊഴിച്ചിലിന് പല കാരണങ്ങളുണ്ടാകാം; പരിശോധനയില്ലാതെ നിങ്ങളുടെ കാരണം ഉറപ്പിക്കാനാവില്ല. മൃദുവായ ഷാംപൂവും കണ്ടീഷണറും ഉപയോഗിച്ച് മുടി സ്വാഭാവികമായി ഉണങ്ങാൻ അനുവദിക്കുക. മുടി കൊഴിച്ചിൽ തുടരുകയാണെങ്കിൽ ഡോക്ടറെ കാണുക; പെട്ടെന്നുള്ള കഷണ്ടിപ്പാടുകൾ, തലയോട്ടിയിൽ വേദനയോ വീക്കമോ ഉണ്ടെങ്കിൽ നേരത്തേ കാണിക്കുക."
+    ],
+    "kb": "hair_loss",
+    "actions": [
+      {
+        "action": "assess",
+        "language": "ml-IN",
+        "confirmed_symptoms": "",
+        "denied_symptoms": "",
+        "topic": "",
+        "question": "",
+        "important_gap": "",
+        "facts": [],
+        "stop_quote": "",
+        "likely": "മുടി കൊഴിച്ചിലിന് പല കാരണങ്ങളുണ്ടാകാം; ഫോണിലൂടെ കൃത്യമായ കാരണം ഉറപ്പിക്കാനാവില്ല.",
+        "why": "മുടി കൊഴിച്ചിലിന് പല കാരണങ്ങളുണ്ടാകാം; പരിശോധനയില്ലാതെ നിങ്ങളുടെ കാരണം ഉറപ്പിക്കാനാവില്ല.",
+        "do": "മൃദുവായ ഷാംപൂവും കണ്ടീഷണറും ഉപയോഗിച്ച് മുടി സ്വാഭാവികമായി ഉണങ്ങാൻ അനുവദിക്കുക.",
+        "avoid": "മുടി മുറുക്കിക്കെട്ടൽ, അമിത ചൂട്, കടുത്ത രാസവസ്തുക്കൾ, തെളിവില്ലാത്ത മുടി വളർത്തൽ വിദ്യകൾ എന്നിവ ഒഴിവാക്കുക.",
+        "seek_care": "മുടി കൊഴിച്ചിൽ തുടരുകയാണെങ്കിൽ ഡോക്ടറെ കാണുക; പെട്ടെന്നുള്ള കഷണ്ടിപ്പാടുകൾ, തലയോട്ടിയിൽ വേദനയോ വീക്കമോ ഉണ്ടെങ്കിൽ നേരത്തേ കാണിക്കുക.",
+        "answer": ""
+      }
+    ],
+    "assessed": true
+  },
+  {
+    "language": "ml-IN",
+    "case": "fever",
+    "input": "എനിക്ക് 32 വയസ്സാണ്. ഇന്നലെ മുതൽ ചെറിയ പനിയും ശരീരവേദനയും ഉണ്ട്. വെള്ളം കുടിക്കാം, മൂത്രം സാധാരണപോലെ പോകുന്നു. ശ്വാസംമുട്ടലോ കഴുത്ത് പിടിക്കലോ ചൊറിപ്പോ ആശയക്കുഴപ്പമോ ഇല്ല. കാരണം അറിയില്ല.",
+    "proposals": [
+      {
+        "action": "ask",
+        "language": "ml-IN",
+        "confirmed_symptoms": "mild fever and body ache",
+        "denied_symptoms": "shortness of breath, neck stiffness, itching, confusion",
+        "topic": "fever_duration",
+        "question": "നിങ്ങൾക്ക് പനി തുടങ്ങിയത് എത്ര ദിവസമായി?",
+        "important_gap": "",
+        "facts": [
+          {
+            "topic": "age",
+            "value": "32 years old",
+            "status": "reported",
+            "quote": "എനിക്ക് 32 വയസ്സാണ്"
+          },
+          {
+            "topic": "fever",
+            "value": "mild fever since yesterday",
+            "status": "reported",
+            "quote": "ഇന്നലെ മുതൽ ചെറിയ പനിയും ശരീരവേദനയും ഉണ്ട്"
+          },
+          {
+            "topic": "urination",
+            "value": "normal urination",
+            "status": "reported",
+            "quote": "മൂത്രം സാധാരണപോലെ പോകുന്നു"
+          },
+          {
+            "topic": "associated_symptoms",
+            "value": "no shortness of breath, no neck stiffness, no itching, no confusion",
+            "status": "reported",
+            "quote": "ശ്വാസംമുട്ടലോ കഴുത്ത് പിടിക്കലോ ചൊറിപ്പോ ആശയക്കുഴപ്പമോ ഇല്ല"
+          }
+        ],
+        "stop_quote": "",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": ""
+      },
+      {
+        "action": "ask",
+        "language": "ml-IN",
+        "confirmed_symptoms": "mild fever and body ache since yesterday",
+        "denied_symptoms": "",
+        "topic": "fever_duration",
+        "question": "പനി എത്ര ദിവസമായി ഉണ്ട്?",
+        "important_gap": "",
+        "facts": [
+          {
+            "topic": "age",
+            "value": "32 years old",
+            "status": "reported",
+            "quote": "എനിക്ക് 32 വയസ്സാണ്"
+          },
+          {
+            "topic": "fever",
+            "value": "mild fever since yesterday",
+            "status": "reported",
+            "quote": "ഇന്നലെ മുതൽ ചെറിയ പനിയും ശരീരവേദനയും ഉണ്ട്"
+          },
+          {
+            "topic": "urination",
+            "value": "normal urination",
+            "status": "reported",
+            "quote": "മൂത്രം സാധാരണപോലെ പോകുന്നു"
+          },
+          {
+            "topic": "associated_symptoms",
+            "value": "no shortness of breath, no neck stiffness, no itching, no confusion",
+            "status": "reported",
+            "quote": "ശ്വാസംമുട്ടലോ കഴുത്ത് പിടിക്കലോ ചൊറിപ്പോ ആശയക്കുഴപ്പമോ ഇല്ല"
+          }
+        ],
+        "stop_quote": "",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": ""
+      }
+    ],
+    "spoken": [
+      "മറുപടി സേവനത്തിൽ കണക്ഷൻ പ്രശ്നമുണ്ട്. നിങ്ങളുടെ വിലയിരുത്തൽ പൂർത്തിയായിട്ടില്ല. അൽപസമയത്തിനു ശേഷം വീണ്ടും ശ്രമിക്കുക."
+    ],
+    "kb": "fever",
+    "actions": [],
+    "assessed": false
+  },
+  {
+    "language": "ml-IN",
+    "case": "headache",
+    "input": "എനിക്ക് 35 വയസ്സാണ്. രണ്ടു ദിവസമായി മിതമായ തലവേദനയുണ്ട്. ഏറെനേരം സ്ക്രീൻ നോക്കിയ ശേഷം ക്രമേണ തുടങ്ങി. പരിക്കോ പനിയോ കഴുത്ത് പിടിക്കലോ ബലക്കുറവോ കാഴ്ചമാറ്റമോ ഇല്ല. കാരണം അറിയില്ല.",
+    "proposals": [
+      {
+        "action": "ask",
+        "language": "ml-IN",
+        "confirmed_symptoms": "moderate headache for two days",
+        "denied_symptoms": "injury, fever, neck stiffness, weakness, vision change",
+        "topic": "screen_relief",
+        "question": "സ്ക്രീൻ നോക്കുന്നത് നിർത്തിയാലും തലവേദന കുറയുന്നുണ്ടോ, അതോ അതേപടി തുടരുകയാണോ?",
+        "important_gap": "",
+        "facts": [
+          {
+            "topic": "age",
+            "value": "35 years old",
+            "status": "reported",
+            "quote": "എനിക്ക് 35 വയസ്സാണ്"
+          },
+          {
+            "topic": "headache_duration",
+            "value": "moderate headache for two days",
+            "status": "reported",
+            "quote": "രണ്ടു ദിവസമായി മിതമായ തലവേദനയുണ്ട്"
+          },
+          {
+            "topic": "headache_onset",
+            "value": "gradual onset after prolonged screen use",
+            "status": "reported",
+            "quote": "ഏറെനേരം സ്ക്രീൻ നോക്കിയ ശേഷം ക്രമേണ തുടങ്ങി"
+          },
+          {
+            "topic": "associated_negatives",
+            "value": "no injury, no fever, no neck stiffness, no weakness, no vision change",
+            "status": "reported",
+            "quote": "പരിക്കോ പനിയോ കഴുത്ത് പിടിക്കലോ ബലക്കുറവോ കാഴ്ചമാറ്റമോ ഇല്ല"
+          }
+        ],
+        "stop_quote": "",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": ""
+      },
+      {
+        "action": "ask",
+        "language": "ml-IN",
+        "confirmed_symptoms": "moderate headache for two days",
+        "denied_symptoms": "injury, fever, neck stiffness, weakness, vision change",
+        "topic": "headache_recurrence",
+        "question": "ഈ തലവേദനയ്ക്ക് മുൻപ് നിങ്ങൾക്ക് ഇതുപോലെ തലവേദന വന്നിട്ടുണ്ടോ?",
+        "important_gap": "",
+        "facts": [
+          {
+            "topic": "age",
+            "value": "35 years old",
+            "status": "reported",
+            "quote": "എനിക്ക് 35 വയസ്സാണ്"
+          },
+          {
+            "topic": "duration",
+            "value": "moderate headache for two days",
+            "status": "reported",
+            "quote": "രണ്ടു ദിവസമായി മിതമായ തലവേദനയുണ്ട്"
+          },
+          {
+            "topic": "headache_onset",
+            "value": "gradual onset after prolonged screen use",
+            "status": "reported",
+            "quote": "ഏറെനേരം സ്ക്രീൻ നോക്കിയ ശേഷം ക്രമേണ തുടങ്ങി"
+          },
+          {
+            "topic": "associated_negatives",
+            "value": "no injury, no fever, no neck stiffness, no weakness, no vision change",
+            "status": "reported",
+            "quote": "പരിക്കോ പനിയോ കഴുത്ത് പിടിക്കലോ ബലക്കുറവോ കാഴ്ചമാറ്റമോ ഇല്ല"
+          }
+        ],
+        "stop_quote": "",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": ""
+      }
+    ],
+    "spoken": [
+      "മറുപടി സേവനത്തിൽ കണക്ഷൻ പ്രശ്നമുണ്ട്. നിങ്ങളുടെ വിലയിരുത്തൽ പൂർത്തിയായിട്ടില്ല. അൽപസമയത്തിനു ശേഷം വീണ്ടും ശ്രമിക്കുക."
+    ],
+    "kb": "headache",
+    "actions": [],
+    "assessed": false
+  },
+  {
+    "language": "ml-IN",
+    "case": "unknown",
+    "input": "എനിക്ക് 28 വയസ്സാണ്. രണ്ടു ദിവസമായി ഇടയ്ക്കിടെ എക്കിളുണ്ട്. ഭക്ഷണം കഴിക്കാൻ ബുദ്ധിമുട്ടുണ്ട്. എന്താണ് കാരണമെന്ന് അറിയില്ല, മറ്റു ലക്ഷണങ്ങളില്ല.",
+    "proposals": [
+      {
+        "action": "ask",
+        "language": "ml-IN",
+        "confirmed_symptoms": "Intermittent hiccups and difficulty eating",
+        "denied_symptoms": "",
+        "topic": "associated_pain_location",
+        "question": "ഭക്ഷണം കഴിക്കുമ്പോൾ നെഞ്ചിൽ എരിച്ചിലോ വേദനയോ അനുഭവപ്പെടുന്നുണ്ടോ?",
+        "important_gap": "",
+        "facts": [
+          {
+            "topic": "symptom_duration",
+            "value": "Intermittent hiccups for two days",
+            "status": "reported",
+            "quote": "രണ്ടു ദിവസമായി ഇടയ്ക്കിടെ എക്കിളുണ്ട്"
+          },
+          {
+            "topic": "symptom_impact",
+            "value": "Difficulty eating due to hiccups",
+            "status": "reported",
+            "quote": "ഭക്ഷണം കഴിക്കാൻ ബുദ്ധിമുട്ടുണ്ട്"
+          },
+          {
+            "topic": "associated_symptoms",
+            "value": "No other symptoms reported",
+            "status": "reported",
+            "quote": "മറ്റു ലക്ഷണങ്ങളില്ല"
+          }
+        ],
+        "stop_quote": "",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": ""
+      },
+      {
+        "action": "ask",
+        "language": "ml-IN",
+        "confirmed_symptoms": "ഇടയ്ക്കിടെ എക്കിൾ വരുകയും ഭക്ഷണം കഴിക്കാൻ ബുദ്ധിമുട്ട് ഉണ്ടാവുകയും ചെയ്യുന്നു.",
+        "denied_symptoms": "",
+        "topic": "trigger_food",
+        "question": "എക്കിൾ തുടങ്ങുന്നതിന് മുൻപ് എന്തെങ്കിലും ചൂടുള്ളതോ എരിവുള്ളതോ കഴിച്ചിരുന്നോ?",
+        "important_gap": "",
+        "facts": [
+          {
+            "topic": "duration",
+            "value": "Intermittent hiccups for two days",
+            "status": "reported",
+            "quote": "രണ്ടു ദിവസമായി ഇടയ്ക്കിടെ എക്കിളുണ്ട്"
+          },
+          {
+            "topic": "impact",
+            "value": "Difficulty eating due to hiccups",
+            "status": "reported",
+            "quote": "ഭക്ഷണം കഴിക്കാൻ ബുദ്ധിമുട്ടുണ്ട്"
+          },
+          {
+            "topic": "associated_symptoms",
+            "value": "No other symptoms reported",
+            "status": "reported",
+            "quote": "മറ്റു ലക്ഷണങ്ങളില്ല"
+          }
+        ],
+        "stop_quote": "",
+        "likely": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": ""
+      }
+    ],
+    "spoken": [
+      "മറുപടി സേവനത്തിൽ കണക്ഷൻ പ്രശ്നമുണ്ട്. നിങ്ങളുടെ വിലയിരുത്തൽ പൂർത്തിയായിട്ടില്ല. അൽപസമയത്തിനു ശേഷം വീണ്ടും ശ്രമിക്കുക."
+    ],
+    "kb": "breathlessness",
+    "actions": [],
+    "assessed": false
+  }
+]

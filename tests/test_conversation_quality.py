@@ -157,6 +157,7 @@ async def test_unknown_complaint_keeps_a_valid_uncertain_assessment(monkeypatch)
         action="assess",
         language="en-IN",
         confirmed_symptoms="persistent hiccups",
+        explanation_quote="persistent hiccups",
         likely="I cannot identify the cause of these hiccups on a call.",
         why="Several causes are possible, and these details do not distinguish them.",
         do="Keep a record of when they occur and any triggers.",

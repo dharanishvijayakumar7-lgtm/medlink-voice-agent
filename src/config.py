@@ -72,8 +72,8 @@ class Settings(BaseSettings):
 
     # --- LiveKit (transport) ---
     livekit_url: str = Field(default="", alias="LIVEKIT_URL")
-    livekit_api_key: str = Field(default="", alias="LIVEKIT_API_KEY")
-    livekit_api_secret: str = Field(default="", alias="LIVEKIT_API_SECRET")
+    livekit_api_key: str = Field(default="", alias="LIVEKIT_API_KEY", repr=False)
+    livekit_api_secret: str = Field(default="", alias="LIVEKIT_API_SECRET", repr=False)
     agent_name: str = Field(default="medlink-agent", alias="LIVEKIT_AGENT_NAME")
 
     # --- Speech / LLM ---
@@ -109,9 +109,7 @@ class Settings(BaseSettings):
     # treated as line noise or echo and ignored. Real speech on a test call came
     # through at 0.98-0.99; the fragments that kept restarting the agent were
     # 0.46-0.47. A clearly heard "no" is high-confidence, so it is still kept.
-    min_turn_confidence: float = Field(
-        default=0.6, alias="MEDLINK_MIN_TURN_CONFIDENCE"
-    )
+    min_turn_confidence: float = Field(default=0.6, alias="MEDLINK_MIN_TURN_CONFIDENCE")
     # When something the agent hears pauses it mid-sentence but turns out not to
     # be the caller, it resumes after this many seconds. LiveKit's default is 2.0,
     # which on speakerphone left a two-second hole in the middle of a word. Echo
@@ -128,7 +126,7 @@ class Settings(BaseSettings):
     llm_model: str = Field(default=SARVAM_LLM_MODEL, alias="MEDLINK_LLM_MODEL")
 
     # --- Sarvam: the whole pipeline, one key ---
-    sarvam_api_key: str = Field(default="", alias="SARVAM_API_KEY")
+    sarvam_api_key: str = Field(default="", alias="SARVAM_API_KEY", repr=False)
     sarvam_stt_model: str = Field(
         default=SARVAM_STT_MODEL, alias="MEDLINK_SARVAM_STT_MODEL"
     )
@@ -140,6 +138,21 @@ class Settings(BaseSettings):
     )
     sarvam_tts_speaker: str = Field(
         default=SARVAM_TTS_SPEAKER, alias="MEDLINK_SARVAM_TTS_SPEAKER"
+    )
+    # Sarvam's Bulbul v3 guide recommends Neha/Priya for Telugu. Other
+    # languages retain the configured voice; this map is freely overridable.
+    tts_language_speakers: dict[str, str] = Field(
+        default_factory=lambda: {"te-IN": "neha"}, alias="MEDLINK_TTS_LANGUAGE_SPEAKERS"
+    )
+    tts_pace: float = Field(default=0.95, ge=0.5, le=2.0, alias="MEDLINK_TTS_PACE")
+    tts_temperature: float = Field(
+        default=0.4, ge=0.01, le=1.0, alias="MEDLINK_TTS_TEMPERATURE"
+    )
+    tts_min_buffer_size: int = Field(
+        default=100, ge=30, le=200, alias="MEDLINK_TTS_MIN_BUFFER_SIZE"
+    )
+    tts_max_chunk_length: int = Field(
+        default=500, ge=50, le=500, alias="MEDLINK_TTS_MAX_CHUNK_LENGTH"
     )
 
     # --- How the agent's voice sounds on the phone ---
@@ -166,10 +179,12 @@ class Settings(BaseSettings):
     tts_gain_max: float = Field(default=6.0, alias="MEDLINK_TTS_GAIN")
 
     # --- Persistence ---
-    database_url: str = Field(default="", alias="DATABASE_URL")
+    database_url: str = Field(default="", alias="DATABASE_URL", repr=False)
     # HMAC key for phone-number lookup hashing; Fernet key for at-rest PII fields.
-    phone_hash_key: str = Field(default="", alias="MEDLINK_PHONE_HASH_KEY")
-    field_encryption_key: str = Field(default="", alias="MEDLINK_FIELD_ENCRYPTION_KEY")
+    phone_hash_key: str = Field(default="", alias="MEDLINK_PHONE_HASH_KEY", repr=False)
+    field_encryption_key: str = Field(
+        default="", alias="MEDLINK_FIELD_ENCRYPTION_KEY", repr=False
+    )
     history_retention_days: int = Field(default=90, alias="MEDLINK_RETENTION_DAYS")
     # Seconds to wait for a database connection before giving up on the write.
     db_connect_timeout: float = Field(default=3.0, alias="MEDLINK_DB_CONNECT_TIMEOUT")
@@ -197,7 +212,9 @@ class Settings(BaseSettings):
     # pretend a console session came from a given number, which makes the
     # returning-caller flow testable without telephony. Ignored whenever a real
     # SIP caller ID is present, and must stay unset in production.
-    dev_caller_phone: str = Field(default="", alias="MEDLINK_DEV_CALLER_PHONE")
+    dev_caller_phone: str = Field(
+        default="", alias="MEDLINK_DEV_CALLER_PHONE", repr=False
+    )
     sms_provider: str = Field(default="", alias="MEDLINK_SMS_PROVIDER")  # plivo|exotel
     emergency_number: str = Field(default="112", alias="MEDLINK_EMERGENCY_NUMBER")
     ambulance_number: str = Field(default="108", alias="MEDLINK_AMBULANCE_NUMBER")
@@ -251,6 +268,9 @@ class Settings(BaseSettings):
         if self.demo_mode:
             return min(self.max_followup_questions, DEMO_MAX_FOLLOWUPS)
         return self.max_followup_questions
+
+    def tts_speaker_for_language(self, language: str) -> str:
+        return self.tts_language_speakers.get(language, self.sarvam_tts_speaker)
 
     @property
     def disclaimer(self) -> str:

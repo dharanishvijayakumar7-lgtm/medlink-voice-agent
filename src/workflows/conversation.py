@@ -8,18 +8,21 @@ import asyncio
 import json
 import logging
 import re
+import unicodedata
 from dataclasses import dataclass, field
 from typing import Literal
 
 from livekit.agents import APIError
+from livekit.agents.llm import ChatContext
 from pydantic import BaseModel, ConfigDict, Field
 
 from api_diagnostics import api_error_details
-from config import SUPPORTED_LANGUAGES
+from config import SUPPORTED_LANGUAGES, settings
 from knowledge.triage_kb import get_triage_kb
 from medicine.formulary import get_formulary
 from safety.guardrails import scan_output
 from safety.redflags import detect_redflag
+from speech.wording import LANGUAGE_STYLE, normalize_for_speech, validate_spoken_text
 from workflows.base import MedLinkAgent, _script_language, detect_language_request
 from workflows.conversation_text import (
     GENERAL_ASSESSMENT,
@@ -93,6 +96,31 @@ MIN_QUESTIONS = 4
 MAX_QUESTIONS = 6
 MODEL_TIMEOUT = 15.0
 
+# The English formulary names do not catch names written in native scripts.
+# This is a finite supplemental list, not an exhaustive medicine recognizer.
+_NATIVE_MEDICINES = (
+    "पैरासिटामोल",
+    "पेरासिटामोल",
+    "इबुप्रोफेन",
+    "ओआरएस",
+    "பாராசிட்டமால்",
+    "பாரசிட்டமால்",
+    "இபுபுரோஃபென்",
+    "ஓஆர்எஸ்",
+    "పారాసిటమాల్",
+    "పారాసెటమాల్",
+    "ఇబుప్రోఫెన్",
+    "ఓఆర్ఎస్",
+    "ಪ್ಯಾರಾಸಿಟಮಾಲ್",
+    "ಪ್ಯಾರಾಸೆಟಮಾಲ್",
+    "ಐಬುಪ್ರೊಫೆನ್",
+    "ಓಆರ್ಎಸ್",
+    "പാരസെറ്റമോൾ",
+    "പാരസിറ്റമോൾ",
+    "ഐബുപ്രോഫെൻ",
+    "ഓആർഎസ്",
+)
+
 
 class ReportedFact(BaseModel):
     model_config = ConfigDict(extra="forbid")
@@ -112,7 +140,7 @@ class Decision(BaseModel):
     language: LANGUAGES
     confirmed_symptoms: str = Field(
         default="",
-        description="English summary of ONLY positively reported symptoms. Keep denied symptoms separate.",
+        description="Short English PRIMARY complaint, e.g. 'hair loss', 'fever', 'headache', 'hiccups'. Do not include age, family history or denied symptoms. Keep negatives separate.",
     )
     denied_symptoms: str = ""
     topic: str = ""
@@ -127,6 +155,10 @@ class Decision(BaseModel):
         description="Exact caller quote explicitly declining more questions or ending the call; otherwise empty. Duration is not a request to stop.",
     )
     likely: str = ""
+    explanation_quote: str = Field(
+        default="",
+        description="For assess: exact original-language caller quote supporting the spoken explanation. Do not invent or translate the quote.",
+    )
     why: str = Field(
         default="",
         description="SPOKEN in the caller's language: one plain sentence combining the possible cause and why it fits a reported fact. This must make sense without the likely field.",
@@ -144,6 +176,9 @@ class Decision(BaseModel):
 
 
 def medicine_free(text: str) -> bool:
+    compact = re.sub(r"\s+", "", unicodedata.normalize("NFKC", text))
+    if any(name in compact for name in _NATIVE_MEDICINES):
+        return False
     if not scan_output(text).is_safe:
         return False
     if re.search(r"\d\s*(?:mg|mcg|ml|tablets?|capsules?|मिलीग्राम|गोली)\b", text, re.I):
@@ -273,6 +308,8 @@ class ConversationPolicy:
             ]
             if not all(p.strip() for p in parts):
                 raise ValueError("incomplete_assessment: Include all five sections")
+            for part in (decision.why, decision.do, decision.seek_care):
+                validate_spoken_text(part, decision.language, complete=True)
             # Keep all five fields for records and safety validation, but speak
             # only the standalone explanation and next steps.
             text = " ".join((decision.why, decision.do, decision.seek_care))
@@ -294,6 +331,8 @@ class ConversationPolicy:
             raise ValueError(
                 "medicine_content: Self-care only; no medicine names or doses"
             )
+        if decision.action != "assess":
+            validate_spoken_text(text, decision.language)
         if decision.action == "ask":
             self.questions.append((decision.topic, decision.question))
         elif decision.action == "assess":
@@ -340,6 +379,18 @@ The whole spoken closing should be three or four short sentences, about 40-70
 English words or equivalent in the caller's language. No headings, numbered
 sections, medical jargon, or recital of the full symptom history. Explain an
 unfamiliar term in everyday words or leave it out. Do not truncate care warnings.
+Finish each spoken field with a complete sentence and final punctuation; never
+return a sentence fragment or ellipsis. Use native script for ALL spoken fields,
+including the possible cause; do not insert English diagnosis names into them.
+For assess include explanation_quote: an exact caller quote supporting why.
+A quote supports a reported detail, not proof of a disease. Keep the cause
+tentative. Fever alone cannot distinguish a viral from a bacterial infection;
+headache after screen use does not confirm tension headache or exclude serious
+causes. Family history can suggest inherited thinning, not confirm it. Do not
+claim no warning signs unless the caller explicitly denied the relevant signs.
+Do not claim a vitamin deficiency, hormone problem, infection or other specific
+cause without supporting reported details. State uncertainty when evidence is
+insufficient. Never turn an English reference heading into a confirmed diagnosis.
 Use the reference for advice, conditioned on what the caller actually reported.
 Do not jump to unrelated conditions because of background history. Referral
 must accompany useful self-care, not replace it. The introduction already says
@@ -364,6 +415,7 @@ class ConversationAgent(MedLinkAgent):
         self.facts: dict[str, ReportedFact] = {}
         self.closed = False
         self.entry = None
+        self._reference_confirmed = False
 
     async def on_enter(self):
         await self.session.say(
@@ -373,6 +425,13 @@ class ConversationAgent(MedLinkAgent):
     async def on_user_turn_completed(self, turn_ctx, new_message):
         # Text and voice sessions both use the same llm_node state machine.
         return None
+
+    async def tts_node(self, text, model_settings):
+        async def normalized():
+            async for chunk in text:
+                yield normalize_for_speech(chunk)
+
+        return await super().tts_node(normalized(), model_settings)
 
     def _reference(self) -> str:
         if self.entry is None:
@@ -391,7 +450,11 @@ class ConversationAgent(MedLinkAgent):
                 "presentation": entry.presentation,
                 "question_guidance": questions,
                 "possible_explanations": entry.explanation,
-                "self_care": entry.self_care,
+                "self_care": " ".join(
+                    sentence
+                    for sentence in re.split(r"(?<=[.!?।])\s+", entry.self_care)
+                    if medicine_free(sentence)
+                ),
                 "avoid": entry.avoid,
                 "seek_care": entry.refer_when,
                 "warning_signs": entry.red_flags,
@@ -427,6 +490,15 @@ class ConversationAgent(MedLinkAgent):
     def _commit(
         self, candidate, *, caller_stopped=False, repeat_requested=False, fallback=False
     ):
+        if candidate.action == "assess":
+            # These two fields are retained for records, not spoken. A model
+            # that correctly supplies the three spoken sentences sometimes
+            # omits them. Derive metadata without discarding a useful localized
+            # explanation or inventing a second, stronger diagnosis.
+            candidate.likely = candidate.likely or candidate.why
+            candidate.avoid = (
+                candidate.avoid or GENERAL_ASSESSMENT[candidate.language]["avoid"]
+            )
         if (
             candidate.action == "assess"
             and self.entry
@@ -524,7 +596,10 @@ class ConversationAgent(MedLinkAgent):
                 # Do not invent a native-language translation during an outage.
                 # A known condition needs its own localized recovery guidance.
                 if language != "en-IN":
-                    return None
+                    # Preserve uncertainty in the caller's language when no
+                    # condition-specific translation is available. Do not turn
+                    # a rejected model proposal into a fictitious API outage.
+                    return Decision(action="assess", language=language, **parts)
                 sentences = re.split(r"(?<=[.!?])\s+", self.entry.self_care)
                 positive = [
                     s
@@ -583,40 +658,53 @@ class ConversationAgent(MedLinkAgent):
         # Establish the reference BEFORE the first question. Keep the primary
         # complaint stable so later family history cannot steal the KB match.
         if self.entry is None:
-            self.entry = get_triage_kb().match(self.data.chief_complaint or callers[0])
+            self.entry = get_triage_kb().match(
+                self.data.chief_complaint or callers[0], aliases_only=True
+            )
         self.data.triage_entry_id = self.entry.id if self.entry else None
         error = ""
         stopped = False
         for attempt in range(2):
-            context = chat_ctx.copy()
+            # Keep runtime state in the same leading instruction as the role.
+            # Some conversation endpoints do not reliably apply a second system
+            # message placed after the latest caller message.
+            context = ChatContext()
             context.add_message(
                 role="system",
                 content=(
+                    f"{self.instructions}\n\nCurrent application state:\n"
                     f"Return JSON matching: {json.dumps(Decision.model_json_schema())}\n"
                     f"Questions already asked: {self.policy.questions}\n"
                     f"Known facts: {json.dumps({t: f.model_dump() for t, f in self.facts.items()}, ensure_ascii=False)}\n"
                     f"Assessed: {self.policy.assessed}. Language: {language}. "
+                    f"Spoken style: {LANGUAGE_STYLE[language]}\n"
                     f"Question count: {len(self.policy.questions)}; minimum FOUR, maximum SIX. "
-                    f"Repeat/language switch requested: {repeat_requested}. Correction: {error}\n"
+                    + (
+                        "The six-question budget is exhausted. Return assess now using the reported facts, or emergency for danger. Do NOT return ask. "
+                        if len(self.policy.questions) >= MAX_QUESTIONS
+                        and not self.policy.assessed
+                        else ""
+                    )
+                    + f"Repeat/language switch requested: {repeat_requested}. Correction: {error}\n"
                     "Emergency and explicit caller requests to stop override the minimum. "
                     "Otherwise ask until four, then assess unless an important gap remains. "
                     "Use symptom-specific topics. Do not re-ask facts supplied in ANY caller message.\n"
+                    "The reference is a candidate, not a diagnosis. Independently translate the primary complaint into confirmed_symptoms; do not turn a denied symptom or incidental difficulty into the primary complaint.\n"
                     f"Clinical reference (omit medicines and doses): {self._reference()}"
                 ),
             )
+            context.items.extend(chat_ctx.copy(exclude_instructions=True).items)
             try:
                 candidate = await asyncio.wait_for(
                     self._propose(context), timeout=MODEL_TIMEOUT
                 )
-                if (
-                    explicit or _script_language(latest)
-                ) and candidate.language != language:
+                if candidate.language != language:
                     raise ValueError("wrong_language: Use the requested language")
                 # A valid model language choice also guides any offline recovery.
                 language = candidate.language
                 self._remember(candidate, callers)
                 if (
-                    self.entry is None
+                    not self._reference_confirmed
                     and not candidate.confirmed_symptoms
                     and candidate.action not in ("emergency", "close", "repeat")
                 ):
@@ -633,11 +721,14 @@ class ConversationAgent(MedLinkAgent):
                     )
                 if self.data.escalated and candidate.action != "close":
                     candidate.action = "emergency"
-                if self.entry is None and candidate.confirmed_symptoms:
-                    matched = get_triage_kb().match(candidate.confirmed_symptoms)
-                    if matched:
+                if not self._reference_confirmed and candidate.confirmed_symptoms:
+                    matched = get_triage_kb().match(
+                        candidate.confirmed_symptoms, aliases_only=True
+                    )
+                    self._reference_confirmed = True
+                    if matched is not self.entry:
                         self.entry = matched
-                        self.data.triage_entry_id = matched.id
+                        self.data.triage_entry_id = matched.id if matched else None
                         if candidate.action in ("ask", "assess"):
                             if attempt == 0:
                                 error = "Use the newly matched reference for your next question or assessment."
@@ -645,6 +736,12 @@ class ConversationAgent(MedLinkAgent):
                             # Never speak an assessment generated before its
                             # relevant clinical reference was available.
                             break
+                if candidate.action == "assess" and not _quoted(
+                    candidate.explanation_quote, callers
+                ):
+                    raise ValueError(
+                        "unsupported_explanation: Include an exact caller quote supporting why; keep any possible cause tentative"
+                    )
                 if (
                     repeat_requested
                     and self.policy.questions
@@ -743,4 +840,7 @@ class ConversationAgent(MedLinkAgent):
             language = "en-IN"
         self.data.language = language
         if self.session.tts is not None:
-            self.session.tts.update_options(target_language_code=language)
+            self.session.tts.update_options(
+                target_language_code=language,
+                speaker=settings.tts_speaker_for_language(language),
+            )

@@ -89,6 +89,10 @@ def build_tts() -> tts.TTS:
         target_language_code=DEFAULT_LANGUAGE_CODE,
         model=settings.sarvam_tts_model,
         speaker=settings.sarvam_tts_speaker,
+        pace=settings.tts_pace,
+        temperature=settings.tts_temperature,
+        min_buffer_size=settings.tts_min_buffer_size,
+        max_chunk_length=settings.tts_max_chunk_length,
         # Synthesise above the 8 kHz line rate and let LiveKit downsample,
         # rather than losing detail at the source.
         speech_sample_rate=settings.tts_sample_rate,

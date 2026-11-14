@@ -1,0 +1,39 @@
+{
+  "baseline_six": {
+    "attempts": 24,
+    "assessed": 7,
+    "by_language": {
+      "en-IN": 4,
+      "hi-IN": 1,
+      "kn-IN": 0,
+      "ml-IN": 1,
+      "ta-IN": 1,
+      "te-IN": 0
+    }
+  },
+  "verification": {
+    "attempts": 24,
+    "assessed": 24,
+    "by_language": {
+      "en-IN": 4,
+      "hi-IN": 4,
+      "kn-IN": 4,
+      "ml-IN": 4,
+      "ta-IN": 4,
+      "te-IN": 4
+    },
+    "retained_model_explanations": 14
+  },
+  "final_conversations": {
+    "attempts": 6,
+    "assessed": 6,
+    "by_language": {
+      "en-IN": 1,
+      "hi-IN": 1,
+      "kn-IN": 1,
+      "ml-IN": 1,
+      "ta-IN": 1,
+      "te-IN": 1
+    }
+  }
+}

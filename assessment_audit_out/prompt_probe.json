@@ -1,0 +1,227 @@
+[
+  {
+    "language": "te-IN",
+    "case": "hair_gradual",
+    "question_count_fixture": 6,
+    "input": "నా వయసు 28. రెండు సంవత్సరాలుగా ముందు భాగంలో జుట్టు నెమ్మదిగా తగ్గుతోంది. మా నాన్నకు కూడా ఇలాగే జుట్టు తగ్గింది. తల చర్మంలో దురద, పొట్టు లేదా నొప్పి లేదు.",
+    "proposals": [
+      {
+        "action": "ask",
+        "language": "te-IN",
+        "confirmed_symptoms": "hair loss",
+        "denied_symptoms": "",
+        "topic": "pattern_0",
+        "question": "జుట్టు ఎక్కడ ఎక్కువగా రాలుతోంది, అంటే నుదురు మీదనా లేక తల పైభాగంలోనా?.",
+        "important_gap": "",
+        "facts": [],
+        "stop_quote": "",
+        "likely": "",
+        "explanation_quote": "",
+        "why": "",
+        "do": "",
+        "avoid": "",
+        "seek_care": "",
+        "answer": ""
+      },
+      {
+        "action": "assess",
+        "language": "te-IN",
+        "confirmed_symptoms": "hair loss",
+        "denied_symptoms": "",
+        "topic": "",
+        "question": "",
+        "important_gap": "",
+        "facts": [
+          {
+            "topic": "age",
+            "value": "28 years old",
+            "status": "reported",
+            "quote": "నా వయసు 28"
+          },
+          {
+            "topic": "progression",
+            "value": "gradual hair loss for two years",
+            "status": "reported",
+            "quote": "రెండు సంవత్సరాలుగా ముందు భాగంలో జుట్టు నెమ్మదిగా తగ్గుతోంది"
+          },
+          {
+            "topic": "family_history",
+            "value": "father had similar hair thinning",
+            "status": "reported",
+            "quote": "మా నాన్నకు కూడా ఇలాగే జుట్టు తగ్గింది"
+          },
+          {
+            "topic": "scalp_changes",
+            "value": "no itching, flaking, or pain",
+            "status": "reported",
+            "quote": "తల చర్మంలో దురద, పొట్టు లేదా నొప్పి లేదు"
+          }
+        ],
+        "stop_quote": "",
+        "likely": "",
+        "explanation_quote": "మా నాన్నకు కూడా ఇలాగే జుట్టు తగ్గింది",
+        "why": "మీ వయసు, రెండు సంవత్సరాలుగా ముందు భాగంలో జుట్టు నెమ్మదిగా తగ్గడం, మరియు మీ నాన్నగారికి కూడా ఇలాగే ఉండటం చూస్తే ఇది వంశపారంపర్యంగా వచ్చే జుట్టు రాలే సమస్య కావచ్చు.",
+        "do": "జుట్టును సున్నితంగా చూసుకోండి, మృదువైన షాంపూతో కడగండి, మరియు సహజంగా ఆరనివ్వండి. జుట్టును లాగే కఠినమైన కేశాలంకరణలు చేయకండి.",
+        "avoid": "",
+        "seek_care": "ఈ సమస్య కొనసాగుతుంటే ఒకసారి చర్మవ్యాధి నిపుణుడిని సంప్రదించండి.",
+        "answer": ""
+      }
+    ],
+    "spoken": [
+      "జుట్టు రాలడానికి వేర్వేరు కారణాలు ఉండవచ్చు; పరీక్ష లేకుండా మీ కారణాన్ని ఖచ్చితంగా చెప్పలేను. మృదువైన షాంపూ, కండిషనర్ వాడి జుట్టును సహజంగా ఆరనివ్వండి. జుట్టు రాలడం కొనసాగితే వైద్యుని కలవండి; అకస్మాత్తుగా బట్టతల మచ్చలు, తల చర్మంలో నొప్పి లేదా వాపు వస్తే త్వరగా చూపించండి."
+    ],
+    "kb": "hair_loss",
+    "actions": [
+      {
+        "action": "assess",
+        "language": "te-IN",
+        "confirmed_symptoms": "",
+        "denied_symptoms": "",
+        "topic": "",
+        "question": "",
+        "important_gap": "",
+        "facts": [],
+        "stop_quote": "",
+        "likely": "జుట్టు రాలడానికి అనేక కారణాలు ఉండవచ్చు; ఫోనులో ఖచ్చితమైన కారణాన్ని నిర్ధారించలేను.",
+        "explanation_quote": "",
+        "why": "జుట్టు రాలడానికి వేర్వేరు కారణాలు ఉండవచ్చు; పరీక్ష లేకుండా మీ కారణాన్ని ఖచ్చితంగా చెప్పలేను.",
+        "do": "మృదువైన షాంపూ, కండిషనర్ వాడి జుట్టును సహజంగా ఆరనివ్వండి.",
+        "avoid": "జుట్టును బిగించి కట్టడం, అధిక వేడి, కఠినమైన రసాయనాలు, నిరూపించని జుట్టు పెంచే చిట్కాలను నివారించండి.",
+        "seek_care": "జుట్టు రాలడం కొనసాగితే వైద్యుని కలవండి; అకస్మాత్తుగా బట్టతల మచ్చలు, తల చర్మంలో నొప్పి లేదా వాపు వస్తే త్వరగా చూపించండి.",
+        "answer": ""
+      }
+    ],
+    "assessed": true
+  },
+  {
+    "language": "te-IN",
+    "case": "fever",
+    "question_count_fixture": 6,
+    "input": "నా వయసు 32. నిన్నటి నుంచి తేలికపాటి జ్వరం, ఒళ్లు నొప్పులు ఉన్నాయి. నీళ్లు తాగగలుగుతున్నాను, మూత్రం మామూలుగానే వస్తోంది. ఊపిరి తీసుకోవడంలో ఇబ్బంది, మెడ బిగుసుకుపోవడం, దద్దుర్లు లేదా అయోమయం లేవు. కారణం తెలియదు.",
+    "proposals": [
+      {
+        "action": "assess",
+        "language": "te-IN",
+        "confirmed_symptoms": "fever",
+        "denied_symptoms": "breathing difficulty, neck stiffness, rash, confusion",
+        "topic": "",
+        "question": "",
+        "important_gap": "",
+        "facts": [
+          {
+            "topic": "fever_duration",
+            "value": "Since yesterday",
+            "status": "reported",
+            "quote": "నిన్నటి నుంచి తేలికపాటి జ్వరం"
+          },
+          {
+            "topic": "body_ache",
+            "value": "body aches",
+            "status": "reported",
+            "quote": "ఒళ్లు నొప్పులు ఉన్నాయి"
+          },
+          {
+            "topic": "hydration_status",
+            "value": "able to drink water",
+            "status": "reported",
+            "quote": "నీళ్లు తాగగలుగుతున్నాను"
+          },
+          {
+            "topic": "urine_status",
+            "value": "normal urine",
+            "status": "reported",
+            "quote": "మూత్రం మామూలుగానే వస్తోంది"
+          },
+          {
+            "topic": "associated_symptoms",
+            "value": "denied breathing difficulty, neck stiffness, rash, confusion",
+            "status": "reported",
+            "quote": "ఊపిరి తీసుకోవడంలో ఇబ్బంది, మెడ బిగుసుకుపోవడం, దద్దుర్లు లేదా అయోమయం లేవు"
+          }
+        ],
+        "stop_quote": "",
+        "likely": "",
+        "explanation_quote": "నిన్నటి నుంచి తేలికపాటి జ్వరం, ఒళ్లు నొప్పులు ఉన్నాయి.",
+        "why": "నిన్నటి నుంచి మీకు జ్వరం, ఒళ్లు నొప్పులు ఉండటం వల్ల ఇది సాధారణ ఇన్ఫెక్షన్ కావచ్చు.",
+        "do": "మీరు తగినంత నీరు తాగండి, విశ్రాంతి తీసుకోండి. జ్వరం ఎక్కువగా ఉంటే సాధారణ ఉష్ణోగ్రత ఉన్న నీటితో శరీరాన్ని తుడవండి. తేలికపాటి ఆహారం తీసుకోండి.",
+        "avoid": "",
+        "seek_care": "జ్వరం మూడు రోజుల కంటే ఎక్కువ ఉంటే లేదా మీ పరిస్థితి మారితే వెంటనే వైద్యుడిని సంప్రదించండి.",
+        "answer": ""
+      },
+      {
+        "action": "assess",
+        "language": "te-IN",
+        "confirmed_symptoms": "fever",
+        "denied_symptoms": "breathing difficulty, neck stiffness, rash, confusion",
+        "topic": "",
+        "question": "",
+        "important_gap": "",
+        "facts": [
+          {
+            "topic": "duration",
+            "value": "Since yesterday",
+            "status": "reported",
+            "quote": "నిన్నటి నుంచి తేలికపాటి జ్వరం"
+          },
+          {
+            "topic": "body_ache",
+            "value": "body aches",
+            "status": "reported",
+            "quote": "ఒళ్లు నొప్పులు ఉన్నాయి"
+          },
+          {
+            "topic": "hydration_status",
+            "value": "able to drink water",
+            "status": "reported",
+            "quote": "నీళ్లు తాగగలుగుతున్నాను"
+          },
+          {
+            "topic": "urine_status",
+            "value": "normal urine",
+            "status": "reported",
+            "quote": "మూత్రం మామూలుగానే వస్తోంది"
+          },
+          {
+            "topic": "associated_symptoms",
+            "value": "denied breathing difficulty, neck stiffness, rash, confusion",
+            "status": "reported",
+            "quote": "ఊపిరి తీసుకోవడంలో ఇబ్బంది, మెడ బిగుసుకుపోవడం, దద్దుర్లు లేదా అయోమయం లేవు"
+          }
+        ],
+        "stop_quote": "",
+        "likely": "",
+        "explanation_quote": "",
+        "why": "నిన్నటి నుంచి మీకు తేలికపాటి జ్వరం, ఒళ్లు నొప్పులు ఉండటం వల్ల ఇది సాధారణ జ్వరం కావచ్చు.",
+        "do": "మీరు పుష్కలంగా నీళ్లు తాగి విశ్రాంతి తీసుకోండి. జ్వరం ఎక్కువగా ఉంటే సాధారణ ఉష్ణోగ్రత ఉన్న నీటితో ఒళ్లను తుడవండి.",
+        "avoid": "",
+        "seek_care": "జ్వరం మూడు రోజుల కంటే ఎక్కువ ఉంటే లేదా పరిస్థితి మారితే వైద్యుడిని సంప్రదించండి.",
+        "answer": ""
+      }
+    ],
+    "spoken": [
+      "ఈ సంభాషణతో కారణాన్ని ఖచ్చితంగా చెప్పలేను; పరీక్ష సహాయపడవచ్చు. సమస్య ఎప్పుడు వస్తోంది, ఎలా మారుతోంది, దేనితో పెరుగుతోందో రాసుకుని వైద్యునికి చెప్పండి. సమస్య కొనసాగితే లేదా పెరిగితే వైద్యుని కలవండి; తీవ్రమైన లక్షణాలకు వెంటనే సహాయం పొందండి."
+    ],
+    "kb": "fever",
+    "actions": [
+      {
+        "action": "assess",
+        "language": "te-IN",
+        "confirmed_symptoms": "",
+        "denied_symptoms": "",
+        "topic": "",
+        "question": "",
+        "important_gap": "",
+        "facts": [],
+        "stop_quote": "",
+        "likely": "ఈ సంభాషణతో ఒక నిర్దిష్ట కారణాన్ని గుర్తించలేకపోతున్నాను.",
+        "explanation_quote": "",
+        "why": "ఈ సంభాషణతో కారణాన్ని ఖచ్చితంగా చెప్పలేను; పరీక్ష సహాయపడవచ్చు.",
+        "do": "సమస్య ఎప్పుడు వస్తోంది, ఎలా మారుతోంది, దేనితో పెరుగుతోందో రాసుకుని వైద్యునికి చెప్పండి.",
+        "avoid": "నిరూపించని చిట్కాలు ప్రయత్నించడం, సొంతంగా చికిత్స మొదలుపెట్టడం నివారించండి.",
+        "seek_care": "సమస్య కొనసాగితే లేదా పెరిగితే వైద్యుని కలవండి; తీవ్రమైన లక్షణాలకు వెంటనే సహాయం పొందండి. నేను ఆరోగ్య సహాయకురాలిని, వైద్యురాలిని కాదు.",
+        "answer": ""
+      }
+    ],
+    "assessed": true
+  }
+]

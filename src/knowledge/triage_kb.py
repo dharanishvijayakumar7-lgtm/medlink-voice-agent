@@ -232,7 +232,9 @@ class TriageKB:
             raise ValueError(f"duplicate triage entry ids: {sorted(dupes)}")
         return cls(entries)
 
-    def match(self, complaint: str) -> TriageEntry | None:
+    def match(
+        self, complaint: str, *, aliases_only: bool = False
+    ) -> TriageEntry | None:
         """Best entry for a free-text complaint, or None if nothing is confident."""
         if not complaint or not complaint.strip():
             return None
@@ -279,7 +281,7 @@ class TriageKB:
             return None
 
         # 2. BM25 fallback for phrasings the aliases missed.
-        if self._bm25 is not None:
+        if self._bm25 is not None and not aliases_only:
             tokens = _content(_tokenize(complaint))
             if tokens:
                 scores = self._bm25.get_scores(tokens)
